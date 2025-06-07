@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:shopping_list/features/article/data/models/article_model.dart';
-import 'package:shopping_list/features/article/domain/entities/article.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopping_list/features/article/presentation/widget/article_card.dart';
 
 class ArticleList extends StatelessWidget {
   const ArticleList({super.key});
@@ -83,8 +83,9 @@ class ArticleList extends StatelessWidget {
                 );
 
                 try {
-                  if (response == null || response == '')
+                  if (response == null || response == '') {
                     throw FormatException();
+                  }
                   Map<String, dynamic> data =
                       json.decode(response) as Map<String, dynamic>;
                   if (context.mounted) {
@@ -116,8 +117,6 @@ class ArticleList extends StatelessWidget {
       body: BlocBuilder<ArticleBloc, ArticleState>(
         builder: (BuildContext context, ArticleState state) {
           switch (state) {
-            case ArticleLoading _:
-              return CircularProgressIndicator();
             case ArticleSuccess _:
               return state.articles.isEmpty
                   ? Center(child: (Text("Aucun article dans la liste !")))
@@ -132,7 +131,7 @@ class ArticleList extends StatelessWidget {
                           shrinkWrap: true,
                           itemCount: state.articles.length,
                           itemBuilder: (context, index) {
-                            return CustomArticleCard(
+                            return ArticleCard(
                               article: state.articles[index],
                             );
                           },
@@ -143,7 +142,15 @@ class ArticleList extends StatelessWidget {
             case ArticleFailure _:
               return Text("Une erreur est survenue !");
             default:
-              return CircularProgressIndicator();
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 50,)
+                  ],
+                )
+              );
           }
         },
       ),
@@ -178,153 +185,6 @@ class ArticleList extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
-  }
-}
-
-class CustomArticleCard extends StatelessWidget {
-  final Article article;
-
-  const CustomArticleCard({super.key, required this.article});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color:
-          article.done ? Theme.of(context).colorScheme.tertiaryContainer : null,
-      clipBehavior: Clip.antiAlias,
-      child: Dismissible(
-        key: GlobalKey(),
-        onDismissed:
-            (direction) => {
-              if (direction == DismissDirection.startToEnd)
-                {
-                  context.read<ArticleBloc>().add(
-                    ToogleArticleDoneStateEvent(
-                      article: ArticleModel.fromMap(<String, dynamic>{
-                        "label": article.label,
-                        "quantity": article.quantity,
-                        "done": article.done,
-                      }),
-                    ),
-                  ),
-                }
-              else
-                {
-                  context.read<ArticleBloc>().add(
-                    RemoveArticleEvent(
-                      article: ArticleModel.fromMap(<String, dynamic>{
-                        "label": article.label,
-                        "quantity": article.quantity,
-                        "done": article.done,
-                      }),
-                    ),
-                  ),
-                },
-            },
-        confirmDismiss: (direction) async {
-          if (direction == DismissDirection.endToStart) {
-            return await showDialog(
-              context: context,
-              builder:
-                  (BuildContext context) => AlertDialog(
-                    title: const Text("Confirmez"),
-                    content: const Text("Voulez-vous vraiment le supprimer ?"),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('Non'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Oui'),
-                      ),
-                    ],
-                  ),
-            );
-          }
-          return true;
-        },
-        background: Container(
-          color:
-              article.done
-                  ? Theme.of(context).colorScheme.surfaceContainer
-                  : Theme.of(context).colorScheme.tertiaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              spacing: 5,
-              children: [
-                Icon(
-                  article.done ? Icons.close_rounded : Icons.check_rounded,
-                  color:
-                      article.done
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.primary,
-                ),
-                Text(
-                  article.done ? "Décocher" : "Cocher",
-                  style:
-                      article.done
-                          ? TextTheme.of(context).bodyLarge!.apply(
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                          : TextTheme.of(context).bodyLarge!.apply(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        secondaryBackground: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 5,
-              children: [
-                Text(
-                  "Supprimer",
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                Icon(
-                  Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
-            ),
-          ),
-        ),
-        child: ListTile(
-          title: Text(
-            article.label,
-            style: TextTheme.of(
-              context,
-            ).bodyLarge!.apply(color: Theme.of(context).colorScheme.primary),
-          ),
-          trailing: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(50)),
-            child: Container(
-              height: 25,
-              width: 25,
-              alignment: Alignment.center,
-              color: Theme.of(context).colorScheme.tertiary,
-              child: Text(
-                article.quantity.toString(),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
