@@ -80,7 +80,7 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go(redirect);
+        context.push<void>(redirect);
       },
       child: Container(
         width: double.infinity,
