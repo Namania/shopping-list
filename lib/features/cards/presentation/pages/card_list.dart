@@ -10,7 +10,7 @@ import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
-import 'package:shopping_list/features/cards/presentation/widget/custom_card.dart';
+import 'package:shopping_list/features/cards/presentation/widgets/custom_card.dart';
 
 class CardList extends StatelessWidget {
   const CardList({super.key});

@@ -6,7 +6,7 @@ import 'package:shopping_list/features/article/presentation/bloc/article_bloc.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shopping_list/features/article/presentation/widget/article_card.dart';
+import 'package:shopping_list/features/article/presentation/widgets/article_card.dart';
 
 class ArticleList extends StatelessWidget {
   const ArticleList({super.key});
