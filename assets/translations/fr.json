@@ -1,0 +1,85 @@
+{
+    "core": {
+        "error": "Une erreur est survenue !",
+        "welcome": "Bienvenue !",
+        "card": {
+            "article": {
+                "title": "Ma liste",
+                "description": "Voir ma liste d'article"
+            },
+            "card": {
+                "title": "Mes cartes",
+                "description": "Voir mes cartes de fidèlité"
+            },
+            "settings": {
+                "title": "Paramètres",
+                "description": "Modifier mes paramètres"
+            }
+        },
+        "settings": {
+            "item": {
+                "theme": "Thème",
+                "lang": "Langage"
+            },
+            "snack": {
+                "theme": "Le thème a été défini en: {theme}",
+                "lang": "La langue a été défini en: {lang}"
+            }
+        }
+    },
+    "article": {
+        "alert": {
+            "add": {
+                "title": "Ajouter un article",
+                "placeholder": {
+                    "name": "Entrez le nom de l'article",
+                    "quantity": "Entrez sa quantité"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "add": "Ajouter"
+                }
+            },
+            "confirm": {
+                "title": "Confirmez",
+                "description": {
+                    "one": "Voulez-vous vraiment le supprimer ?",
+                    "all": "Voulez-vous vraiment tout supprimer ?"
+                },
+                "action": {
+                    "yes": "Oui",
+                    "no": "Non"
+                }
+            }
+        },
+        "empty": "Aucun article dans la liste !",
+        "delete": "Supprimer",
+        "add": "Ajouter un article"
+    },
+    "card": {
+        "alert": {
+            "add": {
+                "title": "Ajouter une carte",
+                "placeholder": {
+                    "name": "Entrez le nom de la boutique",
+                    "code": "Entrez le code de la carte"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "add": "Ajouter"
+                }
+            },
+            "confirm": {
+                "title": "Confirmez",
+                "description": "Voulez-vous vraiment le supprimer ?",
+                "action": {
+                    "yes": "Oui",
+                    "no": "Non"
+                }
+            }
+        },
+        "cancel": "Annuler",
+        "empty": "Aucune carte enregistré !",
+        "add": "Ajouter une carte"
+    }
+}

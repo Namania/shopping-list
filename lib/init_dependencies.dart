@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -25,6 +26,7 @@ import 'core/shared/cubit/theme_cubit.dart';
 GetIt getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
+  await EasyLocalization.ensureInitialized();
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey("articles") || prefs.getString("articles") == "") {

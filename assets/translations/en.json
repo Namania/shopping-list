@@ -1,0 +1,85 @@
+{
+    "core": {
+        "error": "An error occurred!",
+        "welcome": "Welcome !",
+        "card": {
+            "article": {
+                "title": "My list",
+                "description": "See my article list"
+            },
+            "card": {
+                "title": "My cards",
+                "description": "See my faith cards"
+            },
+            "settings": {
+                "title": "Settings",
+                "description": "Edit my settings"
+            }
+        },
+        "settings": {
+            "item": {
+                "theme": "Theme",
+                "lang": "Language"
+            },
+            "snack": {
+                "theme": "Theme has been set to: {theme}",
+                "lang": "Lang has been set to: {lang}"
+            }
+        }
+    },
+    "article": {
+        "alert": {
+            "add": {
+                "title": "Add an article",
+                "placeholder": {
+                    "name": "Enter the name of the article",
+                    "quantity": "Enter his quantity"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "add": "Add"
+                }
+            },
+            "confirm": {
+                "title": "Confirm",
+                "description": {
+                    "one": "Do you really want to delete it ?",
+                    "all": "Do you really want to delete all ?"
+                },
+                "action": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            }
+        },
+        "empty": "No article in the list!",
+        "delete": "Delete",
+        "add": "Add new article"
+    },
+    "card": {
+        "alert": {
+            "add": {
+                "title": "Add a card",
+                "placeholder": {
+                    "name": "Enter the name of the store",
+                    "code": "Enter the card code"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "add": "Add"
+                }
+            },
+            "confirm": {
+                "title": "Confirm",
+                "description": "Do you really want to delete it?",
+                "action": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            }
+        },
+        "cancel": "Cancel",
+        "empty": "No recorded card!",
+        "add": "Add new card"
+    }
+}

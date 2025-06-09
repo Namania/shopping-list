@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,114 @@ import 'package:shopping_list/features/article/presentation/widget/article_card.
 
 class ArticleList extends StatelessWidget {
   const ArticleList({super.key});
+
+  void handleDelete(BuildContext context) async {
+    bool res = await showDialog(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            title: Text(context.tr('article.alert.confirm.title')),
+            content: Text(context.tr('article.alert.confirm.description.all')),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(context.tr('article.alert.confirm.action.no')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(context.tr('article.alert.confirm.action.yes')),
+              ),
+            ],
+          ),
+    );
+    if (res && context.mounted) {
+      context.read<ArticleBloc>().add(ClearEvent());
+    }
+  }
+
+  void handleAdd(BuildContext context) async {
+    final labelController = TextEditingController();
+    final quantityController = TextEditingController();
+
+    String? response = await showDialog<String>(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+            title: Text(context.tr('article.alert.add.title')),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  TextField(
+                    controller: labelController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'article.alert.add.placeholder.name',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: quantityController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'article.alert.add.placeholder.quantity',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, ''),
+                child: Text(context.tr('article.alert.add.action.cancel')),
+              ),
+              TextButton(
+                onPressed:
+                    () => Navigator.pop(
+                      context,
+                      labelController.text != ""
+                          ? '{"label": "${labelController.text}", "quantity": ${quantityController.text == "" ? 1 : quantityController.text}, "done": false}'
+                          : "",
+                    ),
+                child: Text(context.tr('article.alert.add.action.add')),
+              ),
+            ],
+          ),
+    );
+
+    try {
+      if (response == null || response == '') {
+        throw FormatException();
+      }
+      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+      if (context.mounted) {
+        context.read<ArticleBloc>().add(
+          AddArticleEvent(article: ArticleModel.fromMap(data)),
+        );
+      }
+    } on FormatException {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr('core.error'),
+              style: TextTheme.of(context).labelLarge,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            duration: Durations.extralong4,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,93 +132,15 @@ class ArticleList extends StatelessWidget {
             icon: Icon(Icons.arrow_back_rounded),
           ),
         ),
-        title: const Text("Ma liste"),
+        title: Text(context.tr('core.card.article.title')),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               onPressed: () async {
-                final labelController = TextEditingController();
-                final quantityController = TextEditingController();
-
-                String? response = await showDialog<String>(
-                  context: context,
-                  builder:
-                      (BuildContext context) => AlertDialog(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                        title: const Text('Ajouter un article'),
-                        content: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 10,
-                            children: [
-                              TextField(
-                                controller: labelController,
-                                decoration: InputDecoration(
-                                  hintText: "Entrez le nom de l'article",
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.name,
-                              ),
-                              TextField(
-                                controller: quantityController,
-                                decoration: InputDecoration(
-                                  hintText: "Entrez sa quantité",
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, ''),
-                            child: const Text('Annuler'),
-                          ),
-                          TextButton(
-                            onPressed:
-                                () => Navigator.pop(
-                                  context,
-                                  labelController.text != ""
-                                      ? '{"label": "${labelController.text}", "quantity": ${quantityController.text == "" ? 1 : quantityController.text}, "done": false}'
-                                      : "",
-                                ),
-                            child: const Text('Ajouter'),
-                          ),
-                        ],
-                      ),
-                );
-
-                try {
-                  if (response == null || response == '') {
-                    throw FormatException();
-                  }
-                  Map<String, dynamic> data =
-                      json.decode(response) as Map<String, dynamic>;
-                  if (context.mounted) {
-                    context.read<ArticleBloc>().add(
-                      AddArticleEvent(article: ArticleModel.fromMap(data)),
-                    );
-                  }
-                } on FormatException {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Une erreur est survenue !",
-                          style: TextTheme.of(context).labelLarge,
-                        ),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        duration: Durations.extralong4,
-                      ),
-                    );
-                  }
-                }
+                handleDelete(context);
               },
-              icon: Icon(Icons.add),
+              icon: Icon(Icons.delete),
             ),
           ),
         ],
@@ -119,7 +150,7 @@ class ArticleList extends StatelessWidget {
           switch (state) {
             case ArticleSuccess _:
               return state.articles.isEmpty
-                  ? Center(child: (Text("Aucun article dans la liste !")))
+                  ? Center(child: (Text(context.tr('article.empty'))))
                   : SingleChildScrollView(
                     physics: ScrollPhysics(),
                     child: Column(
@@ -131,25 +162,20 @@ class ArticleList extends StatelessWidget {
                           shrinkWrap: true,
                           itemCount: state.articles.length,
                           itemBuilder: (context, index) {
-                            return ArticleCard(
-                              article: state.articles[index],
-                            );
+                            return ArticleCard(article: state.articles[index]);
                           },
                         ),
                       ],
                     ),
                   );
             case ArticleFailure _:
-              return Text("Une erreur est survenue !");
+              return Text(context.tr('core.error'));
             default:
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 50,)
-                  ],
-                )
+                  children: [CircularProgressIndicator(), SizedBox(height: 50)],
+                ),
               );
           }
         },
@@ -157,31 +183,11 @@ class ArticleList extends StatelessWidget {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FilledButton.icon(
-          onPressed: () async {
-            bool res = await showDialog(
-              context: context,
-              builder:
-                  (BuildContext context) => AlertDialog(
-                    title: const Text("Confirmez"),
-                    content: const Text("Voulez-vous vraiment le supprimer ?"),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('Non'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Oui'),
-                      ),
-                    ],
-                  ),
-            );
-            if (res && context.mounted) {
-              context.read<ArticleBloc>().add(ClearEvent());
-            }
+          onPressed: () {
+            handleAdd(context);
           },
-          label: Text("Tout supprimer"),
-          icon: Icon(Icons.delete),
+          label: Text(context.tr('article.add')),
+          icon: Icon(Icons.add_rounded),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

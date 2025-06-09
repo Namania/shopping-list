@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
@@ -48,16 +49,16 @@ class ArticleCard extends StatelessWidget {
             context: context,
             builder:
                 (BuildContext context) => AlertDialog(
-                  title: const Text("Confirmez"),
-                  content: const Text("Voulez-vous vraiment le supprimer ?"),
+                  title: Text(context.tr('article.alert.confirm.title')),
+                  content: Text(context.tr('article.alert.confirm.description.one')),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Non'),
+                      child: Text(context.tr('article.alert.confirm.action.no')),
                     ),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text('Oui'),
+                      child: Text(context.tr('article.alert.confirm.action.yes')),
                     ),
                   ],
                 ),
@@ -76,7 +77,7 @@ class ArticleCard extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 Text(
-                  "Supprimer",
+                  context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -94,7 +95,7 @@ class ArticleCard extends StatelessWidget {
               spacing: 5,
               children: [
                 Text(
-                  "Supprimer",
+                  context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
                     color: Theme.of(context).colorScheme.primary,
                   ),

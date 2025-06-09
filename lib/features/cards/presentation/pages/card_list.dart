@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:barcode_widget/barcode_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
+import 'package:shopping_list/features/cards/presentation/widget/custom_card.dart';
 
 class CardList extends StatelessWidget {
   const CardList({super.key});
@@ -18,7 +20,7 @@ class CardList extends StatelessWidget {
     try {
       String res = await FlutterBarcodeScanner.scanBarcode(
         "#ffffff",
-        "Annuler",
+        context.tr('card.cancel'),
         false,
         ScanMode.BARCODE,
       );
@@ -26,7 +28,9 @@ class CardList extends StatelessWidget {
         barcodeScanRes = res;
       }
     } catch (e) {
-      print("Erreur lors du scan");
+      if (kDebugMode) {
+        print("Erreur lors du scan");
+      }
     }
     return barcodeScanRes;
   }
@@ -44,20 +48,52 @@ class CardList extends StatelessWidget {
             icon: Icon(Icons.arrow_back_rounded),
           ),
         ),
-        title: const Text("Mes cartes"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () async {
-                final labelController = TextEditingController();
+        title: Text(context.tr('core.card.card.title')),
+      ),
+      body: BlocBuilder<CardBloc, CardState>(
+        builder: (BuildContext context, CardState state) {
+          switch (state) {
+            case CardLoading _:
+              return CircularProgressIndicator();
+            case CardSuccess _:
+              return state.cards.isEmpty
+                  ? Center(child: (Text(context.tr('card.empty'))))
+                  : SingleChildScrollView(
+                    physics: ScrollPhysics(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ListView.builder(
+                          padding: EdgeInsets.only(bottom: 60),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: state.cards.length,
+                          itemBuilder: (context, index) {
+                            return CustomCard(card: state.cards[index]);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+            case CardFailure _:
+              return Text(context.tr('core.error'));
+            default:
+              return CircularProgressIndicator();
+          }
+        },
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: FilledButton.icon(
+          onPressed: () async {
+            final labelController = TextEditingController();
                 final codeController = TextEditingController();
 
                 String? response = await showDialog<String>(
                   context: context,
                   builder:
                       (BuildContext context) => AlertDialog(
-                        title: const Text('Ajouter une carte'),
+                        title: Text(context.tr('card.alert.add.title')),
                         content: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Column(
@@ -67,7 +103,7 @@ class CardList extends StatelessWidget {
                               TextField(
                                 controller: labelController,
                                 decoration: InputDecoration(
-                                  hintText: "Entrez le nom de la boutique",
+                                  hintText: context.tr('card.alert.add.placeholder.name'),
                                   border: OutlineInputBorder(),
                                 ),
                                 keyboardType: TextInputType.name,
@@ -75,7 +111,7 @@ class CardList extends StatelessWidget {
                               TextField(
                                 controller: codeController,
                                 decoration: InputDecoration(
-                                  hintText: "Entrez le code de la carte",
+                                  hintText: context.tr('card.alert.add.placeholder.code'),
                                   border: OutlineInputBorder(),
                                   suffixIcon: IconButton(
                                     onPressed: () async {
@@ -95,7 +131,7 @@ class CardList extends StatelessWidget {
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context, ''),
-                            child: const Text('Annuler'),
+                            child: Text(context.tr('card.alert.add.action.cancel')),
                           ),
                           TextButton(
                             onPressed:
@@ -106,7 +142,7 @@ class CardList extends StatelessWidget {
                                       ? '{"label": "${labelController.text}", "code": "${codeController.text}"}'
                                       : "",
                                 ),
-                            child: const Text('Ajouter'),
+                            child: Text(context.tr('card.alert.add.action.add')),
                           ),
                         ],
                       ),
@@ -128,7 +164,7 @@ class CardList extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          "Une erreur est survenue !",
+                          context.tr('core.error'),
                           style: TextTheme.of(context).labelLarge,
                         ),
                         backgroundColor:
@@ -138,162 +174,12 @@ class CardList extends StatelessWidget {
                     );
                   }
                 }
-              },
-              icon: Icon(Icons.add),
-            ),
-          ),
-        ],
-      ),
-      body: BlocBuilder<CardBloc, CardState>(
-        builder: (BuildContext context, CardState state) {
-          switch (state) {
-            case CardLoading _:
-              return CircularProgressIndicator();
-            case CardSuccess _:
-              return state.cards.isEmpty
-                  ? Center(child: (Text("Aucune carte enregistré !")))
-                  : SingleChildScrollView(
-                    physics: ScrollPhysics(),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                          padding: EdgeInsets.only(bottom: 60),
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.cards.length,
-                          itemBuilder: (context, index) {
-                            return CustomCard(card: state.cards[index]);
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-            case CardFailure _:
-              return Text("Une erreur est survenue !");
-            default:
-              return CircularProgressIndicator();
-          }
-        },
-      ),
-    );
-  }
-}
-
-class CustomCard extends StatelessWidget {
-  final CardModel card;
-
-  const CustomCard({super.key, required this.card});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Dismissible(
-        key: GlobalKey(),
-        onDismissed:
-            (direction) => {
-              context.read<CardBloc>().add(RemoveCardEvent(card: card)),
-            },
-        confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder:
-                (BuildContext context) => AlertDialog(
-                  title: const Text("Confirmez"),
-                  content: const Text("Voulez-vous vraiment le supprimer ?"),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Non'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text('Oui'),
-                    ),
-                  ],
-                ),
-          );
-        },
-        background: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              spacing: 5,
-              children: [
-                Icon(
-                  Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                Text(
-                  "Supprimer",
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        secondaryBackground: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 5,
-              children: [
-                Text(
-                  "Supprimer",
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                Icon(
-                  Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
-            ),
-          ),
-        ),
-        child: ExpansionTile(
-          title: Text(
-            card.label,
-            style: TextTheme.of(
-              context,
-            ).bodyLarge!.apply(color: Theme.of(context).colorScheme.primary),
-          ),
-          collapsedShape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-          trailing: Text(
-            card.code,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          children: [
-            Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(30),
-              child: BarcodeWidget(
-                barcode: Barcode.code128(),
-                data: card.code,
-                drawText: false,
-              ),
-            ),
-          ],
+          },
+          label: Text(context.tr('card.add')),
+          icon: Icon(Icons.add_rounded),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
