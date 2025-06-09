@@ -48,6 +48,7 @@
                 },
                 "action": {
                     "yes": "Oui",
+                    "selected": "Cocher uniquement",
                     "no": "Non"
                 }
             }

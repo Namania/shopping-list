@@ -62,10 +62,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  Future<Either<Failure, List<ArticleModel>>> clear() async {
+  Future<Either<Failure, List<ArticleModel>>> clear({
+    required bool allArticle
+  }) async {
     try {
       return Right(
-        await articleRemoteDatasource.clear(),
+        await articleRemoteDatasource.clear(
+          allArticle: allArticle
+        ),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

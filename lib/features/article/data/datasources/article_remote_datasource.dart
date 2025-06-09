@@ -15,7 +15,9 @@ abstract interface class ArticleRemoteDatasource {
   Future<List<ArticleModel>> toogleArticleDoneState({
     required ArticleModel article,
   });
-  Future<List<ArticleModel>> clear();
+  Future<List<ArticleModel>> clear({
+    required bool allArticle
+  });
 }
 
 class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
@@ -81,9 +83,17 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
   
   @override
-  Future<List<ArticleModel>> clear() async {
+  Future<List<ArticleModel>> clear({
+    required bool allArticle
+  }) async {
     try {
-      await prefs.setString("articles", "[]");
+      if (allArticle) {
+        await prefs.setString("articles", "[]");
+      } else {
+        List<ArticleModel> articles = await getAll();
+        articles.removeWhere((a) => a.done);
+        await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
+      }
       return await getAll();
     } catch (e) {
       return [];

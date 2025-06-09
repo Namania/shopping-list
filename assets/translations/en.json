@@ -48,6 +48,7 @@
                 },
                 "action": {
                     "yes": "Yes",
+                    "selected": "Check only",
                     "no": "No"
                 }
             }

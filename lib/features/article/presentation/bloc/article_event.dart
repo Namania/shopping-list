@@ -21,7 +21,11 @@ class RemoveArticleEvent extends ArticleEvent {
   const RemoveArticleEvent({required this.article});
 }
 
-class ClearEvent extends ArticleEvent {}
+class ClearEvent extends ArticleEvent {
+  final bool allArticle;
+
+  const ClearEvent({required this.allArticle});
+}
 
 class ToogleArticleDoneStateEvent extends ArticleEvent {
   final ArticleModel article;

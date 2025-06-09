@@ -12,26 +12,41 @@ class ArticleList extends StatelessWidget {
   const ArticleList({super.key});
 
   void handleDelete(BuildContext context) async {
-    bool res = await showDialog(
+    bool? res = await showDialog(
       context: context,
       builder:
           (BuildContext context) => AlertDialog(
             title: Text(context.tr('article.alert.confirm.title')),
             content: Text(context.tr('article.alert.confirm.description.all')),
             actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(context.tr('article.alert.confirm.action.no')),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: Text(context.tr('article.alert.confirm.action.no')),
+                ),
               ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(context.tr('article.alert.confirm.action.yes')),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(context.tr('article.alert.confirm.action.selected')),
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(context.tr('article.alert.confirm.action.yes')),
+                ),
               ),
             ],
           ),
     );
-    if (res && context.mounted) {
-      context.read<ArticleBloc>().add(ClearEvent());
+    if (res != null && context.mounted) {
+      context.read<ArticleBloc>().add(ClearEvent(
+        allArticle: res
+      ));
     }
   }
 

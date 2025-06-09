@@ -110,7 +110,9 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     Emitter emit,
   ) async {
     emit(ArticleLoading());
-    final result = await clear(NoParams());
+    final result = await clear(ClearParams(
+      allArticle: event.allArticle
+    ));
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),

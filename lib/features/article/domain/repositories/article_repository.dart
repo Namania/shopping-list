@@ -14,5 +14,5 @@ abstract interface class ArticleRepository {
   Future<Either<Failure, List<ArticleModel>>> toogleArticleDoneState({
     required ArticleModel article,
   });
-  Future<Either<Failure, List<Article>>> clear();
+  Future<Either<Failure, List<Article>>> clear({required bool allArticle});
 }
