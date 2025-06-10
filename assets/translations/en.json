@@ -21,13 +21,21 @@
                 "theme": "Theme",
                 "lang": "Language",
                 "shareArticle": "Share my articles",
-                "importArticle": "Import articles"
+                "importArticle": "Import articles",
+                "shareCard": "Share my cards",
+                "importCard": "Import cards"
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",
                 "lang": "Lang has been set to: {lang}"
             },
-            "shareMessage": "Here are my articles !\n[Shopping List]"
+            "separator": {
+                "main": "General",
+                "article": "Article",
+                "card": "Carte"
+            },
+            "shareArticleMessage": "Here are my articles !\n[Shopping List]",
+            "shareCardMessage": "Here are my cards !\n[Shopping List]"
         }
     },
     "article": {
