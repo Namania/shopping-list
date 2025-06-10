@@ -46,5 +46,20 @@ class CardRepositoryImpl implements CardRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<CardModel>>> cardImport({
+    required String json
+  }) async {
+    try {
+      return Right(
+        await cardRemoteDatasource.cardImport(
+          json: json
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
 
 }

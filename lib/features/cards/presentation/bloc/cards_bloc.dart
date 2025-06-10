@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
+import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card%20copy.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
@@ -10,11 +11,13 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   final CardGetAll cardGetAll;
   final AddCard addCard;
   final RemoveCard removeCard;
+  final CardImport cardImport;
 
   CardBloc({
     required this.cardGetAll,
     required this.addCard,
     required this.removeCard,
+    required this.cardImport,
   }) : super(CardInitial()) {
     on<CardEvent>((event, emit) {
       emit(CardLoading());
@@ -28,6 +31,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     on<RemoveCardEvent>(
       (event, emit) => _onRemoveCard(event, emit),
     );
+    on<CardImportEvent>((event, emit) => _onCardImport(event, emit));
     add(CardGetAllEvent());
   }
 
@@ -67,6 +71,16 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     final result = await removeCard(
       RemoveCardParams(card: event.card)
     );
+
+    result.fold(
+      (l) => emit(CardFailure(message: l.message)),
+      (r) => emit(CardSuccess(cards: r)),
+    );
+  }
+  
+  Future<void> _onCardImport(CardImportEvent event, Emitter emit) async {
+    emit(CardLoading());
+    final result = await cardImport(CardImportParams(json: event.json));
 
     result.fold(
       (l) => emit(CardFailure(message: l.message)),

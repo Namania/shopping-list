@@ -52,7 +52,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
-      return [];
+      return await getAll();
     }
   }
 
@@ -66,7 +66,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
-      return [];
+      return await getAll();
     }
   }
   
@@ -81,7 +81,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
-      return [];
+      return await getAll();
     }
   }
   
@@ -119,7 +119,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       }
       return await getAll();
     } catch (e) {
-      return [];
+      return await getAll();
     }
   }
 

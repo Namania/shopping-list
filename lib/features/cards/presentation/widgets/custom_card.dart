@@ -51,12 +51,12 @@ class CustomCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
                 Text(
                   "Supprimer",
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                 ),
               ],
@@ -74,12 +74,12 @@ class CustomCard extends StatelessWidget {
                 Text(
                   "Supprimer",
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                 ),
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
               ],
             ),

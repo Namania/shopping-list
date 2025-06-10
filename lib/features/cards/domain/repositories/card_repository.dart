@@ -10,4 +10,5 @@ abstract interface class CardRepository {
   Future<Either<Failure, List<CardModel>>> removeCard({
     required CardModel card,
   });
+  Future<Either<Failure, List<CardModel>>> cardImport({required String json});
 }

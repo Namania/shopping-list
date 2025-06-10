@@ -11,6 +11,9 @@ abstract interface class CardRemoteDatasource {
   Future<List<CardModel>> removeCard({
     required CardModel card,
   });
+  Future<List<CardModel>> cardImport({
+    required String json
+  });
 }
 
 class CardRemoteDatasourceImpl implements CardRemoteDatasource {
@@ -57,6 +60,26 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
       return await cardGetAll();
     } catch (e) {
       return [];
+    }
+  }
+  
+  @override
+  Future<List<CardModel>> cardImport({
+    required String json
+  }) async {
+    try {
+      List<CardModel> cards = await cardGetAll();
+
+      List<dynamic> data = jsonDecode(json);
+      for (Map<String, dynamic> element in data) {
+        CardModel card = CardModel.fromMap(element);
+        if (!cards.contains(card)) {
+          await addCard(card: card);
+        }
+      }
+      return await cardGetAll();
+    } catch (e) {
+      return await cardGetAll();
     }
   }
 

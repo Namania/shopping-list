@@ -19,6 +19,7 @@ import 'package:shopping_list/features/cards/data/repositories/card_repository_i
 import 'package:shopping_list/features/cards/domain/repositories/card_repository.dart';
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
+import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card%20copy.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 
@@ -89,12 +90,14 @@ void initCard() {
     ..registerFactory<CardGetAll>(() => CardGetAll(getIt()))
     ..registerFactory<AddCard>(() => AddCard(getIt()))
     ..registerFactory<RemoveCard>(() => RemoveCard(getIt()))
+    ..registerFactory<CardImport>(() => CardImport(getIt()))
     // bloc
     ..registerLazySingleton<CardBloc>(
       () => CardBloc(
         cardGetAll: getIt(),
         addCard: getIt(),
         removeCard: getIt(),
+        cardImport: getIt(),
       ),
     );
 }

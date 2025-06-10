@@ -13,7 +13,7 @@
             },
             "settings": {
                 "title": "Paramètres",
-                "description": "Modifier mes paramètres"
+                "description": "Accèder aux paramètres"
             }
         },
         "settings": {
@@ -21,13 +21,21 @@
                 "theme": "Thème",
                 "lang": "Langage",
                 "shareArticle": "Partager mes articles",
-                "importArticle": "Importer des articles"
+                "importArticle": "Importer des articles",
+                "shareCard": "Partager mes Cartes",
+                "importCard": "Importer des Cartes"
             },
             "snack": {
                 "theme": "Le thème a été défini en: {theme}",
                 "lang": "La langue a été défini en: {lang}"
             },
-            "shareMessage": "Voici mes articles !\n[Shopping List]"
+            "separator": {
+                "main": "Gérénal",
+                "article": "Article",
+                "card": "Carte"
+            },
+            "shareArticleMessage": "Voici mes articles !\n[Shopping List]",
+            "shareCardMessage": "Voici mes cartes !\n[Shopping List]"
         }
     },
     "article": {

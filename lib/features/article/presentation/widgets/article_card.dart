@@ -72,12 +72,12 @@ class ArticleCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
                 Text(
                   context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                 ),
               ],
@@ -95,12 +95,12 @@ class ArticleCard extends StatelessWidget {
                 Text(
                   context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                 ),
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
               ],
             ),

@@ -21,3 +21,9 @@ class RemoveCardEvent extends CardEvent {
 
   const RemoveCardEvent({required this.card});
 }
+
+class CardImportEvent extends CardEvent {
+  final String json;
+
+  const CardImportEvent({required this.json});
+}
