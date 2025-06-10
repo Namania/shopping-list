@@ -177,7 +177,7 @@ class ArticleList extends StatelessWidget {
                           shrinkWrap: true,
                           itemCount: state.articles.length,
                           itemBuilder: (context, index) {
-                            return ArticleCard(article: state.articles[index]);
+                            return ArticleCard(article: state.articles[index], index: index);
                           },
                         ),
                       ],

@@ -1,23 +1,19 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/domain/entities/article.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 
 class ArticleCard extends StatelessWidget {
   final Article article;
+  final int index;
 
-  const ArticleCard({super.key, required this.article});
+  const ArticleCard({super.key, required this.article, required this.index});
 
   void toogleArticleDoneState(BuildContext context) {
     context.read<ArticleBloc>().add(
       ToogleArticleDoneStateEvent(
-        article: ArticleModel.fromMap(<String, dynamic>{
-          "label": article.label,
-          "quantity": article.quantity,
-          "done": article.done,
-        }),
+        index: index,
       ),
     );
   }
@@ -25,11 +21,7 @@ class ArticleCard extends StatelessWidget {
   void deleteArticle(BuildContext context) {
     context.read<ArticleBloc>().add(
       RemoveArticleEvent(
-        article: ArticleModel.fromMap(<String, dynamic>{
-          "label": article.label,
-          "quantity": article.quantity,
-          "done": article.done,
-        }),
+        index: index,
       ),
     );
   }
@@ -50,15 +42,21 @@ class ArticleCard extends StatelessWidget {
             builder:
                 (BuildContext context) => AlertDialog(
                   title: Text(context.tr('article.alert.confirm.title')),
-                  content: Text(context.tr('article.alert.confirm.description.one')),
+                  content: Text(
+                    context.tr('article.alert.confirm.description.one'),
+                  ),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(context.tr('article.alert.confirm.action.no')),
+                      child: Text(
+                        context.tr('article.alert.confirm.action.no'),
+                      ),
                     ),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(true),
-                      child: Text(context.tr('article.alert.confirm.action.yes')),
+                      child: Text(
+                        context.tr('article.alert.confirm.action.yes'),
+                      ),
                     ),
                   ],
                 ),

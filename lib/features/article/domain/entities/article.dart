@@ -4,11 +4,12 @@ import 'package:equatable/equatable.dart';
 class Article extends Equatable {
   final String label;
   final int quantity;
-  bool done = false;
+  bool done;
 
   Article({
     required this.label,
     required this.quantity,
+    required this.done
   });
 
   @override

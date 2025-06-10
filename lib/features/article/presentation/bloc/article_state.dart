@@ -10,7 +10,7 @@ abstract class ArticleState extends Equatable {
 class ArticleInitial extends ArticleState {}
 
 class ArticleSuccess extends ArticleState {
-  final List<Article> articles;
+  final List<ArticleModel> articles;
 
   const ArticleSuccess({required this.articles});
 }

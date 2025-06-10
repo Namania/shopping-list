@@ -1,15 +1,23 @@
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
 class Settings extends StatelessWidget {
   const Settings({super.key});
+
+  get state => null;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +49,7 @@ class Settings extends StatelessWidget {
         title: Text(context.tr('core.card.settings.title')),
       ),
       body: SingleChildScrollView(
+        key: GlobalKey(),
         padding: EdgeInsets.all(10),
         physics: ScrollPhysics(),
         child: Column(
@@ -86,6 +95,61 @@ class Settings extends StatelessWidget {
                 dropdownMenuEntries: langMenuEntries,
                 selectedTrailingIcon: Icon(Icons.arrow_drop_up_rounded),
                 trailingIcon: Icon(Icons.arrow_drop_down_rounded),
+              ),
+            ),
+            SettingsItem(
+              icon: Icons.share_rounded,
+              title: context.tr('core.settings.item.shareArticle'),
+              trailing: BlocBuilder<ArticleBloc, ArticleState>(
+                builder: (context, state) {
+                  switch (state) {
+                    case ArticleSuccess _:
+                      return IconButton(
+                        onPressed: () async {
+                          String data = jsonEncode(
+                            state.articles.map((a) => a.toMap()).toList(),
+                          );
+                          Directory temp = await getTemporaryDirectory();
+                          String path = "${temp.path}/articles.json";
+                          File(path).writeAsStringSync(data);
+
+                          if (context.mounted) {
+                            await SharePlus.instance.share(
+                              ShareParams(
+                                files: [XFile(path)],
+                                text: context.tr('core.settings.shareMessage'),
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.file_download),
+                      );
+                    default:
+                      return CircularProgressIndicator();
+                  }
+                },
+              ),
+            ),
+            SettingsItem(
+              icon: Icons.share_rounded,
+              title: context.tr('core.settings.item.importArticle'),
+              trailing: IconButton(
+                onPressed: () async {
+                  FilePickerResult? result = await FilePicker.platform
+                      .pickFiles(
+                        type: FileType.custom,
+                        allowMultiple: false,
+                        allowedExtensions: ["json"],
+                      );
+                  if (context.mounted && result != null) {
+                    context.read<ArticleBloc>().add(
+                      ArticleImportEvent(
+                        json: await result.files.first.xFile.readAsString(),
+                      ),
+                    );
+                  }
+                },
+                icon: Icon(Icons.file_upload_rounded),
               ),
             ),
           ],

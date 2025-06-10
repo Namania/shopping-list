@@ -11,12 +11,12 @@ class ToogleArticleDoneState implements UseCase<List<ArticleModel>, ToogleArticl
 
   @override
   Future<Either<Failure, List<ArticleModel>>> call(ToogleArticleDoneStateParams params) async {
-    return await articleRepository.toogleArticleDoneState(article: params.article);
+    return await articleRepository.toogleArticleDoneState(index: params.index);
   }
 }
 
 class ToogleArticleDoneStateParams {
-  final ArticleModel article;
+  final int index;
 
-  ToogleArticleDoneStateParams({required this.article});
+  ToogleArticleDoneStateParams({required this.index});
 }

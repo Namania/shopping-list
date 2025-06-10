@@ -8,6 +8,7 @@ import 'package:shopping_list/features/article/data/datasources/article_remote_d
 import 'package:shopping_list/features/article/data/repositories/article_repository_impl.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
+import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map%20copy.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
@@ -62,6 +63,7 @@ void initArticle() {
     ..registerFactory<RemoveArticle>(() => RemoveArticle(getIt()))
     ..registerFactory<ToogleArticleDoneState>(() => ToogleArticleDoneState(getIt()))
     ..registerFactory<Clear>(() => Clear(getIt()))
+    ..registerFactory<ArticleImport>(() => ArticleImport(getIt()))
     // bloc
     ..registerLazySingleton<ArticleBloc>(
       () => ArticleBloc(
@@ -70,6 +72,7 @@ void initArticle() {
         removeArticle: getIt(),
         toogleArticleDoneState: getIt(),
         clear: getIt(),
+        articleImport: getIt(),
       ),
     );
 }

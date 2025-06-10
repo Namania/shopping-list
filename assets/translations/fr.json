@@ -19,12 +19,15 @@
         "settings": {
             "item": {
                 "theme": "Thème",
-                "lang": "Langage"
+                "lang": "Langage",
+                "shareArticle": "Partager mes articles",
+                "importArticle": "Importer des articles"
             },
             "snack": {
                 "theme": "Le thème a été défini en: {theme}",
                 "lang": "La langue a été défini en: {lang}"
-            }
+            },
+            "shareMessage": "Voici mes articles !\n[Shopping List]"
         }
     },
     "article": {

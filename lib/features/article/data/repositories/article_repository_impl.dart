@@ -1,6 +1,5 @@
 import 'package:shopping_list/features/article/data/datasources/article_remote_datasource.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
-import 'package:shopping_list/features/article/domain/entities/article.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -12,7 +11,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   ArticleRepositoryImpl(this.articleRemoteDatasource);
 
   @override
-  Future<Either<Failure, List<Article>>> getAll() async {
+  Future<Either<Failure, List<ArticleModel>>> getAll() async {
     try {
       return Right(
         await articleRemoteDatasource.getAll(),
@@ -37,11 +36,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
   
   @override
   Future<Either<Failure, List<ArticleModel>>> removeArticle({
-    required ArticleModel article,
+    required int index,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.removeArticle(article: article),
+        await articleRemoteDatasource.removeArticle(index: index),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
@@ -50,11 +49,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
   
   @override
   Future<Either<Failure, List<ArticleModel>>> toogleArticleDoneState({
-    required ArticleModel article,
+    required int index,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.toogleArticleDoneState(article: article),
+        await articleRemoteDatasource.toogleArticleDoneState(index: index),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
@@ -69,6 +68,21 @@ class ArticleRepositoryImpl implements ArticleRepository {
       return Right(
         await articleRemoteDatasource.clear(
           allArticle: allArticle
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, List<ArticleModel>>> articleImport({
+    required String json
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.articleImport(
+          json: json
         ),
       );
     } catch (e) {

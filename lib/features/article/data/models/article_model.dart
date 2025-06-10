@@ -4,12 +4,11 @@ import 'package:shopping_list/features/article/domain/entities/article.dart';
 
 // ignore: must_be_immutable
 class ArticleModel extends Article {
-  bool done;
 
   ArticleModel({
     required super.label,
     required super.quantity,
-    required this.done,
+    required super.done,
   });
 
   Map<String, dynamic> toMap() {

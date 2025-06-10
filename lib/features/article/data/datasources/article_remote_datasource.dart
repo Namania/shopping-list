@@ -10,13 +10,16 @@ abstract interface class ArticleRemoteDatasource {
     required ArticleModel article,
   });
   Future<List<ArticleModel>> removeArticle({
-    required ArticleModel article,
+    required int index,
   });
   Future<List<ArticleModel>> toogleArticleDoneState({
-    required ArticleModel article,
+    required int index,
   });
   Future<List<ArticleModel>> clear({
     required bool allArticle
+  });
+  Future<List<ArticleModel>> articleImport({
+    required String json
   });
 }
 
@@ -55,11 +58,11 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
 
   @override
   Future<List<ArticleModel>> removeArticle({
-    required ArticleModel article,
+    required int index,
   }) async {
     try {
       List<ArticleModel> articles = await getAll();
-      articles.removeWhere((a) => a.label == article.label && a.quantity == article.quantity && a.done == article.done);
+      articles.removeAt(index);
       await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
@@ -69,12 +72,12 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   
   @override
   Future<List<ArticleModel>> toogleArticleDoneState({
-    required ArticleModel article,
+    required int index,
   }) async {
     try {
       List<ArticleModel> articles = await getAll();
-      ArticleModel a = articles.singleWhere((a) => a.label == article.label && a.quantity == article.quantity);
-      a.done = !a.done;
+      ArticleModel article = articles[index];
+      article.done = !article.done;
       await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
@@ -93,6 +96,26 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
         List<ArticleModel> articles = await getAll();
         articles.removeWhere((a) => a.done);
         await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
+      }
+      return await getAll();
+    } catch (e) {
+      return [];
+    }
+  }
+  
+  @override
+  Future<List<ArticleModel>> articleImport({
+    required String json
+  }) async {
+    try {
+      List<ArticleModel> articles = await getAll();
+
+      List<dynamic> data = jsonDecode(json);
+      for (Map<String, dynamic> element in data) {
+        ArticleModel article = ArticleModel.fromMap(element);
+        if (!articles.contains(article)) {
+          await addArticle(article: article);
+        }
       }
       return await getAll();
     } catch (e) {
