@@ -99,6 +99,17 @@
                     "yes": "Oui",
                     "no": "Non"
                 }
+            },
+            "edit": {
+                "title": "Modifier une carte",
+                "placeholder": {
+                    "name": "Entrez le nom de la boutique",
+                    "code": "Entrez le code de la carte"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "update": "Enregistrer"
+                }
             }
         },
         "cancel": "Annuler",

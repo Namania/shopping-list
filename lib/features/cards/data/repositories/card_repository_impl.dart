@@ -13,9 +13,7 @@ class CardRepositoryImpl implements CardRepository {
   @override
   Future<Either<Failure, List<CardModel>>> cardGetAll() async {
     try {
-      return Right(
-        await cardRemoteDatasource.cardGetAll(),
-      );
+      return Right(await cardRemoteDatasource.cardGetAll());
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
@@ -26,40 +24,50 @@ class CardRepositoryImpl implements CardRepository {
     required CardModel card,
   }) async {
     try {
-      return Right(
-        await cardRemoteDatasource.addCard(card: card),
-      );
+      return Right(await cardRemoteDatasource.addCard(card: card));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<CardModel>>> removeCard({
     required CardModel card,
   }) async {
     try {
-      return Right(
-        await cardRemoteDatasource.removeCard(card: card),
-      );
+      return Right(await cardRemoteDatasource.removeCard(card: card));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<CardModel>>> cardImport({
-    required String json
+    required String json,
+  }) async {
+    try {
+      return Right(await cardRemoteDatasource.cardImport(json: json));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CardModel>>> updateCard({
+    required CardModel card,
+    required String label,
+    required String code,
   }) async {
     try {
       return Right(
-        await cardRemoteDatasource.cardImport(
-          json: json
+        await cardRemoteDatasource.updateCard(
+          card: card,
+          label: label,
+          code: code,
         ),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-
 }

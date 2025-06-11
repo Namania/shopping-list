@@ -62,6 +62,17 @@
                     "selected": "Check only",
                     "no": "No"
                 }
+            },
+            "edit": {
+                "title": "Update article",
+                "placeholder": {
+                    "name": "Enter the name of the article",
+                    "quantity": "Enter his quantity"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "update": "Update"
+                }
             }
         },
         "empty": "No article in the list!",
@@ -71,7 +82,7 @@
     "card": {
         "alert": {
             "add": {
-                "title": "Add a card",
+                "title": "Add card",
                 "placeholder": {
                     "name": "Enter the name of the store",
                     "code": "Enter the card code"
@@ -87,6 +98,17 @@
                 "action": {
                     "yes": "Yes",
                     "no": "No"
+                }
+            },
+            "edit": {
+                "title": "Update card",
+                "placeholder": {
+                    "name": "Enter the name of the store",
+                    "code": "Enter the card code"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "update": "Update"
                 }
             }
         },

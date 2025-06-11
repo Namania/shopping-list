@@ -99,8 +99,7 @@ class ArticleCard extends StatelessWidget {
           UpdateArticleEvent(article: article, label: data["label"], quantity: data["quantity"]),
         );
       }
-    } on FormatException catch (e) {
-      print(e.message);
+    } on FormatException {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

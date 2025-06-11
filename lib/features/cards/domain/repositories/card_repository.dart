@@ -11,4 +11,5 @@ abstract interface class CardRepository {
     required CardModel card,
   });
   Future<Either<Failure, List<CardModel>>> cardImport({required String json});
+  Future<Either<Failure, List<CardModel>>> updateCard({required CardModel card, required String label, required String code});
 }

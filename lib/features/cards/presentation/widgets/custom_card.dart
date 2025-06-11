@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,93 @@ class CustomCard extends StatelessWidget {
   final CardModel card;
 
   const CustomCard({super.key, required this.card});
+
+  void updateCard(BuildContext context, CardModel card) async {
+    final labelController = TextEditingController();
+    final codeController = TextEditingController();
+
+    labelController.text = card.label;
+    codeController.text = card.code;
+
+    String? response = await showDialog<String>(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+            title: Text(context.tr('card.alert.edit.title')),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  TextField(
+                    controller: labelController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'card.alert.edit.placeholder.name',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: codeController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'card.alert.edit.placeholder.code',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.streetAddress,
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, ''),
+                child: Text(context.tr('card.alert.edit.action.cancel')),
+              ),
+              TextButton(
+                onPressed:
+                    () => Navigator.pop(
+                      context,
+                      labelController.text != ""
+                          ? '{"label": "${labelController.text}", "code": ${codeController.text}}'
+                          : "",
+                    ),
+                child: Text(context.tr('card.alert.edit.action.update')),
+              ),
+            ],
+          ),
+    );
+
+    try {
+      if (response == null || response == '') {
+        throw FormatException('No data');
+      }
+      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+      if (context.mounted) {
+        context.read<CardBloc>().add(
+          UpdateCardEvent(card: card, label: data["label"], code: data["code"].toString()),
+        );
+      }
+    } on FormatException {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr('core.error'),
+              style: TextTheme.of(context).labelLarge,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            duration: Durations.extralong4,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,39 +174,44 @@ class CustomCard extends StatelessWidget {
             ),
           ),
         ),
-        child: ExpansionTile(
-          title: Text(
-            card.label,
-            style: TextTheme.of(
-              context,
-            ).bodyLarge!.apply(color: Theme.of(context).colorScheme.primary),
-          ),
-          collapsedShape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-          trailing: Text(
-            card.code,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.primary,
+        child: GestureDetector(
+          onLongPress: () {
+            updateCard(context, card);
+          },
+          child: ExpansionTile(
+            title: Text(
+              card.label,
+              style: TextTheme.of(
+                context,
+              ).bodyLarge!.apply(color: Theme.of(context).colorScheme.primary),
             ),
-          ),
-          children: [
-            Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(30),
-              child: BarcodeWidget(
-                barcode: Barcode.code128(),
-                data: card.code,
-                drawText: false,
+            collapsedShape: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide.none,
+            ),
+            shape: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide.none,
+            ),
+            trailing: Text(
+              card.code,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
-          ],
+            children: [
+              Container(
+                color: Colors.white,
+                padding: EdgeInsets.all(30),
+                child: BarcodeWidget(
+                  barcode: Barcode.code128(),
+                  data: card.code,
+                  drawText: false,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

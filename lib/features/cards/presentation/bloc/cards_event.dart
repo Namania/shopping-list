@@ -16,6 +16,18 @@ class AddCardEvent extends CardEvent {
   const AddCardEvent({required this.card});
 }
 
+class UpdateCardEvent extends CardEvent {
+  final CardModel card;
+  final String label;
+  final String code;
+
+  const UpdateCardEvent({
+    required this.card,
+    required this.label,
+    required this.code,
+  });
+}
+
 class RemoveCardEvent extends CardEvent {
   final CardModel card;
 
