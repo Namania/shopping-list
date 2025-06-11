@@ -15,4 +15,9 @@ abstract interface class ArticleRepository {
   });
   Future<Either<Failure, List<ArticleModel>>> clear({required bool allArticle});
   Future<Either<Failure, List<ArticleModel>>> articleImport({required String json});
+  Future<Either<Failure, List<ArticleModel>>> updateArticle({
+    required ArticleModel article,
+    required String label,
+    required int quantity,
+  });
 }

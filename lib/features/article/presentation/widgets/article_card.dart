@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shopping_list/features/article/domain/entities/article.dart';
+import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 
 class ArticleCard extends StatelessWidget {
-  final Article article;
+  final ArticleModel article;
   final int index;
 
   const ArticleCard({super.key, required this.article, required this.index});
@@ -24,6 +26,94 @@ class ArticleCard extends StatelessWidget {
         index: index,
       ),
     );
+  }
+
+  void editArticle(BuildContext context, ArticleModel article) async {
+    final labelController = TextEditingController();
+    final quantityController = TextEditingController();
+
+    labelController.text = article.label;
+    quantityController.text = article.quantity.toString();
+
+    String? response = await showDialog<String>(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+            title: Text(context.tr('article.alert.edit.title')),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  TextField(
+                    controller: labelController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'article.alert.edit.placeholder.name',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.name,
+                  ),
+                  TextField(
+                    controller: quantityController,
+                    decoration: InputDecoration(
+                      hintText: context.tr(
+                        'article.alert.edit.placeholder.quantity',
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, ''),
+                child: Text(context.tr('article.alert.edit.action.cancel')),
+              ),
+              TextButton(
+                onPressed:
+                    () => Navigator.pop(
+                      context,
+                      labelController.text != ""
+                          ? '{"label": "${labelController.text}", "quantity": ${quantityController.text == "" ? 1 : quantityController.text}}'
+                          : "",
+                    ),
+                child: Text(context.tr('article.alert.edit.action.update')),
+              ),
+            ],
+          ),
+    );
+
+    try {
+      if (response == null || response == '') {
+        throw FormatException('No data');
+      }
+      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+      if (context.mounted) {
+        context.read<ArticleBloc>().add(
+          UpdateArticleEvent(article: article, label: data["label"], quantity: data["quantity"]),
+        );
+      }
+    } on FormatException catch (e) {
+      print(e.message);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr('core.error'),
+              style: TextTheme.of(context).labelLarge,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            duration: Durations.extralong4,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -106,35 +196,40 @@ class ArticleCard extends StatelessWidget {
             ),
           ),
         ),
-        child: CheckboxListTile(
-          activeColor: Theme.of(context).colorScheme.tertiary,
-          secondary: Badge(
-            padding: EdgeInsets.all(3),
-            backgroundColor:
-                article.done
-                    ? Theme.of(context).colorScheme.outline
-                    : Theme.of(context).colorScheme.primary,
-            label: Text(article.quantity.toString()),
-            textColor: Theme.of(context).colorScheme.onPrimary,
-          ),
-          title: Text(
-            article.label,
-            style: TextTheme.of(context).bodyLarge!.apply(
-              color:
+        child: GestureDetector(
+          onLongPress: () {
+            editArticle(context, article);
+          },
+          child: CheckboxListTile(
+            activeColor: Theme.of(context).colorScheme.tertiary,
+            secondary: Badge(
+              padding: EdgeInsets.all(3),
+              backgroundColor:
                   article.done
                       ? Theme.of(context).colorScheme.outline
                       : Theme.of(context).colorScheme.primary,
-              decoration:
-                  article.done
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-              decorationColor: Theme.of(context).colorScheme.outline,
+              label: Text(article.quantity.toString()),
+              textColor: Theme.of(context).colorScheme.onPrimary,
             ),
+            title: Text(
+              article.label,
+              style: TextTheme.of(context).bodyLarge!.apply(
+                color:
+                    article.done
+                        ? Theme.of(context).colorScheme.outline
+                        : Theme.of(context).colorScheme.primary,
+                decoration:
+                    article.done
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                decorationColor: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            value: article.done,
+            onChanged: (bool? value) {
+              toogleArticleDoneState(context);
+            },
           ),
-          value: article.done,
-          onChanged: (bool? value) {
-            toogleArticleDoneState(context);
-          },
         ),
       ),
     );

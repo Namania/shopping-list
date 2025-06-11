@@ -8,6 +8,7 @@ import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
+import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
 
 part 'article_event.dart';
 part 'article_state.dart';
@@ -15,6 +16,7 @@ part 'article_state.dart';
 class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final GetAll getAll;
   final AddArticle addArticle;
+  final UpdateArticle updateArticle;
   final RemoveArticle removeArticle;
   final ToogleArticleDoneState toogleArticleDoneState;
   final Clear clear;
@@ -23,6 +25,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   ArticleBloc({
     required this.getAll,
     required this.addArticle,
+    required this.updateArticle,
     required this.removeArticle,
     required this.toogleArticleDoneState,
     required this.clear,
@@ -33,6 +36,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     });
     on<ArticleGetAllEvent>((event, emit) => _onGetAll(event, emit));
     on<AddArticleEvent>((event, emit) => _onAddArticle(event, emit));
+    on<UpdateArticleEvent>((event, emit) => _onUpdateArticle(event, emit));
     on<RemoveArticleEvent>((event, emit) => _onRemoveArticle(event, emit));
     on<ClearEvent>((event, emit) => _onClear(event, emit));
     on<ToogleArticleDoneStateEvent>(
@@ -108,4 +112,15 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       (r) => emit(ArticleSuccess(articles: r)),
     );
   }
+
+  Future<void> _onUpdateArticle(UpdateArticleEvent event, Emitter emit) async {
+    emit(ArticleLoading());
+    final result = await updateArticle(UpdateArticleParams(article: event.article, label: event.label, quantity: event.quantity));
+
+    result.fold(
+      (l) => emit(ArticleFailure(message: l.message)),
+      (r) => emit(ArticleSuccess(articles: r)),
+    );
+  }
+
 }

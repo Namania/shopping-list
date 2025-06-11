@@ -13,6 +13,7 @@ import 'package:shopping_list/features/article/domain/usecases/remove_article_fr
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
+import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/cards/data/datasources/card_remote_datasource.dart';
 import 'package:shopping_list/features/cards/data/repositories/card_repository_impl.dart';
@@ -61,6 +62,7 @@ void initArticle() {
     // usecases
     ..registerFactory<GetAll>(() => GetAll(getIt()))
     ..registerFactory<AddArticle>(() => AddArticle(getIt()))
+    ..registerFactory<UpdateArticle>(() => UpdateArticle(getIt()))
     ..registerFactory<RemoveArticle>(() => RemoveArticle(getIt()))
     ..registerFactory<ToogleArticleDoneState>(() => ToogleArticleDoneState(getIt()))
     ..registerFactory<Clear>(() => Clear(getIt()))
@@ -70,6 +72,7 @@ void initArticle() {
       () => ArticleBloc(
         getAll: getIt(),
         addArticle: getIt(),
+        updateArticle: getIt(),
         removeArticle: getIt(),
         toogleArticleDoneState: getIt(),
         clear: getIt(),

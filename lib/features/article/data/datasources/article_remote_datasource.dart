@@ -21,6 +21,11 @@ abstract interface class ArticleRemoteDatasource {
   Future<List<ArticleModel>> articleImport({
     required String json
   });
+  Future<List<ArticleModel>> updateArticle({
+    required ArticleModel article,
+    required String label,
+    required int quantity,
+  });
 }
 
 class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
@@ -117,6 +122,29 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
           await addArticle(article: article);
         }
       }
+      return await getAll();
+    } catch (e) {
+      return await getAll();
+    }
+  }
+
+  @override
+  Future<List<ArticleModel>> updateArticle({
+    required ArticleModel article,
+    required String label,
+    required int quantity,
+  }) async {
+    try {
+      List<ArticleModel> articles = await getAll();
+      int index = articles.indexOf(article);
+      articles.removeAt(index);
+      ArticleModel updatedArticle = ArticleModel(
+        label: label,
+        quantity: quantity,
+        done: article.done
+      );
+      articles.insert(index, updatedArticle);
+      await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
       return await getAll();
     } catch (e) {
       return await getAll();

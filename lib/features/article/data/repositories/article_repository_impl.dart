@@ -89,5 +89,24 @@ class ArticleRepositoryImpl implements ArticleRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<ArticleModel>>> updateArticle({
+    required ArticleModel article,
+    required String label,
+    required int quantity,
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.updateArticle(
+          article: article,
+          label: label,
+          quantity: quantity,
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
 
 }

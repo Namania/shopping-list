@@ -62,6 +62,17 @@
                     "selected": "Cocher uniquement",
                     "no": "Non"
                 }
+            },
+            "edit": {
+                "title": "Modifier un article",
+                "placeholder": {
+                    "name": "Entrez le nom de l'article",
+                    "quantity": "Entrez sa quantité"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "update": "Enregistrer"
+                }
             }
         },
         "empty": "Aucun article dans la liste !",

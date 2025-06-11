@@ -15,6 +15,14 @@ class AddArticleEvent extends ArticleEvent {
   const AddArticleEvent({required this.article});
 }
 
+class UpdateArticleEvent extends ArticleEvent {
+  final ArticleModel article;
+  final String label;
+  final int quantity;
+
+  const UpdateArticleEvent({required this.article, required this.label, required this.quantity});
+}
+
 class ArticleImportEvent extends ArticleEvent {
   final String json;
 

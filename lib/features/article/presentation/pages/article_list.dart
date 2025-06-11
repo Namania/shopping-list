@@ -5,7 +5,6 @@ import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shopping_list/features/article/presentation/widgets/article_card.dart';
 
 class ArticleList extends StatelessWidget {
@@ -140,12 +139,7 @@ class ArticleList extends StatelessWidget {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: IconButton(
-            onPressed: () {
-              context.go("/");
-            },
-            icon: Icon(Icons.arrow_back_rounded),
-          ),
+          child: BackButton()
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [
