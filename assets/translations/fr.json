@@ -39,6 +39,14 @@
         }
     },
     "article": {
+        "options": {
+            "delete": "Supprimer",
+            "import": "Importer",
+            "export": "Exporter"
+        },
+        "modal": {
+            "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"
+        },
         "alert": {
             "add": {
                 "title": "Ajouter un article",

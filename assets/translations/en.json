@@ -39,6 +39,14 @@
         }
     },
     "article": {
+        "options": {
+            "delete": "Delete",
+            "import": "Import",
+            "export": "Export"
+        },
+        "modal": {
+            "export": "Scan the QR code via the \"Import\" feature of the Shopping List app"
+        },
         "alert": {
             "add": {
                 "title": "Add an article",

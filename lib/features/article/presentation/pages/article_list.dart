@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,9 @@ class ArticleList extends StatelessWidget {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(context.tr('article.alert.confirm.action.selected')),
+                  child: Text(
+                    context.tr('article.alert.confirm.action.selected'),
+                  ),
                 ),
               ),
               SizedBox(
@@ -43,9 +47,7 @@ class ArticleList extends StatelessWidget {
           ),
     );
     if (res != null && context.mounted) {
-      context.read<ArticleBloc>().add(ClearEvent(
-        allArticle: res
-      ));
+      context.read<ArticleBloc>().add(ClearEvent(allArticle: res));
     }
   }
 
@@ -133,23 +135,108 @@ class ArticleList extends StatelessWidget {
     }
   }
 
+  void handleClick(BuildContext context, String value) {
+    switch (value) {
+      case 'export':
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              padding: EdgeInsets.all(10),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 50,
+                  children: <Widget>[
+                    BlocBuilder<ArticleBloc, ArticleState>(
+                      builder: (BuildContext context, ArticleState state) {
+                        switch (state) {
+                          case ArticleFailure _:
+                            if (kDebugMode) {
+                              print(state.message);
+                            }
+                            return Text(context.tr('core.error'));
+                          case ArticleSuccess _:
+                            return SizedBox(
+                              height: 300,
+                              width: 300,
+                              child: PrettyQrView.data(
+                                data: jsonEncode(
+                                  state.articles
+                                      .map((a) => a.toJson())
+                                      .toList(),
+                                ),
+                                decoration: const PrettyQrDecoration(
+                                  shape: PrettyQrSmoothSymbol(color: Colors.black, roundFactor: .0),
+                                  quietZone: PrettyQrQuietZone.pixels(20),
+                                  background:
+                                      Colors.white,
+                                ),
+                              ),
+                            );
+                          default:
+                            return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                    Text(
+                      context.tr('article.modal.export'),
+                      style: TextTheme.of(context).bodySmall!.apply(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        break;
+      case 'import':
+        print("BBB");
+        break;
+      case 'delete':
+        handleDelete(context);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: BackButton()
+          child: BackButton(),
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () async {
-                handleDelete(context);
+            child: PopupMenuButton<String>(
+              onSelected: (String value) {
+                handleClick(context, value);
               },
-              icon: Icon(Icons.delete),
+              itemBuilder: (BuildContext context) {
+                return [
+                  {'label': 'export', 'icon': Icons.qr_code_2_rounded},
+                  {'label': 'import', 'icon': Icons.qr_code_scanner_rounded},
+                  {'label': 'delete', 'icon': Icons.delete},
+                ].map((Map<String, dynamic> choice) {
+                  return PopupMenuItem<String>(
+                    value: choice['label'],
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        Icon(choice['icon']),
+                        Text(context.tr("article.options.${choice['label']}")),
+                      ],
+                    ),
+                  );
+                }).toList();
+              },
             ),
           ),
         ],
@@ -171,7 +258,10 @@ class ArticleList extends StatelessWidget {
                           shrinkWrap: true,
                           itemCount: state.articles.length,
                           itemBuilder: (context, index) {
-                            return ArticleCard(article: state.articles[index], index: index);
+                            return ArticleCard(
+                              article: state.articles[index],
+                              index: index,
+                            );
                           },
                         ),
                       ],
