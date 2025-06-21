@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
@@ -135,7 +136,28 @@ class ArticleList extends StatelessWidget {
     }
   }
 
-  void handleClick(BuildContext context, String value) {
+  
+  Future<String> handleScaning(BuildContext context) async {
+    String barcodeScanRes = '';
+    try {
+      String res = await FlutterBarcodeScanner.scanBarcode(
+        "#ffffff",
+        context.tr('card.cancel'),
+        false,
+        ScanMode.QR,
+      );
+      if (res != "-1") {
+        barcodeScanRes = res;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Erreur lors du scan");
+      }
+    }
+    return barcodeScanRes;
+  }
+
+  void handleClick(BuildContext context, String value) async {
     switch (value) {
       case 'export':
         showModalBottomSheet<void>(
@@ -164,7 +186,7 @@ class ArticleList extends StatelessWidget {
                               child: PrettyQrView.data(
                                 data: jsonEncode(
                                   state.articles
-                                      .map((a) => a.toJson())
+                                      .map((a) => a.toMap())
                                       .toList(),
                                 ),
                                 decoration: const PrettyQrDecoration(
@@ -195,7 +217,15 @@ class ArticleList extends StatelessWidget {
         );
         break;
       case 'import':
-        print("BBB");
+        String res = await handleScaning(context);
+        print(res);
+        if (res.isNotEmpty && context.mounted) {
+          context.read<ArticleBloc>().add(
+            ArticleImportEvent(
+              json: res,
+            ),
+          );
+        }
         break;
       case 'delete':
         handleDelete(context);
