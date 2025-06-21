@@ -223,7 +223,7 @@ class CardList extends StatelessWidget {
                                     icon: Icon(Icons.camera_alt_rounded),
                                   ),
                                 ),
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.streetAddress,
                               ),
                             ],
                           ),
