@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
@@ -15,14 +16,14 @@ import 'package:shopping_list/features/cards/presentation/widgets/custom_card.da
 class CardList extends StatelessWidget {
   const CardList({super.key});
 
-  Future<String> handleScaning(BuildContext context) async {
+  Future<String> handleScaning(BuildContext context, ScanMode mode) async {
     String barcodeScanRes = '';
     try {
       String res = await FlutterBarcodeScanner.scanBarcode(
         "#ffffff",
         context.tr('card.cancel'),
         false,
-        ScanMode.BARCODE,
+        mode,
       );
       if (res != "-1") {
         barcodeScanRes = res;
@@ -33,6 +34,78 @@ class CardList extends StatelessWidget {
       }
     }
     return barcodeScanRes;
+  }
+
+  void handleClick(BuildContext context, String value) async {
+    switch (value) {
+      case 'export':
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              padding: EdgeInsets.all(10),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 50,
+                  children: <Widget>[
+                    BlocBuilder<CardBloc, CardState>(
+                      builder: (BuildContext context, CardState state) {
+                        switch (state) {
+                          case CardFailure _:
+                            if (kDebugMode) {
+                              print(state.message);
+                            }
+                            return Text(context.tr('core.error'));
+                          case CardSuccess _:
+                            return SizedBox(
+                              height: 300,
+                              width: 300,
+                              child: PrettyQrView.data(
+                                data: jsonEncode(
+                                  state.cards
+                                      .map((a) => a.toMap())
+                                      .toList(),
+                                ),
+                                decoration: const PrettyQrDecoration(
+                                  shape: PrettyQrSmoothSymbol(color: Colors.black, roundFactor: .0),
+                                  quietZone: PrettyQrQuietZone.pixels(20),
+                                  background:
+                                      Colors.white,
+                                ),
+                              ),
+                            );
+                          default:
+                            return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                    Text(
+                      context.tr('modal.export'),
+                      style: TextTheme.of(context).bodySmall!.apply(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        break;
+      case 'import':
+        String res = await handleScaning(context, ScanMode.QR);
+        if (res.isNotEmpty && context.mounted) {
+          context.read<CardBloc>().add(
+            CardImportEvent(
+              json: res,
+            ),
+          );
+        }
+        break;
+    }
   }
 
   @override
@@ -49,6 +122,33 @@ class CardList extends StatelessWidget {
           ),
         ),
         title: Text(context.tr('core.card.card.title')),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: PopupMenuButton<String>(
+              onSelected: (String value) {
+                handleClick(context, value);
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  {'label': 'export', 'icon': Icons.qr_code_2_rounded},
+                  {'label': 'import', 'icon': Icons.qr_code_scanner_rounded},
+                ].map((Map<String, dynamic> choice) {
+                  return PopupMenuItem<String>(
+                    value: choice['label'],
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        Icon(choice['icon']),
+                        Text(context.tr("article.options.${choice['label']}")),
+                      ],
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ),
+        ],
       ),
       body: BlocBuilder<CardBloc, CardState>(
         builder: (BuildContext context, CardState state) {
@@ -115,7 +215,7 @@ class CardList extends StatelessWidget {
                                   border: OutlineInputBorder(),
                                   suffixIcon: IconButton(
                                     onPressed: () async {
-                                      String res = await handleScaning(context);
+                                      String res = await handleScaning(context, ScanMode.BARCODE);
                                       if (res.isNotEmpty) {
                                         codeController.text = res;
                                       }

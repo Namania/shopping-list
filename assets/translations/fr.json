@@ -44,9 +44,6 @@
             "import": "Importer",
             "export": "Exporter"
         },
-        "modal": {
-            "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"
-        },
         "alert": {
             "add": {
                 "title": "Ajouter un article",
@@ -123,5 +120,8 @@
         "cancel": "Annuler",
         "empty": "Aucune carte enregistré !",
         "add": "Ajouter une carte"
+    },
+    "modal": {
+        "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"
     }
 }

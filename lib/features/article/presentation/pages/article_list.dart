@@ -203,7 +203,7 @@ class ArticleList extends StatelessWidget {
                       },
                     ),
                     Text(
-                      context.tr('article.modal.export'),
+                      context.tr('modal.export'),
                       style: TextTheme.of(context).bodySmall!.apply(
                         color: Theme.of(context).colorScheme.outlineVariant,
                       ),
@@ -218,7 +218,6 @@ class ArticleList extends StatelessWidget {
         break;
       case 'import':
         String res = await handleScaning(context);
-        print(res);
         if (res.isNotEmpty && context.mounted) {
           context.read<ArticleBloc>().add(
             ArticleImportEvent(
