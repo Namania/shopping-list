@@ -69,9 +69,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
   Future<void> _onRemoveArticle(RemoveArticleEvent event, Emitter emit) async {
     emit(ArticleLoading());
-    final result = await removeArticle(
-      RemoveArticleParams(index: event.index),
-    );
+    final result = await removeArticle(RemoveArticleParams(index: event.index));
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),
@@ -106,7 +104,12 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
   Future<void> _onArticleImport(ArticleImportEvent event, Emitter emit) async {
     emit(ArticleLoading());
-    final result = await articleImport(ArticleImportParams(json: event.json));
+    final result = await articleImport(
+      ArticleImportParams(
+        json: event.json,
+        defaultCategory: event.defaultCategory,
+      ),
+    );
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),
@@ -116,7 +119,13 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
   Future<void> _onUpdateArticle(UpdateArticleEvent event, Emitter emit) async {
     emit(ArticleLoading());
-    final result = await updateArticle(UpdateArticleParams(article: event.article, label: event.label, category: event.category));
+    final result = await updateArticle(
+      UpdateArticleParams(
+        article: event.article,
+        label: event.label,
+        category: event.category,
+      ),
+    );
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),
@@ -130,5 +139,4 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     }
     return [];
   }
-
 }

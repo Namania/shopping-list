@@ -15,6 +15,7 @@ import 'package:shopping_list/features/article/presentation/bloc/article_bloc.da
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
@@ -143,7 +144,10 @@ class Settings extends StatelessWidget {
                                       context.tr('article.empty'),
                                       style: TextTheme.of(context).labelLarge,
                                     ),
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                                    backgroundColor:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainer,
                                     duration: Durations.extralong4,
                                   ),
                                 );
@@ -172,6 +176,16 @@ class Settings extends StatelessWidget {
                         context.read<ArticleBloc>().add(
                           ArticleImportEvent(
                             json: await result.files.first.xFile.readAsString(),
+                            defaultCategory: CategoryModel(
+                              label:
+                                  context.mounted
+                                      ? context.tr('category.default')
+                                      : "Other",
+                              color:
+                                  context.mounted
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.black,
+                            ),
                           ),
                         );
                       }
@@ -218,7 +232,10 @@ class Settings extends StatelessWidget {
                                       context.tr('card.empty'),
                                       style: TextTheme.of(context).labelLarge,
                                     ),
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                                    backgroundColor:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainer,
                                     duration: Durations.extralong4,
                                   ),
                                 );

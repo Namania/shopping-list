@@ -247,7 +247,15 @@ class _ArticleListState extends State<ArticleList> {
       case 'import':
         String res = await handleScaning(context);
         if (res.isNotEmpty && context.mounted) {
-          context.read<ArticleBloc>().add(ArticleImportEvent(json: res));
+          context.read<ArticleBloc>().add(
+            ArticleImportEvent(
+              json: res,
+              defaultCategory: CategoryModel(
+                label: context.tr('category.default'),
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          );
         }
         break;
       case 'delete':

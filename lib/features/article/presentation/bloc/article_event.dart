@@ -20,13 +20,18 @@ class UpdateArticleEvent extends ArticleEvent {
   final String label;
   final CategoryModel category;
 
-  const UpdateArticleEvent({required this.article, required this.label, required this.category});
+  const UpdateArticleEvent({
+    required this.article,
+    required this.label,
+    required this.category,
+  });
 }
 
 class ArticleImportEvent extends ArticleEvent {
   final String json;
+  final CategoryModel defaultCategory;
 
-  const ArticleImportEvent({required this.json});
+  const ArticleImportEvent({required this.json, required this.defaultCategory});
 }
 
 class RemoveArticleEvent extends ArticleEvent {

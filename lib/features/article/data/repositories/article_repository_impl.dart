@@ -78,12 +78,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
   
   @override
   Future<Either<Failure, List<ArticleModel>>> articleImport({
-    required String json
+    required String json,
+    required CategoryModel defaultCategory
   }) async {
     try {
       return Right(
         await articleRemoteDatasource.articleImport(
-          json: json
+          json: json,
+          defaultCategory: defaultCategory
         ),
       );
     } catch (e) {
