@@ -10,8 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/article/presentation/widgets/article_card.dart';
 
-class ArticleList extends StatelessWidget {
+class ArticleList extends StatefulWidget {
   const ArticleList({super.key});
+
+  @override
+  State<ArticleList> createState() => _ArticleListState();
+}
+
+class _ArticleListState extends State<ArticleList> {
 
   void handleDelete(BuildContext context) async {
     bool? res = await showDialog(
@@ -111,14 +117,15 @@ class ArticleList extends StatelessWidget {
     );
 
     try {
-      if (response == null || response == '') {
+      if (response == null) {
         throw FormatException();
-      }
-      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
-      if (context.mounted) {
-        context.read<ArticleBloc>().add(
-          AddArticleEvent(article: ArticleModel.fromMap(data)),
-        );
+      } else if (response != '') {
+        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        if (context.mounted) {
+          context.read<ArticleBloc>().add(
+            AddArticleEvent(article: ArticleModel.fromMap(data)),
+          );
+        }
       }
     } on FormatException {
       if (context.mounted) {
@@ -136,7 +143,6 @@ class ArticleList extends StatelessWidget {
     }
   }
 
-  
   Future<String> handleScaning(BuildContext context) async {
     String barcodeScanRes = '';
     try {
@@ -185,15 +191,15 @@ class ArticleList extends StatelessWidget {
                               width: 300,
                               child: PrettyQrView.data(
                                 data: jsonEncode(
-                                  state.articles
-                                      .map((a) => a.toMap())
-                                      .toList(),
+                                  state.articles.map((a) => a.toMap()).toList(),
                                 ),
                                 decoration: const PrettyQrDecoration(
-                                  shape: PrettyQrSmoothSymbol(color: Colors.black, roundFactor: .0),
+                                  shape: PrettyQrSmoothSymbol(
+                                    color: Colors.black,
+                                    roundFactor: .0,
+                                  ),
                                   quietZone: PrettyQrQuietZone.pixels(20),
-                                  background:
-                                      Colors.white,
+                                  background: Colors.white,
                                 ),
                               ),
                             );
@@ -219,11 +225,7 @@ class ArticleList extends StatelessWidget {
       case 'import':
         String res = await handleScaning(context);
         if (res.isNotEmpty && context.mounted) {
-          context.read<ArticleBloc>().add(
-            ArticleImportEvent(
-              json: res,
-            ),
-          );
+          context.read<ArticleBloc>().add(ArticleImportEvent(json: res));
         }
         break;
       case 'delete':
@@ -271,41 +273,25 @@ class ArticleList extends StatelessWidget {
         ],
       ),
       body: BlocBuilder<ArticleBloc, ArticleState>(
+        buildWhen: (previous, state) {
+          return state is ArticleSuccess;
+        },
         builder: (BuildContext context, ArticleState state) {
-          switch (state) {
-            case ArticleSuccess _:
-              return state.articles.isEmpty
-                  ? Center(child: (Text(context.tr('article.empty'))))
-                  : SingleChildScrollView(
-                    physics: ScrollPhysics(),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                          padding: EdgeInsets.only(bottom: 60),
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.articles.length,
-                          itemBuilder: (context, index) {
-                            return ArticleCard(
-                              article: state.articles[index],
-                              index: index,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-            case ArticleFailure _:
-              return Text(context.tr('core.error'));
-            default:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [CircularProgressIndicator(), SizedBox(height: 50)],
-                ),
-              );
+          final List<ArticleModel> articles =
+              context.read<ArticleBloc>().getAllArticle();
+          if (articles.isEmpty) {
+            return Center(child: (Text(context.tr('article.empty'))));
           }
+          return Padding(
+            padding: const EdgeInsets.all(5),
+            child: ListView.builder(
+              padding: EdgeInsets.only(bottom: 60),
+              itemCount: articles.length,
+              itemBuilder: (context, index) {
+                return ArticleCard(article: articles[index], index: index);
+              },
+            ),
+          );
         },
       ),
       floatingActionButton: Padding(

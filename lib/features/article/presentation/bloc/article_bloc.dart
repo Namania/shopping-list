@@ -123,4 +123,11 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     );
   }
 
+  List<ArticleModel> getAllArticle() {
+    if (state is ArticleSuccess) {
+      return (state as ArticleSuccess).articles.toList();
+    }
+    return [];
+  }
+
 }
