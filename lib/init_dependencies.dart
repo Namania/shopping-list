@@ -10,7 +10,7 @@ import 'package:shopping_list/features/article/data/repositories/article_reposit
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
-import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map%20copy.dart';
+import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
@@ -22,9 +22,19 @@ import 'package:shopping_list/features/cards/domain/repositories/card_repository
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
-import 'package:shopping_list/features/cards/domain/usecases/remove_card%20copy.dart';
+import 'package:shopping_list/features/cards/domain/usecases/remove_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/update_card.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+import 'package:shopping_list/features/category/data/datasources/category_remote_datasource.dart';
+import 'package:shopping_list/features/category/data/repositories/category_repository_impl.dart';
+import 'package:shopping_list/features/category/domain/repositories/category_repository.dart';
+import 'package:shopping_list/features/category/domain/usecases/add_category_from_map.dart';
+import 'package:shopping_list/features/category/domain/usecases/category_import.dart';
+import 'package:shopping_list/features/category/domain/usecases/clear.dart';
+import 'package:shopping_list/features/category/domain/usecases/get_all_category.dart';
+import 'package:shopping_list/features/category/domain/usecases/remove_category_from_map.dart';
+import 'package:shopping_list/features/category/domain/usecases/update_category.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 import 'core/shared/cubit/theme_cubit.dart';
 
@@ -55,6 +65,7 @@ Future<void> initDependencies() async {
   
   initArticle();
   initCard();
+  initCategory();
 }
 
 void initArticle() {
@@ -109,6 +120,34 @@ void initCard() {
         updateCard: getIt(),
         removeCard: getIt(),
         cardImport: getIt(),
+      ),
+    );
+}
+
+void initCategory() {
+  getIt
+    // Datasource
+    ..registerFactory<CategoryRemoteDatasource>(
+      () => CategoryRemoteDatasourceImpl(getIt()),
+    )
+    // repositories
+    ..registerCachedFactory<CategoryRepository>(() => CategoryRepositoryImpl(getIt()))
+    // usecases
+    ..registerFactory<GetAllCategory>(() => GetAllCategory(getIt()))
+    ..registerFactory<AddCategory>(() => AddCategory(getIt()))
+    ..registerFactory<UpdateCategory>(() => UpdateCategory(getIt()))
+    ..registerFactory<RemoveCategory>(() => RemoveCategory(getIt()))
+    ..registerFactory<CategoryImport>(() => CategoryImport(getIt()))
+    ..registerFactory<ClearCategory>(() => ClearCategory(getIt()))
+    // bloc
+    ..registerLazySingleton<CategoryBloc>(
+      () => CategoryBloc(
+        getAll: getIt(),
+        addCategory: getIt(),
+        updateCategory: getIt(),
+        removeCategory: getIt(),
+        categoryImport: getIt(),
+        clearCategory: getIt(),
       ),
     );
 }

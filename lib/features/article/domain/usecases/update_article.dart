@@ -27,5 +27,9 @@ class UpdateArticleParams {
   final String label;
   final int quantity;
 
-  UpdateArticleParams({required this.article, required this.label, required this.quantity});
+  UpdateArticleParams({
+    required this.article,
+    required this.label,
+    required this.quantity,
+  });
 }

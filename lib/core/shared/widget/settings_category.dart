@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
 
-class Category extends StatelessWidget {
+class SettingsCategory extends StatelessWidget {
   final String title;
   final List<SettingsItem> children;
 
-  const Category({super.key, required this.title, required this.children});
+  const SettingsCategory({super.key, required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {

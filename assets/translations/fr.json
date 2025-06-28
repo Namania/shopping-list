@@ -11,12 +11,13 @@
                 "title": "Mes cartes",
                 "description": "Voir mes cartes de fidèlité"
             },
-            "settings": {
-                "title": "Paramètres",
-                "description": "Accèder aux paramètres"
+            "category": {
+                "title": "Catégorie",
+                "description": "Voir mes catégories"
             }
         },
         "settings": {
+            "title": "Paramètres",
             "item": {
                 "theme": "Thème",
                 "lang": "Langage",
@@ -120,6 +121,49 @@
         "cancel": "Annuler",
         "empty": "Aucune carte enregistré !",
         "add": "Ajouter une carte"
+    },
+    "category": {
+        "options": {
+            "delete": "Supprimer",
+            "import": "Importer",
+            "export": "Exporter"
+        },
+        "alert": {
+            "add": {
+                "title": "Ajouter une catégorie",
+                "placeholder": {
+                    "name": "Entrez le nom de la catégorie"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "add": "Ajouter"
+                }
+            },
+            "confirm": {
+                "title": "Confirmez",
+                "description": {
+                    "one": "Voulez-vous vraiment la supprimer ?",
+                    "all": "Voulez-vous vraiment tout supprimer ?"
+                },
+                "action": {
+                    "yes": "Oui",
+                    "no": "Non"
+                }
+            },
+            "edit": {
+                "title": "Modifier la catégorie",
+                "placeholder": {
+                    "name": "Entrez le nom de la catégorie"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "update": "Enregistrer"
+                }
+            }
+        },
+        "empty": "Aucune catégorie !",
+        "delete": "Supprimer",
+        "add": "Ajouter une catégorie"
     },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"

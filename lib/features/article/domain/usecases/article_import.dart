@@ -10,7 +10,9 @@ class ArticleImport implements UseCase<void, ArticleImportParams> {
   ArticleImport(this.articleRepository);
 
   @override
-  Future<Either<Failure, List<ArticleModel>>> call(ArticleImportParams params) async {
+  Future<Either<Failure, List<ArticleModel>>> call(
+    ArticleImportParams params,
+  ) async {
     return await articleRepository.articleImport(json: params.json);
   }
 }

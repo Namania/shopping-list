@@ -3,7 +3,7 @@ import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
-import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map%20copy.dart';
+import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:equatable/equatable.dart';

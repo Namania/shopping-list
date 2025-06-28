@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
-import 'package:shopping_list/core/shared/widget/category.dart';
+import 'package:shopping_list/core/shared/widget/settings_category.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
@@ -50,7 +50,7 @@ class Settings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(),
-        title: Text(context.tr('core.card.settings.title')),
+        title: Text(context.tr('core.settings.title')),
       ),
       body: SingleChildScrollView(
         key: GlobalKey(),
@@ -60,7 +60,7 @@ class Settings extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           spacing: 2,
           children: [
-            Category(
+            SettingsCategory(
               title: context.tr('core.settings.separator.main'),
               children: [
                 SettingsItem(
@@ -106,7 +106,7 @@ class Settings extends StatelessWidget {
                 ),
               ],
             ),
-            Category(
+            SettingsCategory(
               title: context.tr('core.settings.separator.article'),
               children: [
                 SettingsItem(
@@ -181,7 +181,7 @@ class Settings extends StatelessWidget {
                 ),
               ],
             ),
-            Category(
+            SettingsCategory(
               title: context.tr('core.settings.separator.card'),
               children: [
                 SettingsItem(
