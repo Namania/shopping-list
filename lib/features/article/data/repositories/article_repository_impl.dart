@@ -4,6 +4,7 @@ import 'package:shopping_list/features/article/domain/repositories/article_repos
 import 'package:fpdart/fpdart.dart';
 
 import 'package:shopping_list/core/errors/failure.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final ArticleRemoteDatasource articleRemoteDatasource;
@@ -94,14 +95,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<Either<Failure, List<ArticleModel>>> updateArticle({
     required ArticleModel article,
     required String label,
-    required int quantity,
+    required CategoryModel category,
   }) async {
     try {
       return Right(
         await articleRemoteDatasource.updateArticle(
           article: article,
           label: label,
-          quantity: quantity,
+          category: category,
         ),
       );
     } catch (e) {

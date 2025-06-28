@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
-import 'package:shopping_list/features/category/presentation/widgets/categoty_card.dart';
+import 'package:shopping_list/features/category/presentation/widgets/category_card.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key});
@@ -107,7 +107,7 @@ class _CategoryListState extends State<CategoryList> {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"label": "${labelController.text}", "color": ${pickerColor.toARGB32()}}'
+                          ? '{"label": "${labelController.text[0].toUpperCase() + labelController.text.substring(1)}", "color": ${pickerColor.toARGB32()}}'
                           : "",
                     ),
                 child: Text(context.tr('category.alert.add.action.add')),

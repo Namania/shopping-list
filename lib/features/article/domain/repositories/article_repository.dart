@@ -1,6 +1,7 @@
 import 'package:shopping_list/core/errors/failure.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 abstract interface class ArticleRepository {
   Future<Either<Failure, List<ArticleModel>>> getAll();
@@ -18,6 +19,6 @@ abstract interface class ArticleRepository {
   Future<Either<Failure, List<ArticleModel>>> updateArticle({
     required ArticleModel article,
     required String label,
-    required int quantity,
+    required CategoryModel category,
   });
 }

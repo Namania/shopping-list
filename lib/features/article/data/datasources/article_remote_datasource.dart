@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 import '../models/article_model.dart';
 
@@ -24,7 +25,7 @@ abstract interface class ArticleRemoteDatasource {
   Future<List<ArticleModel>> updateArticle({
     required ArticleModel article,
     required String label,
-    required int quantity,
+    required CategoryModel category,
   });
 }
 
@@ -53,8 +54,19 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }) async {
     try {
       List<ArticleModel> articles = await getAll();
-      articles.add(article);
-      await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
+      List<ArticleModel> exist = articles.where((a) => a.label == article.label).toList();
+      if (exist.isEmpty) {
+        articles.add(article);
+        articles.sort(
+          (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
+        );
+        articles.sort(
+          (a, b) => a.category.label.toLowerCase().compareTo(
+            b.category.label.toLowerCase(),
+          ),
+        );
+        await prefs.setString("articles", jsonEncode(articles.map((a) => a.toJson()).toList()));
+      }
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -132,7 +144,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   Future<List<ArticleModel>> updateArticle({
     required ArticleModel article,
     required String label,
-    required int quantity,
+    required CategoryModel category,
   }) async {
     try {
       List<ArticleModel> articles = await getAll();
@@ -140,7 +152,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       articles.removeAt(index);
       ArticleModel updatedArticle = ArticleModel(
         label: label,
-        quantity: quantity,
+        category: category,
         done: article.done
       );
       articles.insert(index, updatedArticle);

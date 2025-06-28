@@ -1,10 +1,14 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 class ArticleCard extends StatelessWidget {
   final ArticleModel article;
@@ -13,27 +17,38 @@ class ArticleCard extends StatelessWidget {
   const ArticleCard({super.key, required this.article, required this.index});
 
   void toogleArticleDoneState(BuildContext context) {
-    context.read<ArticleBloc>().add(
-      ToogleArticleDoneStateEvent(
-        index: index,
-      ),
-    );
+    context.read<ArticleBloc>().add(ToogleArticleDoneStateEvent(index: index));
   }
 
   void deleteArticle(BuildContext context) {
-    context.read<ArticleBloc>().add(
-      RemoveArticleEvent(
-        index: index,
-      ),
-    );
+    context.read<ArticleBloc>().add(RemoveArticleEvent(index: index));
   }
 
   void editArticle(BuildContext context, ArticleModel article) async {
     final labelController = TextEditingController();
-    final quantityController = TextEditingController();
+
+    List<CategoryModel> categories =
+        context.read<CategoryBloc>().getAllCategory();
+    CategoryModel otherCategory = CategoryModel(
+      label: context.tr('category.default'),
+      color: Theme.of(context).colorScheme.primary,
+    );
+    categories.insert(0, otherCategory);
+    List<MenuEntry> categoryEntries = UnmodifiableListView<MenuEntry>(
+      categories.map<MenuEntry>(
+        (CategoryModel c) => MenuEntry(
+          value: c.label,
+          labelWidget: Text(c.label),
+          label: c.label,
+        ),
+      ),
+    );
+    String categoryEntriesValue =
+        categories.contains(article.category)
+            ? article.category.label
+            : otherCategory.label;
 
     labelController.text = article.label;
-    quantityController.text = article.quantity.toString();
 
     String? response = await showDialog<String>(
       context: context,
@@ -57,15 +72,14 @@ class ArticleCard extends StatelessWidget {
                     ),
                     keyboardType: TextInputType.name,
                   ),
-                  TextField(
-                    controller: quantityController,
-                    decoration: InputDecoration(
-                      hintText: context.tr(
-                        'article.alert.edit.placeholder.quantity',
-                      ),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                  DropdownMenu<String>(
+                    initialSelection: categoryEntriesValue,
+                    onSelected: (String? value) {
+                      categoryEntriesValue = value!;
+                    },
+                    dropdownMenuEntries: categoryEntries,
+                    selectedTrailingIcon: Icon(Icons.arrow_drop_up_rounded),
+                    trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
                 ],
               ),
@@ -80,7 +94,7 @@ class ArticleCard extends StatelessWidget {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"label": "${labelController.text}", "quantity": ${quantityController.text == "" ? 1 : quantityController.text}}'
+                          ? '{"label": "${labelController.text}", "category": ${categories.where((c) => c.label == categoryEntriesValue).first.toJson()}}'
                           : "",
                     ),
                 child: Text(context.tr('article.alert.edit.action.update')),
@@ -96,7 +110,11 @@ class ArticleCard extends StatelessWidget {
       Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
       if (context.mounted) {
         context.read<ArticleBloc>().add(
-          UpdateArticleEvent(article: article, label: data["label"], quantity: data["quantity"]),
+          UpdateArticleEvent(
+            article: article,
+            label: data["label"],
+            category: CategoryModel.fromMap(data["category"]),
+          ),
         );
       }
     } on FormatException {
@@ -206,9 +224,8 @@ class ArticleCard extends StatelessWidget {
               backgroundColor:
                   article.done
                       ? Theme.of(context).colorScheme.outline
-                      : Theme.of(context).colorScheme.primary,
-              label: Text(article.quantity.toString()),
-              textColor: Theme.of(context).colorScheme.onPrimary,
+                      : article.category.color,
+              label: const SizedBox(height: 10),
             ),
             title: Text(
               article.label,

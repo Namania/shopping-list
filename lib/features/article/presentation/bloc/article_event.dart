@@ -18,9 +18,9 @@ class AddArticleEvent extends ArticleEvent {
 class UpdateArticleEvent extends ArticleEvent {
   final ArticleModel article;
   final String label;
-  final int quantity;
+  final CategoryModel category;
 
-  const UpdateArticleEvent({required this.article, required this.label, required this.quantity});
+  const UpdateArticleEvent({required this.article, required this.label, required this.category});
 }
 
 class ArticleImportEvent extends ArticleEvent {

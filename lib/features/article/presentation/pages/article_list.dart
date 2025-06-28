@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -9,6 +10,9 @@ import 'package:shopping_list/features/article/presentation/bloc/article_bloc.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/article/presentation/widgets/article_card.dart';
+import 'package:shopping_list/features/article/presentation/widgets/article_category.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 class ArticleList extends StatefulWidget {
   const ArticleList({super.key});
@@ -17,8 +21,9 @@ class ArticleList extends StatefulWidget {
   State<ArticleList> createState() => _ArticleListState();
 }
 
-class _ArticleListState extends State<ArticleList> {
+typedef MenuEntry = DropdownMenuEntry<String>;
 
+class _ArticleListState extends State<ArticleList> {
   void handleDelete(BuildContext context) async {
     bool? res = await showDialog(
       context: context,
@@ -60,7 +65,24 @@ class _ArticleListState extends State<ArticleList> {
 
   void handleAdd(BuildContext context) async {
     final labelController = TextEditingController();
-    final quantityController = TextEditingController();
+
+    List<CategoryModel> categories =
+        context.read<CategoryBloc>().getAllCategory();
+    CategoryModel otherCategory = CategoryModel(
+      label: context.tr('category.default'),
+      color: Theme.of(context).colorScheme.primary,
+    );
+    categories.insert(0, otherCategory);
+    List<MenuEntry> categoryEntries = UnmodifiableListView<MenuEntry>(
+      categories.map<MenuEntry>(
+        (CategoryModel c) => MenuEntry(
+          value: c.label,
+          labelWidget: Text(c.label),
+          label: c.label,
+        ),
+      ),
+    );
+    String categoryEntriesValue = categories.first.label;
 
     String? response = await showDialog<String>(
       context: context,
@@ -84,15 +106,14 @@ class _ArticleListState extends State<ArticleList> {
                     ),
                     keyboardType: TextInputType.name,
                   ),
-                  TextField(
-                    controller: quantityController,
-                    decoration: InputDecoration(
-                      hintText: context.tr(
-                        'article.alert.add.placeholder.quantity',
-                      ),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                  DropdownMenu<String>(
+                    initialSelection: categoryEntriesValue,
+                    onSelected: (String? value) {
+                      categoryEntriesValue = value!;
+                    },
+                    dropdownMenuEntries: categoryEntries,
+                    selectedTrailingIcon: Icon(Icons.arrow_drop_up_rounded),
+                    trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
                 ],
               ),
@@ -107,7 +128,7 @@ class _ArticleListState extends State<ArticleList> {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"label": "${labelController.text}", "quantity": ${quantityController.text == "" ? 1 : quantityController.text}, "done": false}'
+                          ? '{"label": "${labelController.text}", "category": ${categories.where((c) => c.label == categoryEntriesValue).first.toJson()}, "done": false}'
                           : "",
                     ),
                 child: Text(context.tr('article.alert.add.action.add')),
@@ -120,7 +141,8 @@ class _ArticleListState extends State<ArticleList> {
       if (response == null) {
         throw FormatException();
       } else if (response != '') {
-        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<ArticleBloc>().add(
             AddArticleEvent(article: ArticleModel.fromMap(data)),
@@ -236,6 +258,7 @@ class _ArticleListState extends State<ArticleList> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<CategoryBloc>().add(CategoryGetAllEvent());
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -288,7 +311,11 @@ class _ArticleListState extends State<ArticleList> {
               padding: EdgeInsets.only(bottom: 60),
               itemCount: articles.length,
               itemBuilder: (context, index) {
-                return ArticleCard(article: articles[index], index: index);
+                return index == 0 ||
+                        articles[index - 1].category.label !=
+                            articles[index].category.label
+                    ? ArticleCategory(article: articles[index], index: index)
+                    : ArticleCard(article: articles[index], index: index);
               },
             ),
           );

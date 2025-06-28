@@ -158,21 +158,24 @@ class CardList extends StatelessWidget {
             case CardSuccess _:
               return state.cards.isEmpty
                   ? Center(child: (Text(context.tr('card.empty'))))
-                  : SingleChildScrollView(
-                    physics: ScrollPhysics(),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                          padding: EdgeInsets.only(bottom: 60),
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.cards.length,
-                          itemBuilder: (context, index) {
-                            return CustomCard(card: state.cards[index]);
-                          },
-                        ),
-                      ],
+                  : Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: SingleChildScrollView(
+                      physics: ScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                            padding: EdgeInsets.only(bottom: 60),
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: state.cards.length,
+                            itemBuilder: (context, index) {
+                              return CustomCard(card: state.cards[index]);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
             case CardFailure _:

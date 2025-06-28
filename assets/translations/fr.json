@@ -123,6 +123,7 @@
         "add": "Ajouter une carte"
     },
     "category": {
+        "default": "Sans catégorie",
         "options": {
             "delete": "Supprimer",
             "import": "Importer",

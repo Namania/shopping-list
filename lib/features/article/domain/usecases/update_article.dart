@@ -3,6 +3,7 @@ import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 class UpdateArticle
     implements UseCase<List<ArticleModel>, UpdateArticleParams> {
@@ -17,7 +18,7 @@ class UpdateArticle
     return await articleRepository.updateArticle(
       article: params.article,
       label: params.label,
-      quantity: params.quantity,
+      category: params.category,
     );
   }
 }
@@ -25,11 +26,11 @@ class UpdateArticle
 class UpdateArticleParams {
   final ArticleModel article;
   final String label;
-  final int quantity;
+  final CategoryModel category;
 
   UpdateArticleParams({
     required this.article,
     required this.label,
-    required this.quantity,
+    required this.category,
   });
 }

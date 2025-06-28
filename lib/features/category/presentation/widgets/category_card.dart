@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:shopping_list/features/article/data/models/article_model.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
@@ -15,6 +17,19 @@ class CategoryCard extends StatelessWidget {
 
   void deleteCategory(BuildContext context) {
     context.read<CategoryBloc>().add(RemoveCategoryEvent(index: index));
+    List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+    for (ArticleModel article in articles) {
+      context.read<ArticleBloc>().add(
+        UpdateArticleEvent(
+          article: article,
+          label: article.label,
+          category: CategoryModel(
+            label: context.tr('category.default'),
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      );
+    }
   }
 
   void editCategory(BuildContext context, CategoryModel category) async {
@@ -78,7 +93,7 @@ class CategoryCard extends StatelessWidget {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"label": "${labelController.text}", "color": ${pickerColor.toARGB32()}}'
+                          ? '{"label": "${labelController.text[0].toUpperCase() + labelController.text.substring(1)}", "color": ${pickerColor.toARGB32()}}'
                           : "",
                     ),
                 child: Text(context.tr('category.alert.edit.action.update')),

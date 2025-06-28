@@ -1,20 +1,21 @@
 import 'dart:convert';
 
 import 'package:shopping_list/features/article/domain/entities/article.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 // ignore: must_be_immutable
 class ArticleModel extends Article {
 
   ArticleModel({
     required super.label,
-    required super.quantity,
+    required super.category,
     required super.done,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'label': label,
-      'quantity': quantity,
+      'category': category.toMap(),
       'done': done,
     };
   }
@@ -22,7 +23,7 @@ class ArticleModel extends Article {
   factory ArticleModel.fromMap(Map<String, dynamic> map) {
     return ArticleModel(
       label: map['label'] as String,
-      quantity: map['quantity'] as int,
+      category: CategoryModel.fromMap(map['category']),
       done: map['done'] as bool,
     );
   }

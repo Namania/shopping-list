@@ -49,8 +49,11 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
   }) async {
     try {
       List<CategoryModel> categories = await getAll();
-      categories.add(category);
-      await prefs.setString("categories", jsonEncode(categories.map((a) => a.toJson()).toList()));
+      List<CategoryModel> exist = categories.where((c) => c.label == category.label).toList();
+      if (exist.isEmpty) {
+        categories.add(category);
+        await prefs.setString("categories", jsonEncode(categories.map((c) => c.toJson()).toList()));
+      }
       return await getAll();
     } catch (e) {
       return await getAll();

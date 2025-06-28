@@ -9,6 +9,7 @@ import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 part 'article_event.dart';
 part 'article_state.dart';
@@ -115,7 +116,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
   Future<void> _onUpdateArticle(UpdateArticleEvent event, Emitter emit) async {
     emit(ArticleLoading());
-    final result = await updateArticle(UpdateArticleParams(article: event.article, label: event.label, quantity: event.quantity));
+    final result = await updateArticle(UpdateArticleParams(article: event.article, label: event.label, category: event.category));
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),
