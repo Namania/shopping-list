@@ -179,6 +179,14 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
         done: article.done,
       );
       articles.insert(index, updatedArticle);
+      articles.sort(
+        (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
+      );
+      articles.sort(
+        (a, b) => a.category.label.toLowerCase().compareTo(
+          b.category.label.toLowerCase(),
+        ),
+      );
       await prefs.setString(
         "articles",
         jsonEncode(articles.map((a) => a.toJson()).toList()),
