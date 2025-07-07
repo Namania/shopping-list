@@ -11,12 +11,13 @@
                 "title": "My cards",
                 "description": "See my faith cards"
             },
-            "settings": {
-                "title": "Settings",
-                "description": "Access settings"
+            "category": {
+                "title": "Catégorie",
+                "description": "Voir mes catégories"
             }
         },
         "settings": {
+            "title": "Settings",
             "item": {
                 "theme": "Theme",
                 "lang": "Language",
@@ -120,6 +121,53 @@
         "cancel": "Cancel",
         "empty": "No recorded card!",
         "add": "Add new card"
+    },
+    "category": {
+        "default": "Uncategorized",
+        "options": {
+            "delete": "Delete",
+            "import": "Import",
+            "export": "Export"
+        },
+        "alert": {
+            "add": {
+                "title": "Add a category",
+                "placeholder": {
+                    "name": "Enter the category name"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "add": "Add"
+                }
+            },
+            "confirm": {
+                "title": "Confirm",
+                "description": {
+                    "one": "Do you really want to delete it ?",
+                    "all": "Do you really want to delete everything ?"
+                },
+                "action": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            },
+            "edit": {
+                "title": "Edit category",
+                "placeholder": {
+                    "name": "Enter the category name"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "update": "Save"
+                }
+            }
+        },
+        "empty": "No categories !",
+        "delete": "Delete",
+        "add": "Add a category",
+        "error": {
+            "exist": "A category already exists for this label !"
+        }
     },
     "modal": {
         "export": "Scan the QR code via the \"Import\" feature of the Shopping List app"

@@ -164,7 +164,10 @@
         },
         "empty": "Aucune catégorie !",
         "delete": "Supprimer",
-        "add": "Ajouter une catégorie"
+        "add": "Ajouter une catégorie",
+        "error": {
+            "exist": "Une catégorie existe déjà pour ce label !"
+        }
     },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"

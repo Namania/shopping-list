@@ -56,17 +56,17 @@ class _HomePageState extends State<HomePage> {
               icon: Icons.shopping_bag_rounded
             ),
             CustomCard(
+              title: context.tr('core.card.category.title'),
+              redirect: "/categories",
+              body: Text(context.tr('core.card.category.description')),
+              icon: Icons.category
+            ),
+            CustomCard(
               title: context.tr('core.card.card.title'),
               redirect: "/cards",
               body: Text(context.tr('core.card.card.description')),
               icon: Icons.credit_card_rounded
             ),
-            CustomCard(
-              title: context.tr('core.card.category.title'),
-              redirect: "/categories",
-              body: Text(context.tr('core.card.category.description')),
-              icon: Icons.category
-            )
           ],
         ),
       ),

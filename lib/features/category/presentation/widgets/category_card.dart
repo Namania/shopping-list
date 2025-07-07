@@ -19,16 +19,18 @@ class CategoryCard extends StatelessWidget {
     context.read<CategoryBloc>().add(RemoveCategoryEvent(index: index));
     List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
     for (ArticleModel article in articles) {
-      context.read<ArticleBloc>().add(
-        UpdateArticleEvent(
-          article: article,
-          label: article.label,
-          category: CategoryModel(
-            label: context.tr('category.default'),
-            color: Theme.of(context).colorScheme.primary,
+      if (article.category == category) {
+        context.read<ArticleBloc>().add(
+          UpdateArticleEvent(
+            article: article,
+            label: article.label,
+            category: CategoryModel(
+              label: context.tr('category.default'),
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 
@@ -109,13 +111,50 @@ class CategoryCard extends StatelessWidget {
         Map<String, dynamic> data =
             json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
-          context.read<CategoryBloc>().add(
-            UpdateCategoryEvent(
-              category: category,
-              label: data["label"],
-              color: Color(data["color"]),
-            ),
+          List<CategoryModel> categories =
+              context.read<CategoryBloc>().getAllCategory();
+          CategoryModel updatedCategory = CategoryModel(
+            label: data["label"],
+            color: Color(data["color"]),
           );
+          if (categories
+              .where((c) => c.label == updatedCategory.label)
+              .isEmpty) {
+            context.read<CategoryBloc>().add(
+              UpdateCategoryEvent(
+                category: category,
+                label: updatedCategory.label,
+                color: updatedCategory.color,
+              ),
+            );
+            List<ArticleModel> articles =
+                context.read<ArticleBloc>().getAllArticle();
+            for (ArticleModel article in articles) {
+              if (article.category == category) {
+                context.read<ArticleBloc>().add(
+                  UpdateArticleEvent(
+                    article: article,
+                    label: article.label,
+                    category: CategoryModel(
+                      label: updatedCategory.label,
+                      color: updatedCategory.color,
+                    ),
+                  ),
+                );
+              }
+            }
+          } else if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  context.tr('category.error.exist'),
+                  style: TextTheme.of(context).labelLarge,
+                ),
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                duration: Durations.extralong4,
+              ),
+            );
+          }
         }
       }
     } on FormatException {
