@@ -80,6 +80,7 @@ class CategoryCard extends StatelessWidget {
                         Radius.circular(5),
                       ),
                       pickerAreaHeightPercent: .5,
+                      paletteType: PaletteType.hsl,
                     ),
                   ),
                 ],

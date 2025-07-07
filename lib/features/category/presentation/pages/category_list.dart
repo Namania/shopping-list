@@ -19,7 +19,6 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-
   void handleDelete(BuildContext context) async {
     bool? res = await showDialog(
       context: context,
@@ -90,8 +89,11 @@ class _CategoryListState extends State<CategoryList> {
                       displayThumbColor: false,
                       labelTypes: [],
                       enableAlpha: false,
-                      pickerAreaBorderRadius: BorderRadius.all(Radius.circular(5)),
+                      pickerAreaBorderRadius: BorderRadius.all(
+                        Radius.circular(5),
+                      ),
                       pickerAreaHeightPercent: .5,
+                      paletteType: PaletteType.hsl,
                     ),
                   ),
                 ],
@@ -118,7 +120,8 @@ class _CategoryListState extends State<CategoryList> {
 
     try {
       if (response != null && response != '') {
-        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<CategoryBloc>().add(
             AddCategoryEvent(category: CategoryModel.fromMap(data)),
@@ -189,7 +192,9 @@ class _CategoryListState extends State<CategoryList> {
                               width: 300,
                               child: PrettyQrView.data(
                                 data: jsonEncode(
-                                  state.categories.map((a) => a.toMap()).toList(),
+                                  state.categories
+                                      .map((a) => a.toMap())
+                                      .toList(),
                                 ),
                                 decoration: const PrettyQrDecoration(
                                   shape: PrettyQrSmoothSymbol(
