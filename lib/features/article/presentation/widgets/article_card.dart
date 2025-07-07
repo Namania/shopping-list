@@ -104,18 +104,17 @@ class ArticleCard extends StatelessWidget {
     );
 
     try {
-      if (response == null || response == '') {
-        throw FormatException('No data');
-      }
-      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
-      if (context.mounted) {
-        context.read<ArticleBloc>().add(
-          UpdateArticleEvent(
-            article: article,
-            label: data["label"],
-            category: CategoryModel.fromMap(data["category"]),
-          ),
-        );
+      if (response != null && response != '') {
+        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        if (context.mounted) {
+          context.read<ArticleBloc>().add(
+            UpdateArticleEvent(
+              article: article,
+              label: data["label"],
+              category: CategoryModel.fromMap(data["category"]),
+            ),
+          );
+        }
       }
     } on FormatException {
       if (context.mounted) {

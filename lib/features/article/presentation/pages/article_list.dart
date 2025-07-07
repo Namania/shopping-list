@@ -138,9 +138,7 @@ class _ArticleListState extends State<ArticleList> {
     );
 
     try {
-      if (response == null) {
-        throw FormatException();
-      } else if (response != '') {
+      if (response != null && response != '') {
         Map<String, dynamic> data =
             json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
