@@ -12,8 +12,8 @@
                 "description": "See my faith cards"
             },
             "category": {
-                "title": "Catégorie",
-                "description": "Voir mes catégories"
+                "title": "My categories",
+                "description": "See my categories"
             }
         },
         "settings": {
