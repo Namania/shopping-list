@@ -108,6 +108,10 @@ class CardList extends StatelessWidget {
     }
   }
 
+  String capitalize(String string) {
+    return string.isNotEmpty ? "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}" : string;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,9 +244,9 @@ class CardList extends StatelessWidget {
                             onPressed:
                                 () => Navigator.pop(
                                   context,
-                                  labelController.text != "" &&
-                                          codeController.text != ""
-                                      ? '{"label": "${labelController.text}", "code": "${codeController.text}"}'
+                                  labelController.text.isNotEmpty &&
+                                          codeController.text.isNotEmpty
+                                      ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}"}'
                                       : "",
                                 ),
                             child: Text(context.tr('card.alert.add.action.add')),

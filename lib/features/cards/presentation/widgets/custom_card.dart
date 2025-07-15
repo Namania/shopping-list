@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
+import 'package:shopping_list/features/cards/presentation/widgets/store_logo.dart';
 
 class CustomCard extends StatelessWidget {
   final CardModel card;
@@ -35,9 +36,7 @@ class CustomCard extends StatelessWidget {
                   TextField(
                     controller: labelController,
                     decoration: InputDecoration(
-                      hintText: context.tr(
-                        'card.alert.edit.placeholder.name',
-                      ),
+                      hintText: context.tr('card.alert.edit.placeholder.name'),
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.name,
@@ -45,9 +44,7 @@ class CustomCard extends StatelessWidget {
                   TextField(
                     controller: codeController,
                     decoration: InputDecoration(
-                      hintText: context.tr(
-                        'card.alert.edit.placeholder.code',
-                      ),
+                      hintText: context.tr('card.alert.edit.placeholder.code'),
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.streetAddress,
@@ -64,8 +61,9 @@ class CustomCard extends StatelessWidget {
                 onPressed:
                     () => Navigator.pop(
                       context,
-                      labelController.text != ""
-                          ? '{"label": "${labelController.text}", "code": ${codeController.text}}'
+                      labelController.text.isNotEmpty &&
+                              codeController.text.isNotEmpty
+                          ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}"}'
                           : "",
                     ),
                 child: Text(context.tr('card.alert.edit.action.update')),
@@ -81,7 +79,11 @@ class CustomCard extends StatelessWidget {
       Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
       if (context.mounted) {
         context.read<CardBloc>().add(
-          UpdateCardEvent(card: card, label: data["label"], code: data["code"].toString()),
+          UpdateCardEvent(
+            card: card,
+            label: data["label"],
+            code: data["code"].toString(),
+          ),
         );
       }
     } on FormatException {
@@ -98,6 +100,12 @@ class CustomCard extends StatelessWidget {
         );
       }
     }
+  }
+
+  String capitalize(String string) {
+    return string.isNotEmpty
+        ? "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}"
+        : string;
   }
 
   @override
@@ -179,11 +187,18 @@ class CustomCard extends StatelessWidget {
             updateCard(context, card);
           },
           child: ExpansionTile(
+            tilePadding: EdgeInsets.only(
+              top: 10,
+              bottom: 10,
+              left: 15,
+              right: 25,
+            ),
+            leading: StoreLogo(label: card.label),
             title: Text(
               card.label,
-              style: TextTheme.of(
-                context,
-              ).bodyLarge!.apply(color: Theme.of(context).colorScheme.primary),
+              style: TextTheme.of(context).bodyLarge!.apply(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             collapsedShape: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)),
