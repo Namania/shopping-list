@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
+import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
@@ -76,12 +77,19 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   Future<void> _onUpdateCardEvent(UpdateCardEvent event, Emitter emit) async {
     emit(CardLoading());
     final result = await updateCard(
-      UpdateCardParams(card: event.card, label: event.label, code: event.code),
+      UpdateCardParams(card: event.card, label: event.label, code: event.code, color: event.color),
     );
 
     result.fold(
       (l) => emit(CardFailure(message: l.message)),
       (r) => emit(CardSuccess(cards: r)),
     );
+  }
+
+  List<CardModel> getAllCard() {
+    if (state is CardSuccess) {
+      return (state as CardSuccess).cards.toList();
+    }
+    return [];
   }
 }

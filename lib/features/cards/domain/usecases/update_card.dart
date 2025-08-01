@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shopping_list/core/errors/failure.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:fpdart/fpdart.dart';
@@ -15,6 +16,7 @@ class UpdateCard implements UseCase<List<CardModel>, UpdateCardParams> {
       card: params.card,
       label: params.label,
       code: params.code,
+      color: params.color,
     );
   }
 }
@@ -23,10 +25,12 @@ class UpdateCardParams {
   final CardModel card;
   final String label;
   final String code;
+  final Color color;
 
   UpdateCardParams({
     required this.card,
     required this.label,
     required this.code,
+    required this.color,
   });
 }

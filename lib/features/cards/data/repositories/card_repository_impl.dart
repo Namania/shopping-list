@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:shopping_list/core/errors/failure.dart';
@@ -57,6 +58,7 @@ class CardRepositoryImpl implements CardRepository {
     required CardModel card,
     required String label,
     required String code,
+    required Color color,
   }) async {
     try {
       return Right(
@@ -64,6 +66,7 @@ class CardRepositoryImpl implements CardRepository {
           card: card,
           label: label,
           code: code,
+          color: color,
         ),
       );
     } catch (e) {

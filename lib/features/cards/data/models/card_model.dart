@@ -1,18 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart' as m;
 import 'package:shopping_list/features/cards/domain/entities/card.dart';
 
 class CardModel extends Card {
-
   const CardModel({
     required super.label,
     required super.code,
+    required super.color,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'label': label,
       'code': code,
+      'color': color.toARGB32(),
     };
   }
 
@@ -20,6 +22,10 @@ class CardModel extends Card {
     return CardModel(
       label: map['label'] as String,
       code: map['code'] as String,
+      color:
+          map.containsKey('color')
+              ? m.Color(map['color'])
+              : m.Colors.transparent,
     );
   }
 

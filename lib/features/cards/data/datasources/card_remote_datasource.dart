@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 
@@ -17,7 +18,8 @@ abstract interface class CardRemoteDatasource {
   Future<List<CardModel>> updateCard({
     required CardModel card,
     required String label,
-    required String code
+    required String code,
+    required Color color
   });
 }
 
@@ -94,6 +96,7 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
     required CardModel card,
     required String label,
     required String code,
+    required Color color,
   }) async {
     try {
       List<CardModel> cards = await cardGetAll();
@@ -102,6 +105,7 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
       CardModel updatedCard = CardModel(
         label: label,
         code: code,
+        color: color,
       );
       cards.insert(index, updatedCard);
       await prefs.setString("cards", jsonEncode(cards.map((c) => c.toJson()).toList()));

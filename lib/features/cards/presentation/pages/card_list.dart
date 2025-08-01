@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
@@ -13,9 +14,14 @@ import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart'
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
 import 'package:shopping_list/features/cards/presentation/widgets/custom_card.dart';
 
-class CardList extends StatelessWidget {
+class CardList extends StatefulWidget {
   const CardList({super.key});
 
+  @override
+  State<CardList> createState() => _CardListState();
+}
+
+class _CardListState extends State<CardList> {
   Future<String> handleScaning(BuildContext context, ScanMode mode) async {
     String barcodeScanRes = '';
     try {
@@ -64,15 +70,15 @@ class CardList extends StatelessWidget {
                               width: 300,
                               child: PrettyQrView.data(
                                 data: jsonEncode(
-                                  state.cards
-                                      .map((a) => a.toMap())
-                                      .toList(),
+                                  state.cards.map((a) => a.toMap()).toList(),
                                 ),
                                 decoration: const PrettyQrDecoration(
-                                  shape: PrettyQrSmoothSymbol(color: Colors.black, roundFactor: .0),
+                                  shape: PrettyQrSmoothSymbol(
+                                    color: Colors.black,
+                                    roundFactor: .0,
+                                  ),
                                   quietZone: PrettyQrQuietZone.pixels(20),
-                                  background:
-                                      Colors.white,
+                                  background: Colors.white,
                                 ),
                               ),
                             );
@@ -98,18 +104,16 @@ class CardList extends StatelessWidget {
       case 'import':
         String res = await handleScaning(context, ScanMode.QR);
         if (res.isNotEmpty && context.mounted) {
-          context.read<CardBloc>().add(
-            CardImportEvent(
-              json: res,
-            ),
-          );
+          context.read<CardBloc>().add(CardImportEvent(json: res));
         }
         break;
     }
   }
 
   String capitalize(String string) {
-    return string.isNotEmpty ? "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}" : string;
+    return string.isNotEmpty
+        ? "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}"
+        : string;
   }
 
   @override
@@ -155,38 +159,34 @@ class CardList extends StatelessWidget {
         ],
       ),
       body: BlocBuilder<CardBloc, CardState>(
+        buildWhen: (previous, state) {
+          return state is CardSuccess;
+        },
         builder: (BuildContext context, CardState state) {
-          switch (state) {
-            case CardLoading _:
-              return CircularProgressIndicator();
-            case CardSuccess _:
-              return state.cards.isEmpty
-                  ? Center(child: (Text(context.tr('card.empty'))))
-                  : Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: SingleChildScrollView(
-                      physics: ScrollPhysics(),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ListView.builder(
-                            padding: EdgeInsets.only(bottom: 60),
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: state.cards.length,
-                            itemBuilder: (context, index) {
-                              return CustomCard(card: state.cards[index]);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-            case CardFailure _:
-              return Text(context.tr('core.error'));
-            default:
-              return CircularProgressIndicator();
+          final List<CardModel> cards = context.read<CardBloc>().getAllCard();
+          if (cards.isEmpty) {
+            return Center(child: (Text(context.tr('card.empty'))));
           }
+          return Padding(
+            padding: const EdgeInsets.all(5),
+            child: SingleChildScrollView(
+              physics: ScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ListView.builder(
+                    padding: EdgeInsets.only(bottom: 60),
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) {
+                      return CustomCard(card: cards[index]);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       ),
       floatingActionButton: Padding(
@@ -194,93 +194,124 @@ class CardList extends StatelessWidget {
         child: FilledButton.icon(
           onPressed: () async {
             final labelController = TextEditingController();
-                final codeController = TextEditingController();
+            final codeController = TextEditingController();
 
-                String? response = await showDialog<String>(
-                  context: context,
-                  builder:
-                      (BuildContext context) => AlertDialog(
-                        title: Text(context.tr('card.alert.add.title')),
-                        content: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 10,
-                            children: [
-                              TextField(
-                                controller: labelController,
-                                decoration: InputDecoration(
-                                  hintText: context.tr('card.alert.add.placeholder.name'),
-                                  border: OutlineInputBorder(),
+            Color pickerColor = Theme.of(context).colorScheme.primary;
+
+            void changeColor(Color color) {
+              setState(() => pickerColor = color);
+            }
+
+            String? response = await showDialog<String>(
+              context: context,
+              builder:
+                  (BuildContext context) => AlertDialog(
+                    title: Text(context.tr('card.alert.add.title')),
+                    content: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 10,
+                          children: [
+                            TextField(
+                              controller: labelController,
+                              decoration: InputDecoration(
+                                hintText: context.tr(
+                                  'card.alert.add.placeholder.name',
                                 ),
-                                keyboardType: TextInputType.name,
+                                border: OutlineInputBorder(),
                               ),
-                              TextField(
-                                controller: codeController,
-                                decoration: InputDecoration(
-                                  hintText: context.tr('card.alert.add.placeholder.code'),
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: IconButton(
-                                    onPressed: () async {
-                                      String res = await handleScaning(context, ScanMode.BARCODE);
-                                      if (res.isNotEmpty) {
-                                        codeController.text = res;
-                                      }
-                                    },
-                                    icon: Icon(Icons.camera_alt_rounded),
-                                  ),
+                              keyboardType: TextInputType.name,
+                            ),
+                            TextField(
+                              controller: codeController,
+                              decoration: InputDecoration(
+                                hintText: context.tr(
+                                  'card.alert.add.placeholder.code',
                                 ),
-                                keyboardType: TextInputType.streetAddress,
+                                border: OutlineInputBorder(),
+                                suffixIcon: IconButton(
+                                  onPressed: () async {
+                                    String res = await handleScaning(
+                                      context,
+                                      ScanMode.BARCODE,
+                                    );
+                                    if (res.isNotEmpty) {
+                                      codeController.text = res;
+                                    }
+                                  },
+                                  icon: Icon(Icons.camera_alt_rounded),
+                                ),
                               ),
-                            ],
-                          ),
+                              keyboardType: TextInputType.streetAddress,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: ColorPicker(
+                                hexInputBar: false,
+                                pickerColor: pickerColor,
+                                onColorChanged: changeColor,
+                                displayThumbColor: false,
+                                labelTypes: [],
+                                enableAlpha: false,
+                                pickerAreaBorderRadius: BorderRadius.all(
+                                  Radius.circular(5),
+                                ),
+                                pickerAreaHeightPercent: .5,
+                                paletteType: PaletteType.hsl,
+                              ),
+                            ),
+                          ],
                         ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, ''),
-                            child: Text(context.tr('card.alert.add.action.cancel')),
-                          ),
-                          TextButton(
-                            onPressed:
-                                () => Navigator.pop(
-                                  context,
-                                  labelController.text.isNotEmpty &&
-                                          codeController.text.isNotEmpty
-                                      ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}"}'
-                                      : "",
-                                ),
-                            child: Text(context.tr('card.alert.add.action.add')),
-                          ),
-                        ],
                       ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, ''),
+                        child: Text(context.tr('card.alert.add.action.cancel')),
+                      ),
+                      TextButton(
+                        onPressed:
+                            () => Navigator.pop(
+                              context,
+                              labelController.text.isNotEmpty &&
+                                      codeController.text.isNotEmpty
+                                  ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}", "color": ${pickerColor.toARGB32()}}'
+                                  : "",
+                            ),
+                        child: Text(context.tr('card.alert.add.action.add')),
+                      ),
+                    ],
+                  ),
+            );
+
+            try {
+              if (response == null || response == '') {
+                throw FormatException();
+              }
+              Map<String, dynamic> data =
+                  json.decode(response) as Map<String, dynamic>;
+              if (context.mounted) {
+                context.read<CardBloc>().add(
+                  AddCardEvent(card: CardModel.fromMap(data)),
                 );
-
-                try {
-                  if (response == null || response == '') {
-                    throw FormatException();
-                  }
-                  Map<String, dynamic> data =
-                      json.decode(response) as Map<String, dynamic>;
-                  if (context.mounted) {
-                    context.read<CardBloc>().add(
-                      AddCardEvent(card: CardModel.fromMap(data)),
-                    );
-                  }
-                } on FormatException {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr('core.error'),
-                          style: TextTheme.of(context).labelLarge,
-                        ),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        duration: Durations.extralong4,
-                      ),
-                    );
-                  }
-                }
+              }
+            } on FormatException {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      context.tr('core.error'),
+                      style: TextTheme.of(context).labelLarge,
+                    ),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    duration: Durations.extralong4,
+                  ),
+                );
+              }
+            }
           },
           label: Text(context.tr('card.add')),
           icon: Icon(Icons.add_rounded),

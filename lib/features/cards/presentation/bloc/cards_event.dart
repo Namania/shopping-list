@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 
 abstract class CardEvent extends Equatable {
@@ -20,11 +21,13 @@ class UpdateCardEvent extends CardEvent {
   final CardModel card;
   final String label;
   final String code;
+  final Color color;
 
   const UpdateCardEvent({
     required this.card,
     required this.label,
     required this.code,
+    required this.color,
   });
 }
 

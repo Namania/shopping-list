@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:shopping_list/core/errors/failure.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
@@ -11,5 +12,10 @@ abstract interface class CardRepository {
     required CardModel card,
   });
   Future<Either<Failure, List<CardModel>>> cardImport({required String json});
-  Future<Either<Failure, List<CardModel>>> updateCard({required CardModel card, required String label, required String code});
+  Future<Either<Failure, List<CardModel>>> updateCard({
+    required CardModel card,
+    required String label,
+    required String code,
+    required Color color
+  });
 }

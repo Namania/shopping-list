@@ -4,6 +4,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
@@ -16,6 +17,12 @@ class CustomCard extends StatelessWidget {
   void updateCard(BuildContext context, CardModel card) async {
     final labelController = TextEditingController();
     final codeController = TextEditingController();
+    
+    Color pickerColor = card.color.withAlpha(255);
+
+    void changeColor(Color color) {
+      pickerColor = color;
+    }
 
     labelController.text = card.label;
     codeController.text = card.code;
@@ -26,29 +33,47 @@ class CustomCard extends StatelessWidget {
           (BuildContext context) => AlertDialog(
             contentPadding: EdgeInsets.symmetric(horizontal: 20),
             title: Text(context.tr('card.alert.edit.title')),
-            content: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 10,
-                children: [
-                  TextField(
-                    controller: labelController,
-                    decoration: InputDecoration(
-                      hintText: context.tr('card.alert.edit.placeholder.name'),
-                      border: OutlineInputBorder(),
+            content: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 10,
+                  children: [
+                    TextField(
+                      controller: labelController,
+                      decoration: InputDecoration(
+                        hintText: context.tr('card.alert.edit.placeholder.name'),
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.name,
                     ),
-                    keyboardType: TextInputType.name,
-                  ),
-                  TextField(
-                    controller: codeController,
-                    decoration: InputDecoration(
-                      hintText: context.tr('card.alert.edit.placeholder.code'),
-                      border: OutlineInputBorder(),
+                    TextField(
+                      controller: codeController,
+                      decoration: InputDecoration(
+                        hintText: context.tr('card.alert.edit.placeholder.code'),
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.streetAddress,
                     ),
-                    keyboardType: TextInputType.streetAddress,
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: ColorPicker(
+                        hexInputBar: false,
+                        pickerColor: pickerColor,
+                        onColorChanged: changeColor,
+                        displayThumbColor: false,
+                        labelTypes: [],
+                        enableAlpha: false,
+                        pickerAreaBorderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                        pickerAreaHeightPercent: .5,
+                        paletteType: PaletteType.hsl,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             actions: <Widget>[
@@ -62,7 +87,7 @@ class CustomCard extends StatelessWidget {
                       context,
                       labelController.text.isNotEmpty &&
                               codeController.text.isNotEmpty
-                          ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}"}'
+                          ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}", "color": ${pickerColor.toARGB32()}}'
                           : "",
                     ),
                 child: Text(context.tr('card.alert.edit.action.update')),
@@ -82,6 +107,7 @@ class CustomCard extends StatelessWidget {
             card: card,
             label: data["label"],
             code: data["code"].toString(),
+            color: Color(data["color"]),
           ),
         );
       }
@@ -186,6 +212,12 @@ class CustomCard extends StatelessWidget {
             updateCard(context, card);
           },
           child: ExpansionTile(
+            leading: Badge(
+              padding: EdgeInsets.zero,
+              label: CircleAvatar(
+                backgroundColor: card.color,
+              ),
+            ),
             tilePadding: EdgeInsets.only(
               top: 10,
               bottom: 10,
