@@ -1,7 +1,7 @@
 name: shopping_list
 description: "Simple shopping list app"
 publish_to: 'none'
-version: 1.2.4+1
+version: 1.2.5+1
 
 environment:
   sdk: ^3.7.2
