@@ -23,6 +23,8 @@
                 "lang": "Language",
                 "shareArticle": "Share my articles",
                 "importArticle": "Import articles",
+                "shareCategory": "Share my categories",
+                "importCategory": "Import categories",
                 "shareCard": "Share my cards",
                 "importCard": "Import cards"
             },
@@ -33,9 +35,11 @@
             "separator": {
                 "main": "General",
                 "article": "Article",
+                "category": "Category",
                 "card": "Carte"
             },
             "shareArticleMessage": "Here are my articles !\n[Shopping List]",
+            "shareCategoryMessage": "Here are my categories !\n[Shopping List]",
             "shareCardMessage": "Here are my cards !\n[Shopping List]"
         }
     },

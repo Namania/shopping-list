@@ -16,6 +16,7 @@ import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
@@ -186,6 +187,84 @@ class Settings extends StatelessWidget {
                                       ? Theme.of(context).colorScheme.primary
                                       : Colors.black,
                             ),
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.file_upload_rounded),
+                  ),
+                ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.category'),
+              children: [
+                SettingsItem(
+                  icon: Icons.share_rounded,
+                  title: context.tr('core.settings.item.shareCategory'),
+                  trailing: BlocBuilder<CategoryBloc, CategoryState>(
+                    builder: (context, state) {
+                      switch (state) {
+                        case CategorySuccess _:
+                          return IconButton(
+                            onPressed: () async {
+                              if (state.categories.isNotEmpty) {
+                                String data = jsonEncode(
+                                  state.categories.map((a) => a.toMap()).toList(),
+                                );
+                                Directory temp = await getTemporaryDirectory();
+                                String path = "${temp.path}/categories.json";
+                                File(path).writeAsStringSync(data);
+
+                                if (context.mounted) {
+                                  await SharePlus.instance.share(
+                                    ShareParams(
+                                      files: [XFile(path)],
+                                      text: context.tr(
+                                        'core.settings.shareCategoryMessage',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      context.tr('category.empty'),
+                                      style: TextTheme.of(context).labelLarge,
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainer,
+                                    duration: Durations.extralong4,
+                                  ),
+                                );
+                              }
+                            },
+                            icon: Icon(Icons.file_download),
+                          );
+                        default:
+                          return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ),
+                SettingsItem(
+                  icon: Icons.share_rounded,
+                  title: context.tr('core.settings.item.importCategory'),
+                  trailing: IconButton(
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(
+                            type: FileType.custom,
+                            allowMultiple: false,
+                            allowedExtensions: ["json"],
+                          );
+                      if (context.mounted && result != null) {
+                        context.read<CategoryBloc>().add(
+                          CategoryImportEvent(
+                            json: await result.files.first.xFile.readAsString(),
                           ),
                         );
                       }
