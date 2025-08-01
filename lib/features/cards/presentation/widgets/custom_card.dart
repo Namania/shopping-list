@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
-import 'package:shopping_list/features/cards/presentation/widgets/store_logo.dart';
 
 class CustomCard extends StatelessWidget {
   final CardModel card;
@@ -193,7 +192,6 @@ class CustomCard extends StatelessWidget {
               left: 15,
               right: 25,
             ),
-            leading: StoreLogo(label: card.label),
             title: Text(
               card.label,
               style: TextTheme.of(context).bodyLarge!.apply(
