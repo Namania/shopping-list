@@ -97,19 +97,18 @@ class CustomCard extends StatelessWidget {
     );
 
     try {
-      if (response == null || response == '') {
-        throw FormatException('No data');
-      }
-      Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
-      if (context.mounted) {
-        context.read<CardBloc>().add(
-          UpdateCardEvent(
-            card: card,
-            label: data["label"],
-            code: data["code"].toString(),
-            color: Color(data["color"]),
-          ),
-        );
+      if (response != null && response != '') {
+        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        if (context.mounted) {
+          context.read<CardBloc>().add(
+            UpdateCardEvent(
+              card: card,
+              label: data["label"],
+              code: data["code"].toString(),
+              color: Color(data["color"]),
+            ),
+          );
+        }
       }
     } on FormatException {
       if (context.mounted) {

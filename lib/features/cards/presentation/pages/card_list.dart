@@ -287,15 +287,14 @@ class _CardListState extends State<CardList> {
             );
 
             try {
-              if (response == null || response == '') {
-                throw FormatException();
-              }
-              Map<String, dynamic> data =
-                  json.decode(response) as Map<String, dynamic>;
-              if (context.mounted) {
-                context.read<CardBloc>().add(
-                  AddCardEvent(card: CardModel.fromMap(data)),
-                );
+              if (response != null && response != '') {
+                Map<String, dynamic> data =
+                    json.decode(response) as Map<String, dynamic>;
+                if (context.mounted) {
+                  context.read<CardBloc>().add(
+                    AddCardEvent(card: CardModel.fromMap(data)),
+                  );
+                }
               }
             } on FormatException {
               if (context.mounted) {
