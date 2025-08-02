@@ -209,7 +209,7 @@ class CategoryCard extends StatelessWidget {
           );
         },
         background: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -218,12 +218,12 @@ class CategoryCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
                 Text(
                   context.tr('category.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -231,7 +231,7 @@ class CategoryCard extends StatelessWidget {
           ),
         ),
         secondaryBackground: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -241,12 +241,12 @@ class CategoryCard extends StatelessWidget {
                 Text(
                   context.tr('category.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
               ],
             ),

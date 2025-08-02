@@ -169,7 +169,7 @@ class ArticleCard extends StatelessWidget {
           );
         },
         background: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -178,12 +178,12 @@ class ArticleCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
                 Text(
                   context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -191,7 +191,7 @@ class ArticleCard extends StatelessWidget {
           ),
         ),
         secondaryBackground: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -201,12 +201,12 @@ class ArticleCard extends StatelessWidget {
                 Text(
                   context.tr('article.delete'),
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
               ],
             ),

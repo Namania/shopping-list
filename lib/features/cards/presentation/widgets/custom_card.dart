@@ -163,7 +163,7 @@ class CustomCard extends StatelessWidget {
           );
         },
         background: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -172,12 +172,12 @@ class CustomCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
                 Text(
                   "Supprimer",
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -185,7 +185,7 @@ class CustomCard extends StatelessWidget {
           ),
         ),
         secondaryBackground: Container(
-          color: Theme.of(context).colorScheme.errorContainer,
+          color: Color(0xff93000a),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -195,12 +195,12 @@ class CustomCard extends StatelessWidget {
                 Text(
                   "Supprimer",
                   style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    color: Colors.white,
                   ),
                 ),
                 Icon(
                   Icons.delete_rounded,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
+                  color: Colors.white,
                 ),
               ],
             ),
