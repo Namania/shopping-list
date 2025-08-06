@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/shared/pages/home_page.dart';
+import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_list.dart';
 import 'package:shopping_list/features/cards/presentation/pages/card_list.dart';
@@ -25,13 +26,17 @@ pageBuilder({
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/loading',
   routes: <GoRoute>[
     GoRoute(
       path: '/',
       pageBuilder:
           (context, state) =>
               pageBuilder(context: context, state: state, page: HomePage()),
+    ),
+    GoRoute(
+      path: '/loading',
+      builder: (builder, state) => LoadingPage(),
     ),
     GoRoute(
       path: '/articles',

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/core/router/app_router.dart';
+import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/theme/app_theme.dart';
 import 'package:shopping_list/core/theme/text_theme.dart';
@@ -22,6 +23,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => ThemeCubit()),
+        BlocProvider(create: (context) => SettingRouterCubit()),
         BlocProvider(create: (context) => getIt<ArticleBloc>()),
         BlocProvider(create: (context) => getIt<CardBloc>()),
         BlocProvider(create: (context) => getIt<CategoryBloc>()),

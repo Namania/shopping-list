@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
@@ -269,7 +270,11 @@ class _ArticleListState extends State<ArticleList> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: BackButton(),
+          child: BackButton(
+            onPressed: () {
+              context.go("/");
+            },
+          ),
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [

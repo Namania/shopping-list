@@ -1,28 +1,34 @@
 import 'dart:collection';
-import 'dart:convert';
-import 'dart:io';
+// import 'dart:convert';
+// import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:share_plus/share_plus.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
-import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
-import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
-import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
-import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
-import 'package:shopping_list/features/category/data/models/category_model.dart';
-import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
+// import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+// import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+// import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
+// import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
+// import 'package:shopping_list/features/category/data/models/category_model.dart';
+// import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
 
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
   get state => null;
 
   @override
@@ -48,6 +54,9 @@ class Settings extends StatelessWidget {
       ),
     );
     String langMenuEntriesValue = context.locale.languageCode;
+
+    bool isArticleRoute =
+        context.read<SettingRouterCubit>().state == AvailableRoute.article;
 
     return Scaffold(
       appBar: AppBar(
@@ -106,252 +115,267 @@ class Settings extends StatelessWidget {
                     trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
                 ),
+                SettingsItem(
+                  icon: Icons.signpost_rounded,
+                  title: context.tr('core.settings.item.route'),
+                  trailing: Switch(
+                    value: isArticleRoute,
+                    onChanged: (value) {
+                      context.read<SettingRouterCubit>().selectRoute(
+                        value ? AvailableRoute.article : AvailableRoute.root,
+                      );
+                      setState(() {
+                        isArticleRoute = value;
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
-            SettingsCategory(
-              title: context.tr('core.settings.separator.article'),
-              children: [
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.shareArticle'),
-                  trailing: BlocBuilder<ArticleBloc, ArticleState>(
-                    builder: (context, state) {
-                      switch (state) {
-                        case ArticleSuccess _:
-                          return IconButton(
-                            onPressed: () async {
-                              if (state.articles.isNotEmpty) {
-                                String data = jsonEncode(
-                                  state.articles.map((a) => a.toMap()).toList(),
-                                );
-                                Directory temp = await getTemporaryDirectory();
-                                String path = "${temp.path}/articles.json";
-                                File(path).writeAsStringSync(data);
+            // SettingsCategory(
+            //   title: context.tr('core.settings.separator.article'),
+            //   children: [
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.shareArticle'),
+            //       trailing: BlocBuilder<ArticleBloc, ArticleState>(
+            //         builder: (context, state) {
+            //           switch (state) {
+            //             case ArticleSuccess _:
+            //               return IconButton(
+            //                 onPressed: () async {
+            //                   if (state.articles.isNotEmpty) {
+            //                     String data = jsonEncode(
+            //                       state.articles.map((a) => a.toMap()).toList(),
+            //                     );
+            //                     Directory temp = await getTemporaryDirectory();
+            //                     String path = "${temp.path}/articles.json";
+            //                     File(path).writeAsStringSync(data);
 
-                                if (context.mounted) {
-                                  await SharePlus.instance.share(
-                                    ShareParams(
-                                      files: [XFile(path)],
-                                      text: context.tr(
-                                        'core.settings.shareArticleMessage',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      context.tr('article.empty'),
-                                      style: TextTheme.of(context).labelLarge,
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                    duration: Durations.extralong4,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: Icon(Icons.file_download),
-                          );
-                        default:
-                          return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                ),
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.importArticle'),
-                  trailing: IconButton(
-                    onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform
-                          .pickFiles(
-                            type: FileType.custom,
-                            allowMultiple: false,
-                            allowedExtensions: ["json"],
-                          );
-                      if (context.mounted && result != null) {
-                        context.read<ArticleBloc>().add(
-                          ArticleImportEvent(
-                            json: await result.files.first.xFile.readAsString(),
-                            defaultCategory: CategoryModel(
-                              label:
-                                  context.mounted
-                                      ? context.tr('category.default')
-                                      : "Other",
-                              color:
-                                  context.mounted
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Colors.black,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.file_upload_rounded),
-                  ),
-                ),
-              ],
-            ),
-            SettingsCategory(
-              title: context.tr('core.settings.separator.category'),
-              children: [
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.shareCategory'),
-                  trailing: BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (context, state) {
-                      switch (state) {
-                        case CategorySuccess _:
-                          return IconButton(
-                            onPressed: () async {
-                              if (state.categories.isNotEmpty) {
-                                String data = jsonEncode(
-                                  state.categories.map((a) => a.toMap()).toList(),
-                                );
-                                Directory temp = await getTemporaryDirectory();
-                                String path = "${temp.path}/categories.json";
-                                File(path).writeAsStringSync(data);
+            //                     if (context.mounted) {
+            //                       await SharePlus.instance.share(
+            //                         ShareParams(
+            //                           files: [XFile(path)],
+            //                           text: context.tr(
+            //                             'core.settings.shareArticleMessage',
+            //                           ),
+            //                         ),
+            //                       );
+            //                     }
+            //                   } else {
+            //                     ScaffoldMessenger.of(context).showSnackBar(
+            //                       SnackBar(
+            //                         content: Text(
+            //                           context.tr('article.empty'),
+            //                           style: TextTheme.of(context).labelLarge,
+            //                         ),
+            //                         backgroundColor:
+            //                             Theme.of(
+            //                               context,
+            //                             ).colorScheme.surfaceContainer,
+            //                         duration: Durations.extralong4,
+            //                       ),
+            //                     );
+            //                   }
+            //                 },
+            //                 icon: Icon(Icons.file_download),
+            //               );
+            //             default:
+            //               return CircularProgressIndicator();
+            //           }
+            //         },
+            //       ),
+            //     ),
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.importArticle'),
+            //       trailing: IconButton(
+            //         onPressed: () async {
+            //           FilePickerResult? result = await FilePicker.platform
+            //               .pickFiles(
+            //                 type: FileType.custom,
+            //                 allowMultiple: false,
+            //                 allowedExtensions: ["json"],
+            //               );
+            //           if (context.mounted && result != null) {
+            //             context.read<ArticleBloc>().add(
+            //               ArticleImportEvent(
+            //                 json: await result.files.first.xFile.readAsString(),
+            //                 defaultCategory: CategoryModel(
+            //                   label:
+            //                       context.mounted
+            //                           ? context.tr('category.default')
+            //                           : "Other",
+            //                   color:
+            //                       context.mounted
+            //                           ? Theme.of(context).colorScheme.primary
+            //                           : Colors.black,
+            //                 ),
+            //               ),
+            //             );
+            //           }
+            //         },
+            //         icon: Icon(Icons.file_upload_rounded),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // SettingsCategory(
+            //   title: context.tr('core.settings.separator.category'),
+            //   children: [
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.shareCategory'),
+            //       trailing: BlocBuilder<CategoryBloc, CategoryState>(
+            //         builder: (context, state) {
+            //           switch (state) {
+            //             case CategorySuccess _:
+            //               return IconButton(
+            //                 onPressed: () async {
+            //                   if (state.categories.isNotEmpty) {
+            //                     String data = jsonEncode(
+            //                       state.categories.map((a) => a.toMap()).toList(),
+            //                     );
+            //                     Directory temp = await getTemporaryDirectory();
+            //                     String path = "${temp.path}/categories.json";
+            //                     File(path).writeAsStringSync(data);
 
-                                if (context.mounted) {
-                                  await SharePlus.instance.share(
-                                    ShareParams(
-                                      files: [XFile(path)],
-                                      text: context.tr(
-                                        'core.settings.shareCategoryMessage',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      context.tr('category.empty'),
-                                      style: TextTheme.of(context).labelLarge,
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                    duration: Durations.extralong4,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: Icon(Icons.file_download),
-                          );
-                        default:
-                          return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                ),
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.importCategory'),
-                  trailing: IconButton(
-                    onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform
-                          .pickFiles(
-                            type: FileType.custom,
-                            allowMultiple: false,
-                            allowedExtensions: ["json"],
-                          );
-                      if (context.mounted && result != null) {
-                        context.read<CategoryBloc>().add(
-                          CategoryImportEvent(
-                            json: await result.files.first.xFile.readAsString(),
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.file_upload_rounded),
-                  ),
-                ),
-              ],
-            ),
-            SettingsCategory(
-              title: context.tr('core.settings.separator.card'),
-              children: [
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.shareCard'),
-                  trailing: BlocBuilder<CardBloc, CardState>(
-                    builder: (context, state) {
-                      switch (state) {
-                        case CardSuccess _:
-                          return IconButton(
-                            onPressed: () async {
-                              if (state.cards.isNotEmpty) {
-                                String data = jsonEncode(
-                                  state.cards.map((a) => a.toMap()).toList(),
-                                );
-                                Directory temp = await getTemporaryDirectory();
-                                String path = "${temp.path}/cards.json";
-                                File(path).writeAsStringSync(data);
+            //                     if (context.mounted) {
+            //                       await SharePlus.instance.share(
+            //                         ShareParams(
+            //                           files: [XFile(path)],
+            //                           text: context.tr(
+            //                             'core.settings.shareCategoryMessage',
+            //                           ),
+            //                         ),
+            //                       );
+            //                     }
+            //                   } else {
+            //                     ScaffoldMessenger.of(context).showSnackBar(
+            //                       SnackBar(
+            //                         content: Text(
+            //                           context.tr('category.empty'),
+            //                           style: TextTheme.of(context).labelLarge,
+            //                         ),
+            //                         backgroundColor:
+            //                             Theme.of(
+            //                               context,
+            //                             ).colorScheme.surfaceContainer,
+            //                         duration: Durations.extralong4,
+            //                       ),
+            //                     );
+            //                   }
+            //                 },
+            //                 icon: Icon(Icons.file_download),
+            //               );
+            //             default:
+            //               return CircularProgressIndicator();
+            //           }
+            //         },
+            //       ),
+            //     ),
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.importCategory'),
+            //       trailing: IconButton(
+            //         onPressed: () async {
+            //           FilePickerResult? result = await FilePicker.platform
+            //               .pickFiles(
+            //                 type: FileType.custom,
+            //                 allowMultiple: false,
+            //                 allowedExtensions: ["json"],
+            //               );
+            //           if (context.mounted && result != null) {
+            //             context.read<CategoryBloc>().add(
+            //               CategoryImportEvent(
+            //                 json: await result.files.first.xFile.readAsString(),
+            //               ),
+            //             );
+            //           }
+            //         },
+            //         icon: Icon(Icons.file_upload_rounded),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // SettingsCategory(
+            //   title: context.tr('core.settings.separator.card'),
+            //   children: [
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.shareCard'),
+            //       trailing: BlocBuilder<CardBloc, CardState>(
+            //         builder: (context, state) {
+            //           switch (state) {
+            //             case CardSuccess _:
+            //               return IconButton(
+            //                 onPressed: () async {
+            //                   if (state.cards.isNotEmpty) {
+            //                     String data = jsonEncode(
+            //                       state.cards.map((a) => a.toMap()).toList(),
+            //                     );
+            //                     Directory temp = await getTemporaryDirectory();
+            //                     String path = "${temp.path}/cards.json";
+            //                     File(path).writeAsStringSync(data);
 
-                                if (context.mounted) {
-                                  await SharePlus.instance.share(
-                                    ShareParams(
-                                      files: [XFile(path)],
-                                      text: context.tr(
-                                        'core.settings.shareCardMessage',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      context.tr('card.empty'),
-                                      style: TextTheme.of(context).labelLarge,
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                    duration: Durations.extralong4,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: Icon(Icons.file_download),
-                          );
-                        default:
-                          return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                ),
-                SettingsItem(
-                  icon: Icons.share_rounded,
-                  title: context.tr('core.settings.item.importCard'),
-                  trailing: IconButton(
-                    onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform
-                          .pickFiles(
-                            type: FileType.custom,
-                            allowMultiple: false,
-                            allowedExtensions: ["json"],
-                          );
-                      if (context.mounted && result != null) {
-                        context.read<CardBloc>().add(
-                          CardImportEvent(
-                            json: await result.files.first.xFile.readAsString(),
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.file_upload_rounded),
-                  ),
-                ),
-              ],
-            ),
+            //                     if (context.mounted) {
+            //                       await SharePlus.instance.share(
+            //                         ShareParams(
+            //                           files: [XFile(path)],
+            //                           text: context.tr(
+            //                             'core.settings.shareCardMessage',
+            //                           ),
+            //                         ),
+            //                       );
+            //                     }
+            //                   } else {
+            //                     ScaffoldMessenger.of(context).showSnackBar(
+            //                       SnackBar(
+            //                         content: Text(
+            //                           context.tr('card.empty'),
+            //                           style: TextTheme.of(context).labelLarge,
+            //                         ),
+            //                         backgroundColor:
+            //                             Theme.of(
+            //                               context,
+            //                             ).colorScheme.surfaceContainer,
+            //                         duration: Durations.extralong4,
+            //                       ),
+            //                     );
+            //                   }
+            //                 },
+            //                 icon: Icon(Icons.file_download),
+            //               );
+            //             default:
+            //               return CircularProgressIndicator();
+            //           }
+            //         },
+            //       ),
+            //     ),
+            //     SettingsItem(
+            //       icon: Icons.share_rounded,
+            //       title: context.tr('core.settings.item.importCard'),
+            //       trailing: IconButton(
+            //         onPressed: () async {
+            //           FilePickerResult? result = await FilePicker.platform
+            //               .pickFiles(
+            //                 type: FileType.custom,
+            //                 allowMultiple: false,
+            //                 allowedExtensions: ["json"],
+            //               );
+            //           if (context.mounted && result != null) {
+            //             context.read<CardBloc>().add(
+            //               CardImportEvent(
+            //                 json: await result.files.first.xFile.readAsString(),
+            //               ),
+            //             );
+            //           }
+            //         },
+            //         icon: Icon(Icons.file_upload_rounded),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

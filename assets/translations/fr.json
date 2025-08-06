@@ -21,6 +21,7 @@
             "item": {
                 "theme": "Thème",
                 "lang": "Langage",
+                "route": "Aller directement aux articles au lancement de l'application.",
                 "shareArticle": "Partager mes articles",
                 "importArticle": "Importer des articles",
                 "shareCategory": "Partager mes catégories",
