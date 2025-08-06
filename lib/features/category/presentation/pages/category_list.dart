@@ -250,22 +250,36 @@ class _CategoryListState extends State<CategoryList> {
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: PopupMenuButton<String>(
-              onSelected: (String value) {
-                handleClick(context, value);
-              },
-              itemBuilder: (BuildContext context) {
-                return [
+              onSelected: (value) => handleClick(context, value),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              color: Theme.of(context).cardColor,
+              icon: const Icon(Icons.more_vert),
+              tooltip: context.tr("category.options.tooltip"),
+              itemBuilder: (context) {
+                final choices = [
                   {'label': 'export', 'icon': Icons.qr_code_2_rounded},
                   {'label': 'import', 'icon': Icons.qr_code_scanner_rounded},
                   {'label': 'delete', 'icon': Icons.delete},
-                ].map((Map<String, dynamic> choice) {
+                ];
+
+                return choices.map((choice) {
                   return PopupMenuItem<String>(
-                    value: choice['label'],
+                    padding: EdgeInsets.only(left: 20),
+                    value: choice['label'] as String,
                     child: Row(
-                      spacing: 5,
                       children: [
-                        Icon(choice['icon']),
-                        Text(context.tr("category.options.${choice['label']}")),
+                        Icon(
+                          choice['icon'] as IconData,
+                          size: 20,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          context.tr("category.options.${choice['label']}"),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ],
                     ),
                   );

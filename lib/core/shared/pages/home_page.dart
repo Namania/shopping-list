@@ -15,7 +15,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Image.asset("assets/images/logo.png", color: Theme.of(context).colorScheme.tertiary,),
+        leading: Image.asset(
+          "assets/images/logo.png",
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
         title: Text("Shopping List"),
         actions: [
           Padding(
@@ -24,9 +27,9 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 context.push<void>("/settings");
               },
-              icon: Icon(Icons.settings)
+              icon: Icon(Icons.settings),
             ),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -36,36 +39,30 @@ class _HomePageState extends State<HomePage> {
           spacing: 20,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 50
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
               child: Text(
                 context.tr('core.welcome'),
-                style: TextTheme.of(context).displayMedium
+                style: TextTheme.of(context).displayMedium,
               ),
             ),
-            const Divider(
-              indent: 10,
-              endIndent: 10,
-            ),
+            const Divider(indent: 10, endIndent: 10),
             CustomCard(
               title: context.tr('core.card.article.title'),
               redirect: "/articles",
               body: Text(context.tr('core.card.article.description')),
-              icon: Icons.shopping_bag_rounded
+              icon: Icons.shopping_bag_rounded,
             ),
             CustomCard(
               title: context.tr('core.card.category.title'),
               redirect: "/categories",
               body: Text(context.tr('core.card.category.description')),
-              icon: Icons.category
+              icon: Icons.category,
             ),
             CustomCard(
               title: context.tr('core.card.card.title'),
               redirect: "/cards",
               body: Text(context.tr('core.card.card.description')),
-              icon: Icons.credit_card_rounded
+              icon: Icons.credit_card_rounded,
             ),
           ],
         ),

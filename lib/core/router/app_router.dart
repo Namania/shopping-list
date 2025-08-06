@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopping_list/core/shared/pages/deep_link_handler.dart';
 import 'package:shopping_list/core/shared/pages/home_page.dart';
 import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
@@ -27,6 +28,15 @@ pageBuilder({
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/loading',
+  redirect: (context, state) {
+    final uri = state.uri;
+    if (uri.scheme == 'shopping-list' &&
+        uri.host == 'launch' &&
+        state.matchedLocation != '/deeplink') {
+      return '/deeplink${uri.hasQuery ? '?${uri.query}' : ''}';
+    }
+    return null;
+  },
   routes: <GoRoute>[
     GoRoute(
       path: '/',
@@ -37,6 +47,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/loading',
       builder: (builder, state) => LoadingPage(),
+    ),
+    GoRoute(
+      path: '/deeplink',
+      builder: (context, state) {
+        final uri = state.uri;
+        final jsonData = uri.queryParameters['data'];
+        return DeepLinkHandler(jsonData: jsonData);
+      },
     ),
     GoRoute(
       path: '/articles',

@@ -1,6 +1,8 @@
 {
     "core": {
         "error": "Une erreur est survenue !",
+        "deep_link_error": "Une erreur s'est produite..\nVeuillez nous excuser pour le dérangement.",
+        "deep_link_button": "Retourner à l'accueil",
         "welcome": "Bienvenue !",
         "card": {
             "article": {
@@ -48,7 +50,7 @@
         "options": {
             "delete": "Supprimer",
             "import": "Importer",
-            "export": "Exporter"
+            "share": "Partager"
         },
         "alert": {
             "add": {
@@ -175,6 +177,9 @@
         }
     },
     "modal": {
-        "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List"
+        "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",
+        "send_file": "Envoyer un fichier",
+        "scan": "Scanner",
+        "pick_file": "Parcourir"
     }
 }
