@@ -217,48 +217,50 @@ class _ArticleListState extends State<ArticleList> {
                   ),
                   BlocBuilder<ArticleBloc, ArticleState>(
                     builder: (context, state) {
-                      if (state is ArticleFailure) {
-                        if (kDebugMode) print(state.message);
-                        return Text(
-                          context.tr('core.error'),
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        );
-                      } else if (state is ArticleSuccess) {
-                        final rawJson = {
-                          "action": "importArticles",
-                          "json": state.articles.map((a) => a.toMap()).toList(),
-                        };
-
-                        final encodedData = Uri.encodeComponent(
-                          jsonEncode(rawJson),
-                        );
-                        final deepLink =
-                            'shopping-list://launch?data=$encodedData';
-
-                        return SizedBox(
-                          height: 250,
-                          width: 250,
-                          child: PrettyQrView.data(
-                            data: deepLink,
-                            decoration: const PrettyQrDecoration(
-                              shape: PrettyQrSmoothSymbol(
-                                color: Colors.black,
-                                roundFactor: 0.0,
-                              ),
-                              quietZone: PrettyQrQuietZone.pixels(20),
-                              background: Colors.white,
+                      switch (state) {
+                        case ArticleFailure _:
+                          if (kDebugMode) print(state.message);
+                          return Text(
+                            context.tr('core.error'),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
                             ),
-                          ),
-                        );
-                      } else {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40),
-                          child: CircularProgressIndicator(),
-                        );
+                          );
+                        case ArticleSuccess _:
+                          final rawJson = {
+                            "action": "importArticles",
+                            "json":
+                                state.articles.map((a) => a.toMap()).toList(),
+                          };
+
+                          final encodedData = Uri.encodeComponent(
+                            jsonEncode(rawJson),
+                          );
+                          final deepLink =
+                              'shopping-list://launch?data=$encodedData';
+
+                          return SizedBox(
+                            height: 250,
+                            width: 250,
+                            child: PrettyQrView.data(
+                              data: deepLink,
+                              decoration: const PrettyQrDecoration(
+                                shape: PrettyQrSmoothSymbol(
+                                  color: Colors.black,
+                                  roundFactor: 0.0,
+                                ),
+                                quietZone: PrettyQrQuietZone.pixels(20),
+                                background: Colors.white,
+                              ),
+                            ),
+                          );
+                        default:
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: CircularProgressIndicator(),
+                          );
                       }
                     },
                   ),
@@ -367,7 +369,7 @@ class _ArticleListState extends State<ArticleList> {
                           onTap: () async {
                             String res = await handleScaning(context);
                             Uri? uri = Uri.tryParse(res);
-                            if (uri != null && context.mounted) {
+                            if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
                                 uri.queryParameters['data'] ?? '',
                               );

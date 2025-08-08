@@ -1,6 +1,8 @@
 {
     "core": {
         "error": "An error occurred!",
+        "deep_link_error": "An error has occurred.\nWe apologize for the inconvenience.",
+        "deep_link_button": "Return to home",
         "welcome": "Welcome !",
         "card": {
             "article": {
@@ -21,13 +23,7 @@
             "item": {
                 "theme": "Theme",
                 "lang": "Language",
-                "route": "Navigate to articles upon app launch.",
-                "shareArticle": "Share my articles",
-                "importArticle": "Import articles",
-                "shareCategory": "Share my categories",
-                "importCategory": "Import categories",
-                "shareCard": "Share my cards",
-                "importCard": "Import cards"
+                "route": "Navigate to articles upon app launch."
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",
@@ -91,6 +87,10 @@
         "add": "Add new article"
     },
     "card": {
+        "options": {
+            "import": "Import",
+            "share": "Share"
+        },
         "alert": {
             "add": {
                 "title": "Add card",
@@ -132,7 +132,7 @@
         "options": {
             "delete": "Delete",
             "import": "Import",
-            "export": "Export"
+            "share": "Share"
         },
         "alert": {
             "add": {
@@ -175,6 +175,9 @@
         }
     },
     "modal": {
-        "export": "Scan the QR code via the \"Import\" feature of the Shopping List app"
+        "export": "Scan the QR code via the \"Import\" feature of the Shopping List app",
+        "send_file": "Send file",
+        "scan": "Scan",
+        "pick_file": "Browse"
     }
 }

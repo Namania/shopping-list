@@ -23,13 +23,7 @@
             "item": {
                 "theme": "Thème",
                 "lang": "Langage",
-                "route": "Aller directement aux articles au lancement de l'application.",
-                "shareArticle": "Partager mes articles",
-                "importArticle": "Importer des articles",
-                "shareCategory": "Partager mes catégories",
-                "importCategory": "Importer des catégories",
-                "shareCard": "Partager mes Cartes",
-                "importCard": "Importer des Cartes"
+                "route": "Aller directement aux articles au lancement de l'application."
             },
             "snack": {
                 "theme": "Le thème a été défini en: {theme}",
@@ -93,6 +87,10 @@
         "add": "Ajouter un article"
     },
     "card": {
+        "options": {
+            "import": "Importer",
+            "share": "Partager"
+        },
         "alert": {
             "add": {
                 "title": "Ajouter une carte",
@@ -134,7 +132,7 @@
         "options": {
             "delete": "Supprimer",
             "import": "Importer",
-            "export": "Exporter"
+            "share": "Partager"
         },
         "alert": {
             "add": {

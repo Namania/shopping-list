@@ -30,6 +30,7 @@ dependencies:
   file_picker: ^10.1.9
   pretty_qr_code: ^3.4.0
   flutter_colorpicker: ^1.1.0
+  flutter_switch: ^0.3.2
 
 dev_dependencies:
   flutter_test:

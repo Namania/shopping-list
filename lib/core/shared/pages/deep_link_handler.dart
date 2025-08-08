@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 class DeepLinkHandler extends StatefulWidget {
   final String? jsonData;
@@ -20,12 +23,10 @@ class _DeepLinkHandlerState extends State<DeepLinkHandler> {
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.jsonData != null) {
         try {
-          // final decodedData = Uri.decodeComponent(widget.jsonData!);
-          // final decoded = json.decode(decodedData);
           final decoded = json.decode(widget.jsonData!);
           executeFunction(decoded);
         } catch (e) {
@@ -54,6 +55,22 @@ class _DeepLinkHandlerState extends State<DeepLinkHandler> {
             ),
           );
           context.go('/articles');
+        } catch (e) {
+          setState(() => error = true);
+        }
+        break;
+      case QrCodeActions.importCategories:
+        try {
+          context.read<CategoryBloc>().add(CategoryImportEvent(json: json));
+          context.go('/categories');
+        } catch (e) {
+          setState(() => error = true);
+        }
+        break;
+      case QrCodeActions.importCards:
+        try {
+          context.read<CardBloc>().add(CardImportEvent(json: json));
+          context.go('/cards');
         } catch (e) {
           setState(() => error = true);
         }
