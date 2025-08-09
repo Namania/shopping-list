@@ -73,4 +73,22 @@ class CardRepositoryImpl implements CardRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<CardModel>>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      return Right(
+        await cardRemoteDatasource.rerange(
+          oldIndex: oldIndex,
+          newIndex: newIndex,
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
 }

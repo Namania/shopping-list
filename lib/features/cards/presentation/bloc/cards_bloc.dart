@@ -5,6 +5,7 @@ import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card.dart';
+import 'package:shopping_list/features/cards/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/cards/domain/usecases/update_card.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
@@ -15,6 +16,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   final UpdateCard updateCard;
   final RemoveCard removeCard;
   final CardImport cardImport;
+  final RerangeCard rerangeCard;
 
   CardBloc({
     required this.cardGetAll,
@@ -22,6 +24,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     required this.updateCard,
     required this.removeCard,
     required this.cardImport,
+    required this.rerangeCard,
   }) : super(CardInitial()) {
     on<CardEvent>((event, emit) {
       emit(CardLoading());
@@ -31,6 +34,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     on<UpdateCardEvent>((event, emit) => _onUpdateCardEvent(event, emit));
     on<RemoveCardEvent>((event, emit) => _onRemoveCard(event, emit));
     on<CardImportEvent>((event, emit) => _onCardImport(event, emit));
+    on<RerangeCardEvent>((event, emit) => _onRerangeCard(event, emit));
     add(CardGetAllEvent());
   }
 
@@ -77,7 +81,24 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   Future<void> _onUpdateCardEvent(UpdateCardEvent event, Emitter emit) async {
     emit(CardLoading());
     final result = await updateCard(
-      UpdateCardParams(card: event.card, label: event.label, code: event.code, color: event.color),
+      UpdateCardParams(
+        card: event.card,
+        label: event.label,
+        code: event.code,
+        color: event.color,
+      ),
+    );
+
+    result.fold(
+      (l) => emit(CardFailure(message: l.message)),
+      (r) => emit(CardSuccess(cards: r)),
+    );
+  }
+
+  Future<void> _onRerangeCard(RerangeCardEvent event, Emitter emit) async {
+    emit(CardLoading());
+    final result = await rerangeCard(
+      RerangeCardParams(oldIndex: event.oldIndex, newIndex: event.newIndex),
     );
 
     result.fold(

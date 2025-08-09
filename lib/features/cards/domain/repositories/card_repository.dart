@@ -18,4 +18,8 @@ abstract interface class CardRepository {
     required String code,
     required Color color
   });
+  Future<Either<Failure, List<CardModel>>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  });
 }

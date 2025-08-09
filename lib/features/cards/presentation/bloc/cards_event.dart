@@ -42,3 +42,13 @@ class CardImportEvent extends CardEvent {
 
   const CardImportEvent({required this.json});
 }
+
+class RerangeCardEvent extends CardEvent {
+  final int oldIndex;
+  final int newIndex;
+
+  const RerangeCardEvent({
+    required this.oldIndex,
+    required this.newIndex,
+  });
+}

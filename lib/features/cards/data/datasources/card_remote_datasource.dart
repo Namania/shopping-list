@@ -6,20 +6,18 @@ import 'package:shopping_list/features/cards/data/models/card_model.dart';
 
 abstract interface class CardRemoteDatasource {
   Future<List<CardModel>> cardGetAll();
-  Future<List<CardModel>> addCard({
-    required CardModel card,
-  });
-  Future<List<CardModel>> removeCard({
-    required CardModel card,
-  });
-  Future<List<CardModel>> cardImport({
-    required String json
-  });
+  Future<List<CardModel>> addCard({required CardModel card});
+  Future<List<CardModel>> removeCard({required CardModel card});
+  Future<List<CardModel>> cardImport({required String json});
   Future<List<CardModel>> updateCard({
     required CardModel card,
     required String label,
     required String code,
-    required Color color
+    required Color color,
+  });
+  Future<List<CardModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
   });
 }
 
@@ -41,35 +39,41 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
 
     return data;
   }
-  
+
   @override
   Future<List<CardModel>> addCard({
-    required CardModel card,
+    required CardModel card
   }) async {
     try {
       List<CardModel> cards = await cardGetAll();
       cards.add(card);
-      await prefs.setString("cards", jsonEncode(cards.map((c) => c.toJson()).toList()));
+      await prefs.setString(
+        "cards",
+        jsonEncode(cards.map((c) => c.toJson()).toList()),
+      );
       return await cardGetAll();
     } catch (e) {
       return [];
     }
   }
-  
+
   @override
   Future<List<CardModel>> removeCard({
-    required CardModel card,
+    required CardModel card
   }) async {
     try {
       List<CardModel> cards = await cardGetAll();
       cards.removeWhere((c) => c.label == card.label && c.code == card.code);
-      await prefs.setString("cards", jsonEncode(cards.map((c) => c.toJson()).toList()));
+      await prefs.setString(
+        "cards",
+        jsonEncode(cards.map((c) => c.toJson()).toList()),
+      );
       return await cardGetAll();
     } catch (e) {
       return [];
     }
   }
-  
+
   @override
   Future<List<CardModel>> cardImport({
     required String json
@@ -90,7 +94,6 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
     }
   }
 
-  
   @override
   Future<List<CardModel>> updateCard({
     required CardModel card,
@@ -102,17 +105,34 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
       List<CardModel> cards = await cardGetAll();
       int index = cards.indexOf(card);
       cards.removeAt(index);
-      CardModel updatedCard = CardModel(
-        label: label,
-        code: code,
-        color: color,
-      );
+      CardModel updatedCard = CardModel(label: label, code: code, color: color);
       cards.insert(index, updatedCard);
-      await prefs.setString("cards", jsonEncode(cards.map((c) => c.toJson()).toList()));
+      await prefs.setString(
+        "cards",
+        jsonEncode(cards.map((c) => c.toJson()).toList()),
+      );
       return await cardGetAll();
     } catch (e) {
       return await cardGetAll();
     }
   }
 
+  @override
+  Future<List<CardModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      List<CardModel> cards = await cardGetAll();
+      final item = cards.removeAt(oldIndex);
+      cards.insert(newIndex, item);
+      await prefs.setString(
+        "cards",
+        jsonEncode(cards.map((c) => c.toJson()).toList()),
+      );
+      return await cardGetAll();
+    } catch (e) {
+      return [];
+    }
+  }
 }

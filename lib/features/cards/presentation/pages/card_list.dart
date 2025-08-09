@@ -26,6 +26,9 @@ class CardList extends StatefulWidget {
 }
 
 class _CardListState extends State<CardList> {
+  bool movableMode = false;
+  List<CardModel> cards = [];
+
   Future<String> handleScaning(BuildContext context, ScanMode mode) async {
     String barcodeScanRes = '';
     try {
@@ -330,6 +333,11 @@ class _CardListState extends State<CardList> {
           },
         );
         break;
+      case 'move':
+        setState(() {
+          movableMode = true;
+        });
+        break;
     }
   }
 
@@ -337,6 +345,12 @@ class _CardListState extends State<CardList> {
     return string.isNotEmpty
         ? "${string[0].toUpperCase()}${string.substring(1).toLowerCase()}"
         : string;
+  }
+
+  void removeCard(CardModel card) {
+    setState(() {
+      cards.remove(card);
+    });
   }
 
   @override
@@ -355,51 +369,61 @@ class _CardListState extends State<CardList> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: PopupMenuButton<String>(
-              onSelected: (value) => handleClick(context, value),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              icon: const Icon(Icons.more_vert),
-              tooltip: context.tr("card.options.tooltip"),
-              itemBuilder: (context) {
-                final choices = [
-                  {'label': 'share', 'icon': Icons.share_rounded},
-                  {'label': 'import', 'icon': Icons.download_rounded},
-                ];
+            child:
+                movableMode
+                    ? IconButton(
+                      onPressed: () {
+                        setState(() {
+                          movableMode = false;
+                        });
+                      },
+                      icon: Icon(Icons.check_rounded),
+                    )
+                    : PopupMenuButton<String>(
+                      onSelected: (value) => handleClick(context, value),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      icon: const Icon(Icons.more_vert),
+                      tooltip: context.tr("card.options.tooltip"),
+                      itemBuilder: (context) {
+                        final choices = [
+                          {'label': 'share', 'icon': Icons.share_rounded},
+                          {'label': 'import', 'icon': Icons.download_rounded},
+                          {'label': 'move', 'icon': Icons.shuffle_rounded},
+                        ];
 
-                return choices.map((choice) {
-                  return PopupMenuItem<String>(
-                    padding: EdgeInsets.only(left: 20),
-                    value: choice['label'] as String,
-                    child: Row(
-                      children: [
-                        Icon(
-                          choice['icon'] as IconData,
-                          size: 20,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          context.tr("card.options.${choice['label']}"),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+                        return choices.map((choice) {
+                          return PopupMenuItem<String>(
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            value: choice['label'] as String,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  choice['icon'] as IconData,
+                                  size: 20,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  context.tr("card.options.${choice['label']}"),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
                     ),
-                  );
-                }).toList();
-              },
-            ),
           ),
         ],
       ),
       body: BlocBuilder<CardBloc, CardState>(
-        buildWhen: (previous, state) {
-          return state is CardSuccess;
-        },
         builder: (BuildContext context, CardState state) {
-          final List<CardModel> cards = context.read<CardBloc>().getAllCard();
+          if (state is CardSuccess) {
+            cards = state.cards;
+          }
           if (cards.isEmpty) {
             return Center(child: (Text(context.tr('card.empty'))));
           }
@@ -410,15 +434,42 @@ class _CardListState extends State<CardList> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ListView.builder(
-                    padding: EdgeInsets.only(bottom: 60),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) {
-                      return CustomCard(card: cards[index]);
-                    },
-                  ),
+                  movableMode
+                      ? ReorderableListView.builder(
+                        onReorder: (int oldIndex, int newIndex) {
+                          if (newIndex > oldIndex) newIndex -= 1;
+                          context.read<CardBloc>().add(
+                            RerangeCardEvent(
+                              oldIndex: oldIndex,
+                              newIndex: newIndex,
+                            ),
+                          );
+                          setState(() {
+                            final item = cards.removeAt(oldIndex);
+                            cards.insert(newIndex, item);
+                          });
+                        },
+                        padding: EdgeInsets.only(bottom: 60),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: cards.length,
+                        itemBuilder: (context, index) {
+                          return CustomCard(
+                            key: ValueKey("${cards[index].label}${cards[index].code}"),
+                            card: cards[index],
+                            removeCard: removeCard
+                          );
+                        },
+                      )
+                      : ListView.builder(
+                        padding: EdgeInsets.only(bottom: 60),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: cards.length,
+                        itemBuilder: (context, index) {
+                          return CustomCard(card: cards[index], removeCard: removeCard);
+                        },
+                      ),
                 ],
               ),
             ),

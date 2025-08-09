@@ -11,8 +11,9 @@ import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart'
 
 class CustomCard extends StatelessWidget {
   final CardModel card;
+  final Function removeCard;
 
-  const CustomCard({super.key, required this.card});
+  const CustomCard({super.key, required this.card, required this.removeCard});
 
   void updateCard(BuildContext context, CardModel card) async {
     final labelController = TextEditingController();
@@ -139,8 +140,9 @@ class CustomCard extends StatelessWidget {
       child: Dismissible(
         key: GlobalKey(),
         onDismissed:
-            (direction) => {
-              context.read<CardBloc>().add(RemoveCardEvent(card: card)),
+            (direction) {
+              context.read<CardBloc>().add(RemoveCardEvent(card: card));
+              removeCard(card);
             },
         confirmDismiss: (direction) async {
           return await showDialog(

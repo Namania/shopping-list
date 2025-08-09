@@ -23,6 +23,7 @@ import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card.dart';
+import 'package:shopping_list/features/cards/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/cards/domain/usecases/update_card.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/category/data/datasources/category_remote_datasource.dart';
@@ -112,6 +113,7 @@ void initCard() {
     ..registerFactory<UpdateCard>(() => UpdateCard(getIt()))
     ..registerFactory<RemoveCard>(() => RemoveCard(getIt()))
     ..registerFactory<CardImport>(() => CardImport(getIt()))
+    ..registerFactory<RerangeCard>(() => RerangeCard(getIt()))
     // bloc
     ..registerLazySingleton<CardBloc>(
       () => CardBloc(
@@ -120,6 +122,7 @@ void initCard() {
         updateCard: getIt(),
         removeCard: getIt(),
         cardImport: getIt(),
+        rerangeCard: getIt(),
       ),
     );
 }

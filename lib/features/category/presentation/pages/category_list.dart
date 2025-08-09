@@ -489,7 +489,7 @@ class _CategoryListState extends State<CategoryList> {
 
                 return choices.map((choice) {
                   return PopupMenuItem<String>(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(left: 20, right: 10),
                     value: choice['label'] as String,
                     child: Row(
                       children: [
