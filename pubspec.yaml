@@ -1,7 +1,7 @@
 name: shopping_list
 description: "Shopping List lets you create your shopping lists and store your loyalty cards, even without an internet connection. This allows you to use it anywhere, easily and quickly."
 publish_to: 'none'
-version: 1.2.8+4 # versionCode+versionName
+version: 1.2.9+5 # versionCode+versionName
 
 environment:
   sdk: ^3.7.2
