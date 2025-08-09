@@ -9,8 +9,8 @@ abstract interface class ArticleRemoteDatasource {
   Future<List<ArticleModel>> getAll();
   Future<List<CategoryModel>> getAllCategories();
   Future<List<ArticleModel>> addArticle({required ArticleModel article});
-  Future<List<ArticleModel>> removeArticle({required int index});
-  Future<List<ArticleModel>> toogleArticleDoneState({required int index});
+  Future<List<ArticleModel>> removeArticle({required ArticleModel article});
+  Future<List<ArticleModel>> toogleArticleDoneState({required ArticleModel article});
   Future<List<ArticleModel>> clear({required bool allArticle});
   Future<List<ArticleModel>> articleImport({
     required String json,
@@ -67,14 +67,6 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
           articles.where((a) => a.label == article.label).toList();
       if (exist.isEmpty) {
         articles.add(article);
-        articles.sort(
-          (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
-        );
-        articles.sort(
-          (a, b) => a.category.label.toLowerCase().compareTo(
-            b.category.label.toLowerCase(),
-          ),
-        );
         await prefs.setString(
           "articles",
           jsonEncode(articles.map((a) => a.toJson()).toList()),
@@ -87,10 +79,10 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleModel>> removeArticle({required int index}) async {
+  Future<List<ArticleModel>> removeArticle({required ArticleModel article}) async {
     try {
       List<ArticleModel> articles = await getAll();
-      articles.removeAt(index);
+      articles.remove(article);
       await prefs.setString(
         "articles",
         jsonEncode(articles.map((a) => a.toJson()).toList()),
@@ -103,12 +95,12 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
 
   @override
   Future<List<ArticleModel>> toogleArticleDoneState({
-    required int index,
+    required ArticleModel article,
   }) async {
     try {
       List<ArticleModel> articles = await getAll();
-      ArticleModel article = articles[index];
-      article.done = !article.done;
+      int index = articles.indexOf(article);
+      articles[index].done = !articles[index].done;
       await prefs.setString(
         "articles",
         jsonEncode(articles.map((a) => a.toJson()).toList()),

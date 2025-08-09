@@ -88,4 +88,21 @@ class CategoryRepositoryImpl implements CategoryRepository {
       return Left(ServerFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<CategoryModel>>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      return Right(
+        await categoryRemoteDatasource.rerange(
+          oldIndex: oldIndex,
+          newIndex: newIndex,
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
 }

@@ -19,6 +19,10 @@ abstract interface class CategoryRemoteDatasource {
     required String json
   });
   Future<List<CategoryModel>> clear();
+  Future<List<CategoryModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  });
 }
 
 class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
@@ -121,6 +125,25 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
   Future<List<CategoryModel>> clear() async {
     try {
       await prefs.setString("categories", "[]");
+      return await getAll();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  Future<List<CategoryModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      List<CategoryModel> categories = await getAll();
+      final item = categories.removeAt(oldIndex);
+      categories.insert(newIndex, item);
+      await prefs.setString(
+        "categories",
+        jsonEncode(categories.map((c) => c.toJson()).toList()),
+      );
       return await getAll();
     } catch (e) {
       return [];

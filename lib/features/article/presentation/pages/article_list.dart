@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:flutter/material.dart';
@@ -552,8 +553,24 @@ class _ArticleListState extends State<ArticleList> {
           return state is ArticleSuccess;
         },
         builder: (BuildContext context, ArticleState state) {
-          final List<ArticleModel> articles =
+          final List<ArticleModel> data =
               context.read<ArticleBloc>().getAllArticle();
+          final List<CategoryModel> categories =
+              context.read<CategoryBloc>().getAllCategory();
+
+          final List<ArticleModel> articles = [];
+          categories.insert(
+            context.read<SettingDefaultCategoryPosition>().getValue()
+                ? 0
+                : categories.length,
+            CategoryModel(
+              label: context.tr('category.default'),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          );
+          for (CategoryModel category in categories) {
+            articles.addAll(data.where((a) => a.category == category));
+          }
           if (articles.isEmpty) {
             return Center(child: (Text(context.tr('article.empty'))));
           }
@@ -566,8 +583,8 @@ class _ArticleListState extends State<ArticleList> {
                 return index == 0 ||
                         articles[index - 1].category.label !=
                             articles[index].category.label
-                    ? ArticleCategory(article: articles[index], index: index)
-                    : ArticleCard(article: articles[index], index: index);
+                    ? ArticleCategory(article: articles[index])
+                    : ArticleCard(article: articles[index]);
               },
             ),
           );

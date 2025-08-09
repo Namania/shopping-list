@@ -4,12 +4,10 @@ import 'package:shopping_list/features/article/presentation/widgets/article_card
 
 class ArticleCategory extends StatelessWidget {
   final ArticleModel article;
-  final int index;
 
   const ArticleCategory({
     super.key,
     required this.article,
-    required this.index,
   });
 
   @override
@@ -24,7 +22,7 @@ class ArticleCategory extends StatelessWidget {
             child: Text(article.category.label, style: TextTheme.of(context).titleLarge),
           ),
           const Divider(indent: 10, endIndent: 10),
-          ArticleCard(article: article, index: index),
+          ArticleCard(article: article),
         ],
       ),
     );

@@ -11,12 +11,12 @@ class RemoveArticle implements UseCase<List<ArticleModel>, RemoveArticleParams> 
 
   @override
   Future<Either<Failure, List<ArticleModel>>> call(RemoveArticleParams params) async {
-    return await articleRepository.removeArticle(index: params.index);
+    return await articleRepository.removeArticle(article: params.article);
   }
 }
 
 class RemoveArticleParams {
-  final int index;
+  final ArticleModel article;
 
-  RemoveArticleParams({required this.index});
+  RemoveArticleParams({required this.article});
 }

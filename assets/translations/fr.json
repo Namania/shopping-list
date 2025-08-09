@@ -26,7 +26,8 @@
                 "route": {
                     "article": "Aller directement aux articles au lancement de l'application.",
                     "category": "Aller directement aux cartes au lancement de l'application."
-                }
+                },
+                "category": "Afficher les articles sans catégorie au début de la liste."
             },
             "snack": {
                 "theme": "Le thème a été défini en: {theme}",
@@ -34,9 +35,7 @@
             },
             "separator": {
                 "main": "Gérénal",
-                "article": "Article",
-                "category": "Catégorie",
-                "card": "Carte"
+                "startup": "Lancement de l'application"
             },
             "shareArticleMessage": "Voici mes articles !\n[Shopping List]",
             "shareCategoryMessage": "Voici mes catégories !\n[Shopping List]",
@@ -136,6 +135,7 @@
         "options": {
             "delete": "Supprimer",
             "import": "Importer",
+            "move": "Organiser mes catégories",
             "share": "Partager"
         },
         "alert": {

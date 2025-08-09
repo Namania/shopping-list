@@ -18,4 +18,8 @@ abstract interface class CategoryRepository {
   });
   Future<Either<Failure, List<CategoryModel>>> categoryImport({required String json});
   Future<Either<Failure, List<CategoryModel>>> clear();
+  Future<Either<Failure, List<CategoryModel>>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  });
 }

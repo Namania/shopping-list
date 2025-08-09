@@ -12,16 +12,15 @@ import 'package:shopping_list/features/category/presentation/bloc/category_bloc.
 
 class ArticleCard extends StatelessWidget {
   final ArticleModel article;
-  final int index;
 
-  const ArticleCard({super.key, required this.article, required this.index});
+  const ArticleCard({super.key, required this.article});
 
   void toogleArticleDoneState(BuildContext context) {
-    context.read<ArticleBloc>().add(ToogleArticleDoneStateEvent(index: index));
+    context.read<ArticleBloc>().add(ToogleArticleDoneStateEvent(article: article));
   }
 
   void deleteArticle(BuildContext context) {
-    context.read<ArticleBloc>().add(RemoveArticleEvent(index: index));
+    context.read<ArticleBloc>().add(RemoveArticleEvent(article: article));
   }
 
   void editArticle(BuildContext context, ArticleModel article) async {

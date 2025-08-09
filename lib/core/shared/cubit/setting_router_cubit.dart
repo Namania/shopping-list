@@ -1,13 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class SettingRouterCubit extends HydratedCubit<AvailableRoute> {
   SettingRouterCubit() : super(AvailableRoute.root);
-
-  Brightness get systemBrightness =>
-      SchedulerBinding.instance.platformDispatcher.platformBrightness;
 
   void toggleRoute() {
     switch (state) {
@@ -49,5 +43,5 @@ class SettingRouterCubit extends HydratedCubit<AvailableRoute> {
 enum AvailableRoute {
   root,
   article,
-  card
+  card,
 }

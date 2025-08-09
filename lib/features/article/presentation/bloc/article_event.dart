@@ -35,9 +35,9 @@ class ArticleImportEvent extends ArticleEvent {
 }
 
 class RemoveArticleEvent extends ArticleEvent {
-  final int index;
+  final ArticleModel article;
 
-  const RemoveArticleEvent({required this.index});
+  const RemoveArticleEvent({required this.article});
 }
 
 class ClearEvent extends ArticleEvent {
@@ -47,7 +47,7 @@ class ClearEvent extends ArticleEvent {
 }
 
 class ToogleArticleDoneStateEvent extends ArticleEvent {
-  final int index;
+  final ArticleModel article;
 
-  const ToogleArticleDoneStateEvent({required this.index});
+  const ToogleArticleDoneStateEvent({required this.article});
 }

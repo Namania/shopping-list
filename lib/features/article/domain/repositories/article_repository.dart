@@ -9,10 +9,10 @@ abstract interface class ArticleRepository {
     required ArticleModel article,
   });
   Future<Either<Failure, List<ArticleModel>>> removeArticle({
-    required int index,
+    required ArticleModel article,
   });
   Future<Either<Failure, List<ArticleModel>>> toogleArticleDoneState({
-    required int index,
+    required ArticleModel article,
   });
   Future<Either<Failure, List<ArticleModel>>> clear({required bool allArticle});
   Future<Either<Failure, List<ArticleModel>>> articleImport({

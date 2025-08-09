@@ -24,6 +24,9 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
+  bool movableMode = false;
+  List<CategoryModel> categories = [];
+
   void handleDelete(BuildContext context) async {
     bool? res = await showDialog(
       context: context,
@@ -453,7 +456,18 @@ class _CategoryListState extends State<CategoryList> {
       case 'delete':
         handleDelete(context);
         break;
+      case 'move':
+        setState(() {
+          movableMode = true;
+        });
+        break;
     }
+  }
+
+  void removeCategory(CategoryModel category) {
+    setState(() {
+      categories.remove(category);
+    });
   }
 
   @override
@@ -472,65 +486,124 @@ class _CategoryListState extends State<CategoryList> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: PopupMenuButton<String>(
-              onSelected: (value) => handleClick(context, value),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              icon: const Icon(Icons.more_vert),
-              tooltip: context.tr("category.options.tooltip"),
-              itemBuilder: (context) {
-                final choices = [
-                  {'label': 'share', 'icon': Icons.share_rounded},
-                  {'label': 'import', 'icon': Icons.download_rounded},
-                  {'label': 'delete', 'icon': Icons.delete},
-                ];
+            child:
+                movableMode
+                    ? IconButton(
+                      onPressed: () {
+                        setState(() {
+                          movableMode = false;
+                        });
+                      },
+                      icon: Icon(Icons.check_rounded),
+                    )
+                    : PopupMenuButton<String>(
+                      onSelected: (value) => handleClick(context, value),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      icon: const Icon(Icons.more_vert),
+                      tooltip: context.tr("category.options.tooltip"),
+                      itemBuilder: (context) {
+                        final choices = [
+                          {'label': 'share', 'icon': Icons.share_rounded},
+                          {'label': 'import', 'icon': Icons.download_rounded},
+                          {'label': 'move', 'icon': Icons.shuffle_rounded},
+                          {'label': 'delete', 'icon': Icons.delete},
+                        ];
 
-                return choices.map((choice) {
-                  return PopupMenuItem<String>(
-                    padding: EdgeInsets.only(left: 20, right: 10),
-                    value: choice['label'] as String,
-                    child: Row(
-                      children: [
-                        Icon(
-                          choice['icon'] as IconData,
-                          size: 20,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          context.tr("category.options.${choice['label']}"),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+                        return choices.map((choice) {
+                          return PopupMenuItem<String>(
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            value: choice['label'] as String,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  choice['icon'] as IconData,
+                                  size: 20,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  context.tr(
+                                    "category.options.${choice['label']}",
+                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
                     ),
-                  );
-                }).toList();
-              },
-            ),
           ),
         ],
       ),
       body: BlocBuilder<CategoryBloc, CategoryState>(
-        buildWhen: (previous, state) {
-          return state is CategorySuccess;
-        },
         builder: (BuildContext context, CategoryState state) {
-          final List<CategoryModel> categories =
-              context.read<CategoryBloc>().getAllCategory();
+          if (state is CategorySuccess) {
+            categories = state.categories;
+          }
           if (categories.isEmpty) {
             return Center(child: (Text(context.tr('category.empty'))));
           }
           return Padding(
             padding: const EdgeInsets.all(5),
-            child: ListView.builder(
-              padding: EdgeInsets.only(bottom: 60),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                return CategoryCard(category: categories[index], index: index);
-              },
-            ),
+            child:
+                movableMode
+                    ? ReorderableListView.builder(
+                      proxyDecorator: (
+                        Widget child,
+                        int index,
+                        Animation<double> animation,
+                      ) {
+                        return Material(
+                          elevation: 10,
+                          color: Colors.transparent,
+                          child: child,
+                        );
+                      },
+                      onReorder: (int oldIndex, int newIndex) {
+                        if (newIndex > oldIndex) newIndex -= 1;
+                        context.read<CategoryBloc>().add(
+                          RerangeCategoryEvent(
+                            oldIndex: oldIndex,
+                            newIndex: newIndex,
+                          ),
+                        );
+                        setState(() {
+                          final item = categories.removeAt(oldIndex);
+                          categories.insert(newIndex, item);
+                        });
+                      },
+                      padding: EdgeInsets.only(bottom: 60),
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        return CategoryCard(
+                          key: ValueKey(
+                            "${categories[index].label}${categories[index].color.toHexString()}",
+                          ),
+                          index: index,
+                          category: categories[index],
+                          movableMode: movableMode,
+                          removeCategory: removeCategory,
+                        );
+                      },
+                    )
+                    : ListView.builder(
+                      padding: EdgeInsets.only(bottom: 60),
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        return CategoryCard(
+                          category: categories[index],
+                          index: index,
+                          movableMode: movableMode,
+                          removeCategory: removeCategory,
+                        );
+                      },
+                    ),
           );
         },
       ),

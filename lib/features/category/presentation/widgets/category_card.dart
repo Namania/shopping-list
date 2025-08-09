@@ -12,11 +12,20 @@ import 'package:shopping_list/features/category/presentation/bloc/category_bloc.
 class CategoryCard extends StatelessWidget {
   final CategoryModel category;
   final int index;
+  final Function removeCategory;
+  final bool movableMode;
 
-  const CategoryCard({super.key, required this.category, required this.index});
+  const CategoryCard({
+    super.key,
+    required this.category,
+    required this.movableMode,
+    required this.index,
+    required this.removeCategory
+  });
 
   void deleteCategory(BuildContext context) {
     context.read<CategoryBloc>().add(RemoveCategoryEvent(index: index));
+    removeCategory(category);
     List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
     for (ArticleModel article in articles) {
       if (article.category == category) {
@@ -216,15 +225,12 @@ class CategoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: 5,
               children: [
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
                 Text(
                   context.tr('category.delete'),
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
               ],
             ),
@@ -240,14 +246,11 @@ class CategoryCard extends StatelessWidget {
               children: [
                 Text(
                   context.tr('category.delete'),
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
               ],
             ),
           ),
@@ -257,11 +260,14 @@ class CategoryCard extends StatelessWidget {
             editCategory(context, category);
           },
           child: ListTile(
-            leading: Badge(
-              padding: EdgeInsets.all(3),
-              label: const SizedBox(height: 10),
-              backgroundColor: category.color,
-            ),
+            leading:
+                movableMode
+                    ? Icon(Icons.drag_handle_rounded)
+                    : Badge(
+                      padding: EdgeInsets.all(3),
+                      label: const SizedBox(height: 10),
+                      backgroundColor: category.color,
+                    ),
             title: Text(category.label, style: TextTheme.of(context).bodyLarge),
           ),
         ),

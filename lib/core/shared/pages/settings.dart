@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
@@ -21,15 +22,16 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   late bool isArticleRoute;
   late bool isCardRoute;
+  late bool isCategoryFirst;
 
   @override
   void initState() {
     super.initState();
-    final AvailableRoute currentState = context.read<SettingRouterCubit>().state;
-    isArticleRoute =
-        currentState == AvailableRoute.article;
-    isCardRoute =
-        currentState == AvailableRoute.card;
+    final AvailableRoute currentState =
+        context.read<SettingRouterCubit>().state;
+    isArticleRoute = currentState == AvailableRoute.article;
+    isCardRoute = currentState == AvailableRoute.card;
+    isCategoryFirst = context.read<SettingDefaultCategoryPosition>().getValue();
   }
 
   @override
@@ -114,6 +116,48 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
                 SettingsItem(
+                  icon: Icons.swap_vert_rounded,
+                  title: context.tr('core.settings.item.category'),
+                  trailing: SizedBox(
+                    width: 70,
+                    child: FlutterSwitch(
+                      value: isCategoryFirst,
+                      width: 70,
+                      height: 36,
+                      toggleSize: 30,
+                      borderRadius: 20,
+                      padding: 3,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      inactiveColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      inactiveSwitchBorder: Border.all(
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                        width: 2,
+                      ),
+                      activeSwitchBorder: Border.all(width: 2),
+                      inactiveIcon: Icon(Icons.close_rounded),
+                      activeIcon: Icon(Icons.check_rounded),
+                      duration: const Duration(milliseconds: 300),
+                      onToggle: (val) {
+                        context.read<SettingDefaultCategoryPosition>().selectValue(
+                          val ? AvailableState.first : AvailableState.last,
+                        );
+                        setState(() {
+                          isCategoryFirst = val;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.startup'),
+              children: [
+                SettingsItem(
                   icon: Icons.signpost_rounded,
                   title: context.tr('core.settings.item.route.article'),
                   trailing: SizedBox(
@@ -135,9 +179,7 @@ class _SettingsState extends State<Settings> {
                             ).colorScheme.surfaceContainerHighest,
                         width: 2,
                       ),
-                      activeSwitchBorder: Border.all(
-                        width: 2,
-                      ),
+                      activeSwitchBorder: Border.all(width: 2),
                       inactiveIcon: Icon(Icons.close_rounded),
                       activeIcon: Icon(Icons.check_rounded),
                       duration: const Duration(milliseconds: 300),
@@ -177,9 +219,7 @@ class _SettingsState extends State<Settings> {
                             ).colorScheme.surfaceContainerHighest,
                         width: 2,
                       ),
-                      activeSwitchBorder: Border.all(
-                        width: 2,
-                      ),
+                      activeSwitchBorder: Border.all(width: 2),
                       inactiveIcon: Icon(Icons.close_rounded),
                       activeIcon: Icon(Icons.check_rounded),
                       duration: const Duration(milliseconds: 300),

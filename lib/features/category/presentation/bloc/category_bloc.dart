@@ -8,6 +8,7 @@ import 'package:shopping_list/features/category/domain/usecases/category_import.
 import 'package:shopping_list/features/category/domain/usecases/clear.dart';
 import 'package:shopping_list/features/category/domain/usecases/get_all_category.dart';
 import 'package:shopping_list/features/category/domain/usecases/remove_category_from_map.dart';
+import 'package:shopping_list/features/category/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/category/domain/usecases/update_category.dart';
 
 part 'category_event.dart';
@@ -20,6 +21,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final UpdateCategory updateCategory;
   final CategoryImport categoryImport;
   final ClearCategory clearCategory;
+  final RerangeCategory rerangeCategory;
 
   CategoryBloc({
     required this.getAll,
@@ -28,6 +30,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     required this.updateCategory,
     required this.categoryImport,
     required this.clearCategory,
+    required this.rerangeCategory,
   }) : super(CategoryInitial()) {
     on<CategoryEvent>((event, emit) {
       emit(CategoryLoading());
@@ -38,6 +41,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<UpdateCategoryEvent>((event, emit) => _onUpdateCategory(event, emit));
     on<CategoryImportEvent>((event, emit) => _onCategoryImport(event, emit));
     on<ClearCategoryEvent>((event, emit) => _onClearCategory(event, emit));
+    on<RerangeCategoryEvent>((event, emit) => _onRerangeCategory(event, emit));
     add(CategoryGetAllEvent());
   }
 
@@ -110,6 +114,18 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   Future<void> _onCategoryImport(CategoryImportEvent event, Emitter emit) async {
     emit(CategoryLoading());
     final result = await categoryImport(CategoryImportParams(json: event.json));
+
+    result.fold(
+      (l) => emit(CategoryFailure(message: l.message)),
+      (r) => emit(CategorySuccess(categories: r)),
+    );
+  }
+
+  Future<void> _onRerangeCategory(RerangeCategoryEvent event, Emitter emit) async {
+    emit(CategoryLoading());
+    final result = await rerangeCategory(
+      RerangeCategoryParams(oldIndex: event.oldIndex, newIndex: event.newIndex),
+    );
 
     result.fold(
       (l) => emit(CategoryFailure(message: l.message)),

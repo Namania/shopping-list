@@ -26,7 +26,8 @@
                 "route": {
                     "article": "Navigate to articles upon app launch.",
                     "category": "Navigate to cards upon app launch."
-                }
+                },
+                "category": "Show uncategorized items at the top of the list."
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",
@@ -34,9 +35,7 @@
             },
             "separator": {
                 "main": "General",
-                "article": "Article",
-                "category": "Category",
-                "card": "Carte"
+                "startup": "Upon app launch"
             },
             "shareArticleMessage": "Here are my articles !\n[Shopping List]",
             "shareCategoryMessage": "Here are my categories !\n[Shopping List]",
@@ -92,7 +91,8 @@
     "card": {
         "options": {
             "import": "Import",
-            "share": "Share"
+            "share": "Share",
+            "move": "Organize my cards"
         },
         "alert": {
             "add": {
@@ -135,6 +135,7 @@
         "options": {
             "delete": "Delete",
             "import": "Import",
+            "move": "Organize my categories",
             "share": "Share"
         },
         "alert": {

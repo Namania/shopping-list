@@ -34,6 +34,7 @@ import 'package:shopping_list/features/category/domain/usecases/category_import.
 import 'package:shopping_list/features/category/domain/usecases/clear.dart';
 import 'package:shopping_list/features/category/domain/usecases/get_all_category.dart';
 import 'package:shopping_list/features/category/domain/usecases/remove_category_from_map.dart';
+import 'package:shopping_list/features/category/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/category/domain/usecases/update_category.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
@@ -142,6 +143,7 @@ void initCategory() {
     ..registerFactory<RemoveCategory>(() => RemoveCategory(getIt()))
     ..registerFactory<CategoryImport>(() => CategoryImport(getIt()))
     ..registerFactory<ClearCategory>(() => ClearCategory(getIt()))
+    ..registerFactory<RerangeCategory>(() => RerangeCategory(getIt()))
     // bloc
     ..registerLazySingleton<CategoryBloc>(
       () => CategoryBloc(
@@ -151,6 +153,7 @@ void initCategory() {
         removeCategory: getIt(),
         categoryImport: getIt(),
         clearCategory: getIt(),
+        rerangeCategory: getIt(),
       ),
     );
 }

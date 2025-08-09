@@ -37,11 +37,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
   
   @override
   Future<Either<Failure, List<ArticleModel>>> removeArticle({
-    required int index,
+    required ArticleModel article,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.removeArticle(index: index),
+        await articleRemoteDatasource.removeArticle(article: article),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
@@ -50,11 +50,11 @@ class ArticleRepositoryImpl implements ArticleRepository {
   
   @override
   Future<Either<Failure, List<ArticleModel>>> toogleArticleDoneState({
-    required int index,
+    required ArticleModel article,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.toogleArticleDoneState(index: index),
+        await articleRemoteDatasource.toogleArticleDoneState(article: article),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

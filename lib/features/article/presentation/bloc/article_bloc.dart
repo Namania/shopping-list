@@ -69,7 +69,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
   Future<void> _onRemoveArticle(RemoveArticleEvent event, Emitter emit) async {
     emit(ArticleLoading());
-    final result = await removeArticle(RemoveArticleParams(index: event.index));
+    final result = await removeArticle(RemoveArticleParams(article: event.article));
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),
@@ -83,7 +83,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   ) async {
     emit(ArticleLoading());
     final result = await toogleArticleDoneState(
-      ToogleArticleDoneStateParams(index: event.index),
+      ToogleArticleDoneStateParams(article: event.article),
     );
 
     result.fold(

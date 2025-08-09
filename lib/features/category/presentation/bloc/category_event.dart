@@ -40,3 +40,13 @@ class CategoryImportEvent extends CategoryEvent {
 }
 
 class ClearCategoryEvent extends CategoryEvent {}
+
+class RerangeCategoryEvent extends CategoryEvent {
+  final int oldIndex;
+  final int newIndex;
+
+  const RerangeCategoryEvent({
+    required this.oldIndex,
+    required this.newIndex,
+  });
+}
