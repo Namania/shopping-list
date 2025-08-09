@@ -8,17 +8,10 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final route = context.read<SettingRouterCubit>().state;
+    final route = context.read<SettingRouterCubit>().getRoute();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      switch (route) {
-        case AvailableRoute.root:
-          context.go('/');
-          break;
-        case AvailableRoute.article:
-          context.go('/articles');
-          break;
-      }
+      context.go(route);
     });
 
     return const Scaffold(

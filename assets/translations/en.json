@@ -23,7 +23,10 @@
             "item": {
                 "theme": "Theme",
                 "lang": "Language",
-                "route": "Navigate to articles upon app launch."
+                "route": {
+                    "article": "Navigate to articles upon app launch.",
+                    "category": "Navigate to cards upon app launch."
+                }
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",

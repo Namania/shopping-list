@@ -20,12 +20,16 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   late bool isArticleRoute;
+  late bool isCardRoute;
 
   @override
   void initState() {
     super.initState();
+    final AvailableRoute currentState = context.read<SettingRouterCubit>().state;
     isArticleRoute =
-        context.read<SettingRouterCubit>().state == AvailableRoute.article;
+        currentState == AvailableRoute.article;
+    isCardRoute =
+        currentState == AvailableRoute.card;
   }
 
   @override
@@ -111,7 +115,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SettingsItem(
                   icon: Icons.signpost_rounded,
-                  title: context.tr('core.settings.item.route'),
+                  title: context.tr('core.settings.item.route.article'),
                   trailing: SizedBox(
                     width: 70,
                     child: FlutterSwitch(
@@ -142,7 +146,52 @@ class _SettingsState extends State<Settings> {
                           val ? AvailableRoute.article : AvailableRoute.root,
                         );
                         setState(() {
+                          if (val) {
+                            isCardRoute = false;
+                          }
                           isArticleRoute = val;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                SettingsItem(
+                  icon: Icons.signpost_rounded,
+                  title: context.tr('core.settings.item.route.category'),
+                  trailing: SizedBox(
+                    width: 70,
+                    child: FlutterSwitch(
+                      value: isCardRoute,
+                      width: 70,
+                      height: 36,
+                      toggleSize: 30,
+                      borderRadius: 20,
+                      padding: 3,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      inactiveColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      inactiveSwitchBorder: Border.all(
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                        width: 2,
+                      ),
+                      activeSwitchBorder: Border.all(
+                        width: 2,
+                      ),
+                      inactiveIcon: Icon(Icons.close_rounded),
+                      activeIcon: Icon(Icons.check_rounded),
+                      duration: const Duration(milliseconds: 300),
+                      onToggle: (val) {
+                        context.read<SettingRouterCubit>().selectRoute(
+                          val ? AvailableRoute.card : AvailableRoute.root,
+                        );
+                        setState(() {
+                          if (val) {
+                            isArticleRoute = false;
+                          }
+                          isCardRoute = val;
                         });
                       },
                     ),

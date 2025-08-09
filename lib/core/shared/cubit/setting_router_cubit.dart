@@ -14,7 +14,20 @@ class SettingRouterCubit extends HydratedCubit<AvailableRoute> {
       case AvailableRoute.root:
         emit(AvailableRoute.article);
       case AvailableRoute.article:
+        emit(AvailableRoute.card);
+      case AvailableRoute.card:
         emit(AvailableRoute.root);
+    }
+  }
+
+  String getRoute() {
+    switch (state) {
+      case AvailableRoute.root:
+        return "/";
+      case AvailableRoute.article:
+        return "/articles";
+      case AvailableRoute.card:
+        return "/cards";
     }
   }
 
@@ -35,5 +48,6 @@ class SettingRouterCubit extends HydratedCubit<AvailableRoute> {
 
 enum AvailableRoute {
   root,
-  article
+  article,
+  card
 }
