@@ -12,8 +12,9 @@ import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart'
 class CustomCard extends StatelessWidget {
   final CardModel card;
   final Function removeCard;
+  final bool movableMode;
 
-  const CustomCard({super.key, required this.card, required this.removeCard});
+  const CustomCard({super.key, required this.card, required this.movableMode, required this.removeCard});
 
   void updateCard(BuildContext context, CardModel card) async {
     final labelController = TextEditingController();
@@ -213,7 +214,7 @@ class CustomCard extends StatelessWidget {
             updateCard(context, card);
           },
           child: ExpansionTile(
-            leading: Badge(
+            leading: movableMode ? Icon(Icons.drag_handle_rounded) : Badge(
               padding: EdgeInsets.zero,
               label: CircleAvatar(
                 backgroundColor: card.color,

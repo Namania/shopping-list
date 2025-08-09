@@ -436,6 +436,17 @@ class _CardListState extends State<CardList> {
                 children: [
                   movableMode
                       ? ReorderableListView.builder(
+                        proxyDecorator: (
+                          Widget child,
+                          int index,
+                          Animation<double> animation,
+                        ) {
+                          return Material(
+                            elevation: 10,
+                            color: Colors.transparent,
+                            child: child,
+                          );
+                        },
                         onReorder: (int oldIndex, int newIndex) {
                           if (newIndex > oldIndex) newIndex -= 1;
                           context.read<CardBloc>().add(
@@ -455,9 +466,12 @@ class _CardListState extends State<CardList> {
                         itemCount: cards.length,
                         itemBuilder: (context, index) {
                           return CustomCard(
-                            key: ValueKey("${cards[index].label}${cards[index].code}"),
+                            key: ValueKey(
+                              "${cards[index].label}${cards[index].code}",
+                            ),
                             card: cards[index],
-                            removeCard: removeCard
+                            movableMode: movableMode,
+                            removeCard: removeCard,
                           );
                         },
                       )
@@ -467,7 +481,11 @@ class _CardListState extends State<CardList> {
                         shrinkWrap: true,
                         itemCount: cards.length,
                         itemBuilder: (context, index) {
-                          return CustomCard(card: cards[index], removeCard: removeCard);
+                          return CustomCard(
+                            card: cards[index],
+                            movableMode: movableMode,
+                            removeCard: removeCard,
+                          );
                         },
                       ),
                 ],
