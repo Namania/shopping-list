@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,6 +27,15 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   bool movableMode = false;
   List<CategoryModel> categories = [];
+  final ScrollController _scrollController = ScrollController();
+  Timer? _scrollTimer;
+
+  @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void handleDelete(BuildContext context) async {
     bool? res = await showDialog(
@@ -470,6 +480,25 @@ class _CategoryListState extends State<CategoryList> {
     });
   }
 
+  void _startScroll(double offset) {
+    _scrollTimer ??= Timer.periodic(Duration(milliseconds: 50), (_) {
+      final newOffset = _scrollController.offset + offset;
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(
+          newOffset.clamp(
+            _scrollController.position.minScrollExtent,
+            _scrollController.position.maxScrollExtent,
+          ),
+        );
+      }
+    });
+  }
+
+  void _stopScroll() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -551,46 +580,62 @@ class _CategoryListState extends State<CategoryList> {
             padding: const EdgeInsets.all(5),
             child:
                 movableMode
-                    ? ReorderableListView.builder(
-                      proxyDecorator: (
-                        Widget child,
-                        int index,
-                        Animation<double> animation,
-                      ) {
-                        return Material(
-                          elevation: 10,
-                          color: Colors.transparent,
-                          child: child,
-                        );
+                    ? Listener(
+                      onPointerMove: (event) {
+                        final y = event.position.dy;
+                        final screenHeight = MediaQuery.of(context).size.height;
+
+                        if (y < 100) {
+                          _startScroll(-10);
+                        } else if (y > screenHeight - 100) {
+                          _startScroll(10);
+                        } else {
+                          _stopScroll();
+                        }
                       },
-                      onReorder: (int oldIndex, int newIndex) {
-                        if (newIndex > oldIndex) newIndex -= 1;
-                        context.read<CategoryBloc>().add(
-                          RerangeCategoryEvent(
-                            oldIndex: oldIndex,
-                            newIndex: newIndex,
-                          ),
-                        );
-                        setState(() {
-                          final item = categories.removeAt(oldIndex);
-                          categories.insert(newIndex, item);
-                        });
-                      },
-                      padding: EdgeInsets.only(bottom: 60),
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        return CategoryCard(
-                          key: ValueKey(
-                            "${categories[index].label}${categories[index].color.toHexString()}",
-                          ),
-                          index: index,
-                          category: categories[index],
-                          movableMode: movableMode,
-                          removeCategory: removeCategory,
-                        );
-                      },
+                      onPointerUp: (_) => _stopScroll(),
+                      child: ReorderableListView.builder(
+                        scrollController: _scrollController,
+                        proxyDecorator: (
+                          Widget child,
+                          int index,
+                          Animation<double> animation,
+                        ) {
+                          return Material(
+                            elevation: 10,
+                            color: Colors.transparent,
+                            child: child,
+                          );
+                        },
+                        onReorder: (int oldIndex, int newIndex) {
+                          if (newIndex > oldIndex) newIndex -= 1;
+                          context.read<CategoryBloc>().add(
+                            RerangeCategoryEvent(
+                              oldIndex: oldIndex,
+                              newIndex: newIndex,
+                            ),
+                          );
+                          setState(() {
+                            final item = categories.removeAt(oldIndex);
+                            categories.insert(newIndex, item);
+                          });
+                        },
+                        padding: EdgeInsets.only(bottom: 60),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          return CategoryCard(
+                            key: ValueKey(
+                              "${categories[index].label}${categories[index].color.toHexString()}",
+                            ),
+                            index: index,
+                            category: categories[index],
+                            movableMode: movableMode,
+                            removeCategory: removeCategory,
+                          );
+                        },
+                      ),
                     )
                     : ListView.builder(
                       padding: EdgeInsets.only(bottom: 60),

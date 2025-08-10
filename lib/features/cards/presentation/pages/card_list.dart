@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -28,6 +29,15 @@ class CardList extends StatefulWidget {
 class _CardListState extends State<CardList> {
   bool movableMode = false;
   List<CardModel> cards = [];
+  final ScrollController _scrollController = ScrollController();
+  Timer? _scrollTimer;
+
+  @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Future<String> handleScaning(BuildContext context, ScanMode mode) async {
     String barcodeScanRes = '';
@@ -353,6 +363,25 @@ class _CardListState extends State<CardList> {
     });
   }
 
+  void _startScroll(double offset) {
+    _scrollTimer ??= Timer.periodic(Duration(milliseconds: 50), (_) {
+      final newOffset = _scrollController.offset + offset;
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(
+          newOffset.clamp(
+            _scrollController.position.minScrollExtent,
+            _scrollController.position.maxScrollExtent,
+          ),
+        );
+      }
+    });
+  }
+
+  void _stopScroll() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -429,13 +458,24 @@ class _CardListState extends State<CardList> {
           }
           return Padding(
             padding: const EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              physics: ScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  movableMode
-                      ? ReorderableListView.builder(
+            child:
+                movableMode
+                    ? Listener(
+                      onPointerMove: (event) {
+                        final y = event.position.dy;
+                        final screenHeight = MediaQuery.of(context).size.height;
+
+                        if (y < 100) {
+                          _startScroll(-10);
+                        } else if (y > screenHeight - 100) {
+                          _startScroll(10);
+                        } else {
+                          _stopScroll();
+                        }
+                      },
+                      onPointerUp: (_) => _stopScroll(),
+                      child: ReorderableListView.builder(
+                        scrollController: _scrollController,
                         proxyDecorator: (
                           Widget child,
                           int index,
@@ -467,30 +507,26 @@ class _CardListState extends State<CardList> {
                         itemBuilder: (context, index) {
                           return CustomCard(
                             key: ValueKey(
-                              "${cards[index].label}${cards[index].code}",
+                              "${cards[index].label}${cards[index].code}${cards[index].color.toHexString()}",
                             ),
                             card: cards[index],
                             movableMode: movableMode,
                             removeCard: removeCard,
                           );
                         },
-                      )
-                      : ListView.builder(
-                        padding: EdgeInsets.only(bottom: 60),
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: cards.length,
-                        itemBuilder: (context, index) {
-                          return CustomCard(
-                            card: cards[index],
-                            movableMode: movableMode,
-                            removeCard: removeCard,
-                          );
-                        },
                       ),
-                ],
-              ),
-            ),
+                    )
+                    : ListView.builder(
+                      padding: EdgeInsets.only(bottom: 60),
+                      itemCount: cards.length,
+                      itemBuilder: (context, index) {
+                        return CustomCard(
+                          card: cards[index],
+                          movableMode: movableMode,
+                          removeCard: removeCard,
+                        );
+                      },
+                    ),
           );
         },
       ),

@@ -126,7 +126,7 @@ class CategoryCard extends StatelessWidget {
             color: Color(data["color"]),
           );
           if (categories
-              .where((c) => c.label == updatedCategory.label)
+              .where((c) => c.label == updatedCategory.label && c.color == updatedCategory.color)
               .isEmpty) {
             context.read<CategoryBloc>().add(
               UpdateCategoryEvent(

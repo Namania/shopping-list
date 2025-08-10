@@ -6,18 +6,14 @@ import 'package:shopping_list/features/category/data/models/category_model.dart'
 
 abstract interface class CategoryRemoteDatasource {
   Future<List<CategoryModel>> getAll();
-  Future<List<CategoryModel>> addCategory({
-    required CategoryModel category,
-  });
+  Future<List<CategoryModel>> addCategory({required CategoryModel category});
   Future<List<CategoryModel>> removeCategory({required int index});
   Future<List<CategoryModel>> updateCategory({
     required CategoryModel category,
     required String label,
     required Color color,
   });
-  Future<List<CategoryModel>> categoryImport({
-    required String json
-  });
+  Future<List<CategoryModel>> categoryImport({required String json});
   Future<List<CategoryModel>> clear();
   Future<List<CategoryModel>> rerange({
     required int oldIndex,
@@ -53,10 +49,18 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
   }) async {
     try {
       List<CategoryModel> categories = await getAll();
-      List<CategoryModel> exist = categories.where((c) => c.label == category.label).toList();
+      List<CategoryModel> exist =
+          categories
+              .where(
+                (c) => c.label == category.label && c.color == category.color,
+              )
+              .toList();
       if (exist.isEmpty) {
         categories.add(category);
-        await prefs.setString("categories", jsonEncode(categories.map((c) => c.toJson()).toList()));
+        await prefs.setString(
+          "categories",
+          jsonEncode(categories.map((c) => c.toJson()).toList()),
+        );
       }
       return await getAll();
     } catch (e) {
@@ -100,11 +104,9 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
       return await getAll();
     }
   }
-  
+
   @override
-  Future<List<CategoryModel>> categoryImport({
-    required String json
-  }) async {
+  Future<List<CategoryModel>> categoryImport({required String json}) async {
     try {
       List<CategoryModel> categories = await getAll();
 
