@@ -92,7 +92,7 @@
         "options": {
             "import": "Importer",
             "share": "Partager",
-            "move": "Organiser mes cartes"
+            "move": "Réorganiser"
         },
         "alert": {
             "add": {
@@ -135,7 +135,7 @@
         "options": {
             "delete": "Supprimer",
             "import": "Importer",
-            "move": "Organiser mes catégories",
+            "move": "Réorganiser",
             "share": "Partager"
         },
         "alert": {
