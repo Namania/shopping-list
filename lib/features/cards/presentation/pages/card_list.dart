@@ -28,6 +28,7 @@ class CardList extends StatefulWidget {
 
 class _CardListState extends State<CardList> {
   bool movableMode = false;
+  bool _isDragging = false;
   List<CardModel> cards = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _scrollTimer;
@@ -365,13 +366,15 @@ class _CardListState extends State<CardList> {
 
   void _startScroll(double offset) {
     _scrollTimer ??= Timer.periodic(Duration(milliseconds: 50), (_) {
-      final newOffset = _scrollController.offset + offset;
       if (_scrollController.hasClients) {
-        _scrollController.jumpTo(
+        final newOffset = _scrollController.offset + offset;
+        _scrollController.animateTo(
           newOffset.clamp(
             _scrollController.position.minScrollExtent,
             _scrollController.position.maxScrollExtent,
           ),
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
         );
       }
     });
@@ -461,19 +464,25 @@ class _CardListState extends State<CardList> {
             child:
                 movableMode
                     ? Listener(
+                      behavior: HitTestBehavior.translucent,
                       onPointerMove: (event) {
-                        final y = event.position.dy;
-                        final screenHeight = MediaQuery.of(context).size.height;
+                        if (_isDragging) {
+                          final y = event.position.dy;
+                          final screenHeight = MediaQuery.of(context).size.height;
 
-                        if (y < 100) {
-                          _startScroll(-10);
-                        } else if (y > screenHeight - 100) {
-                          _startScroll(10);
-                        } else {
-                          _stopScroll();
+                          if (y < 100) {
+                            _startScroll(-10);
+                          } else if (y > screenHeight - 100) {
+                            _startScroll(10);
+                          } else {
+                            _stopScroll();
+                          }
                         }
                       },
-                      onPointerUp: (_) => _stopScroll(),
+                      onPointerUp: (_) {
+                        _stopScroll();
+                        _isDragging = false;
+                      },
                       child: ReorderableListView.builder(
                         scrollController: _scrollController,
                         proxyDecorator: (
@@ -481,6 +490,7 @@ class _CardListState extends State<CardList> {
                           int index,
                           Animation<double> animation,
                         ) {
+                          _isDragging = true;
                           return Material(
                             elevation: 10,
                             color: Colors.transparent,
@@ -488,6 +498,8 @@ class _CardListState extends State<CardList> {
                           );
                         },
                         onReorder: (int oldIndex, int newIndex) {
+                          _isDragging = false;
+                          _stopScroll();
                           if (newIndex > oldIndex) newIndex -= 1;
                           context.read<CardBloc>().add(
                             RerangeCardEvent(
@@ -501,7 +513,6 @@ class _CardListState extends State<CardList> {
                           });
                         },
                         padding: EdgeInsets.only(bottom: 60),
-                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: cards.length,
                         itemBuilder: (context, index) {

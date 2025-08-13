@@ -26,6 +26,7 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   bool movableMode = false;
+  bool _isDragging = false;
   List<CategoryModel> categories = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _scrollTimer;
@@ -482,13 +483,15 @@ class _CategoryListState extends State<CategoryList> {
 
   void _startScroll(double offset) {
     _scrollTimer ??= Timer.periodic(Duration(milliseconds: 50), (_) {
-      final newOffset = _scrollController.offset + offset;
       if (_scrollController.hasClients) {
-        _scrollController.jumpTo(
+        final newOffset = _scrollController.offset + offset;
+        _scrollController.animateTo(
           newOffset.clamp(
             _scrollController.position.minScrollExtent,
             _scrollController.position.maxScrollExtent,
           ),
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
         );
       }
     });
@@ -581,19 +584,26 @@ class _CategoryListState extends State<CategoryList> {
             child:
                 movableMode
                     ? Listener(
+                      behavior: HitTestBehavior.translucent,
                       onPointerMove: (event) {
-                        final y = event.position.dy;
-                        final screenHeight = MediaQuery.of(context).size.height;
+                        if (_isDragging) {
+                          final y = event.position.dy;
+                          final screenHeight =
+                              MediaQuery.of(context).size.height;
 
-                        if (y < 100) {
-                          _startScroll(-10);
-                        } else if (y > screenHeight - 100) {
-                          _startScroll(10);
-                        } else {
-                          _stopScroll();
+                          if (y < 100) {
+                            _startScroll(-10);
+                          } else if (y > screenHeight - 100) {
+                            _startScroll(10);
+                          } else {
+                            _stopScroll();
+                          }
                         }
                       },
-                      onPointerUp: (_) => _stopScroll(),
+                      onPointerUp: (_) {
+                        _stopScroll();
+                        _isDragging = false;
+                      },
                       child: ReorderableListView.builder(
                         scrollController: _scrollController,
                         proxyDecorator: (
@@ -601,6 +611,7 @@ class _CategoryListState extends State<CategoryList> {
                           int index,
                           Animation<double> animation,
                         ) {
+                          _isDragging = true;
                           return Material(
                             elevation: 10,
                             color: Colors.transparent,
@@ -608,6 +619,8 @@ class _CategoryListState extends State<CategoryList> {
                           );
                         },
                         onReorder: (int oldIndex, int newIndex) {
+                          _isDragging = false;
+                          _stopScroll();
                           if (newIndex > oldIndex) newIndex -= 1;
                           context.read<CategoryBloc>().add(
                             RerangeCategoryEvent(
@@ -621,7 +634,6 @@ class _CategoryListState extends State<CategoryList> {
                           });
                         },
                         padding: EdgeInsets.only(bottom: 60),
-                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
