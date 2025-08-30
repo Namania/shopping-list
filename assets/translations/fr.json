@@ -21,6 +21,7 @@
         "settings": {
             "title": "Paramètres",
             "item": {
+                "version": "Version de l'application",
                 "theme": "Thème",
                 "lang": "Langage",
                 "route": {

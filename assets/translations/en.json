@@ -21,6 +21,7 @@
         "settings": {
             "title": "Settings",
             "item": {
+                "version": "App version",
                 "theme": "Theme",
                 "lang": "Language",
                 "route": {
