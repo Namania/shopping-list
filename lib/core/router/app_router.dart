@@ -8,6 +8,8 @@ import 'package:shopping_list/features/article/presentation/pages/article_list.d
 import 'package:shopping_list/features/cards/presentation/pages/card_list.dart';
 import 'package:shopping_list/features/category/presentation/pages/category_list.dart';
 
+import '../shared/utils.dart';
+
 pageBuilder({
   required BuildContext context,
   required GoRouterState state,
@@ -52,7 +54,7 @@ final GoRouter appRouter = GoRouter(
       path: '/deeplink',
       builder: (context, state) {
         final uri = state.uri;
-        final jsonData = uri.queryParameters['data'];
+        final jsonData = Utils.decompressJson(uri.queryParameters['data'] ?? '');
         return DeepLinkHandler(jsonData: jsonData);
       },
     ),

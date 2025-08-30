@@ -17,6 +17,8 @@ import 'package:shopping_list/features/category/data/models/category_model.dart'
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 import 'package:shopping_list/features/category/presentation/widgets/category_card.dart';
 
+import '../../../../core/shared/utils.dart';
+
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key});
 
@@ -231,7 +233,7 @@ class _CategoryListState extends State<CategoryList> {
                           };
 
                           final encodedData = Uri.encodeComponent(
-                            jsonEncode(rawJson),
+                            Utils.compressJson(jsonEncode(rawJson)),
                           );
                           final deepLink =
                               'shopping-list://launch?data=$encodedData';
@@ -367,7 +369,7 @@ class _CategoryListState extends State<CategoryList> {
                             Uri? uri = Uri.tryParse(res);
                             if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
-                                uri.queryParameters['data'] ?? '',
+                                Utils.decompressJson(uri.queryParameters['data'] ?? ''),
                               );
                               context.read<CategoryBloc>().add(
                                 CategoryImportEvent(

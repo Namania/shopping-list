@@ -19,6 +19,8 @@ import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart'
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
 import 'package:shopping_list/features/cards/presentation/widgets/custom_card.dart';
 
+import '../../../../core/shared/utils.dart';
+
 class CardList extends StatefulWidget {
   const CardList({super.key});
 
@@ -107,7 +109,7 @@ class _CardListState extends State<CardList> {
                           };
 
                           final encodedData = Uri.encodeComponent(
-                            jsonEncode(rawJson),
+                            Utils.compressJson(jsonEncode(rawJson)),
                           );
                           final deepLink =
                               'shopping-list://launch?data=$encodedData';
@@ -246,7 +248,7 @@ class _CardListState extends State<CardList> {
                             Uri? uri = Uri.tryParse(res);
                             if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
-                                uri.queryParameters['data'] ?? '',
+                                Utils.decompressJson(uri.queryParameters['data'] ?? ''),
                               );
 
                               context.read<CardBloc>().add(
