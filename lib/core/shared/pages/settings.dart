@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
@@ -34,14 +33,55 @@ class _SettingsState extends State<Settings> {
     isCategoryFirst = context.read<SettingDefaultCategoryPosition>().getValue();
   }
 
+  String getThemeName(String theme, String lang) {
+    final Map<String, String> system = {"en": "System", "fr": "Système"};
+
+    final Map<String, String> light = {"en": "Light", "fr": "Clair"};
+
+    final Map<String, String> dark = {"en": "Dark", "fr": "Sombre"};
+
+    switch (theme) {
+      case 'system':
+        if (system.containsKey(lang)) {
+          return system[lang]!;
+        }
+        return theme;
+      case 'light':
+        if (light.containsKey(lang)) {
+          return light[lang]!;
+        }
+        return theme;
+      case 'dark':
+        if (dark.containsKey(lang)) {
+          return dark[lang]!;
+        }
+        return theme;
+      default:
+        return theme;
+    }
+  }
+
+  String getLocalName(String code) {
+    switch (code) {
+      case 'en':
+        return 'English';
+      case 'fr':
+        return 'Français';
+      default:
+        return code;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<MenuEntry> themeMenuEntries = UnmodifiableListView<MenuEntry>(
       ThemeMode.values.map<MenuEntry>(
         (ThemeMode mode) => MenuEntry(
           value: mode.name,
-          labelWidget: Text(mode.name),
-          label: mode.name,
+          labelWidget: Text(
+            getThemeName(mode.name, context.locale.languageCode),
+          ),
+          label: getThemeName(mode.name, context.locale.languageCode),
         ),
       ),
     );
@@ -51,8 +91,8 @@ class _SettingsState extends State<Settings> {
       context.supportedLocales.map<MenuEntry>(
         (Locale lang) => MenuEntry(
           value: lang.languageCode,
-          labelWidget: Text(lang.languageCode),
-          label: lang.languageCode,
+          labelWidget: Text(getLocalName(lang.languageCode)),
+          label: getLocalName(lang.languageCode),
         ),
       ),
     );
@@ -120,127 +160,58 @@ class _SettingsState extends State<Settings> {
                     trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
                 ),
-                SettingsItem(
+                SettingsItem.toggle(
+                  context: context,
                   icon: Icons.swap_vert_rounded,
                   title: context.tr('core.settings.item.category'),
-                  trailing: SizedBox(
-                    width: 70,
-                    child: FlutterSwitch(
-                      value: isCategoryFirst,
-                      width: 70,
-                      height: 36,
-                      toggleSize: 30,
-                      borderRadius: 20,
-                      padding: 3,
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      inactiveColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      inactiveSwitchBorder: Border.all(
-                        color:
-                            Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                        width: 2,
-                      ),
-                      activeSwitchBorder: Border.all(width: 2),
-                      inactiveIcon: Icon(Icons.close_rounded),
-                      activeIcon: Icon(Icons.check_rounded),
-                      duration: const Duration(milliseconds: 300),
-                      onToggle: (val) {
-                        context.read<SettingDefaultCategoryPosition>().selectValue(
-                          val ? AvailableState.first : AvailableState.last,
-                        );
-                        setState(() {
-                          isCategoryFirst = val;
-                        });
-                      },
-                    ),
-                  ),
+                  value: isCategoryFirst,
+                  onToggle: (value) {
+                    context.read<SettingDefaultCategoryPosition>().selectValue(
+                      value ? AvailableState.first : AvailableState.last,
+                    );
+                    setState(() {
+                      isCategoryFirst = value;
+                    });
+                  },
                 ),
               ],
             ),
             SettingsCategory(
               title: context.tr('core.settings.separator.startup'),
               children: [
-                SettingsItem(
+                SettingsItem.toggle(
+                  context: context,
                   icon: Icons.signpost_rounded,
                   title: context.tr('core.settings.item.route.article'),
-                  trailing: SizedBox(
-                    width: 70,
-                    child: FlutterSwitch(
-                      value: isArticleRoute,
-                      width: 70,
-                      height: 36,
-                      toggleSize: 30,
-                      borderRadius: 20,
-                      padding: 3,
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      inactiveColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      inactiveSwitchBorder: Border.all(
-                        color:
-                            Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                        width: 2,
-                      ),
-                      activeSwitchBorder: Border.all(width: 2),
-                      inactiveIcon: Icon(Icons.close_rounded),
-                      activeIcon: Icon(Icons.check_rounded),
-                      duration: const Duration(milliseconds: 300),
-                      onToggle: (val) {
-                        context.read<SettingRouterCubit>().selectRoute(
-                          val ? AvailableRoute.article : AvailableRoute.root,
-                        );
-                        setState(() {
-                          if (val) {
-                            isCardRoute = false;
-                          }
-                          isArticleRoute = val;
-                        });
-                      },
-                    ),
-                  ),
+                  value: isArticleRoute,
+                  onToggle: (value) {
+                    context.read<SettingRouterCubit>().selectRoute(
+                      value ? AvailableRoute.article : AvailableRoute.root,
+                    );
+                    setState(() {
+                      if (value) {
+                        isCardRoute = false;
+                      }
+                      isArticleRoute = value;
+                    });
+                  },
                 ),
-                SettingsItem(
+                SettingsItem.toggle(
+                  context: context,
                   icon: Icons.signpost_rounded,
                   title: context.tr('core.settings.item.route.category'),
-                  trailing: SizedBox(
-                    width: 70,
-                    child: FlutterSwitch(
-                      value: isCardRoute,
-                      width: 70,
-                      height: 36,
-                      toggleSize: 30,
-                      borderRadius: 20,
-                      padding: 3,
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      inactiveColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      inactiveSwitchBorder: Border.all(
-                        color:
-                            Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
-                        width: 2,
-                      ),
-                      activeSwitchBorder: Border.all(width: 2),
-                      inactiveIcon: Icon(Icons.close_rounded),
-                      activeIcon: Icon(Icons.check_rounded),
-                      duration: const Duration(milliseconds: 300),
-                      onToggle: (val) {
-                        context.read<SettingRouterCubit>().selectRoute(
-                          val ? AvailableRoute.card : AvailableRoute.root,
-                        );
-                        setState(() {
-                          if (val) {
-                            isArticleRoute = false;
-                          }
-                          isCardRoute = val;
-                        });
-                      },
-                    ),
-                  ),
+                  value: isCardRoute,
+                  onToggle: (value) {
+                    context.read<SettingRouterCubit>().selectRoute(
+                      value ? AvailableRoute.card : AvailableRoute.root,
+                    );
+                    setState(() {
+                      if (value) {
+                        isArticleRoute = false;
+                      }
+                      isCardRoute = value;
+                    });
+                  },
                 ),
               ],
             ),
