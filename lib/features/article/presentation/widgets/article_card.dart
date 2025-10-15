@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
+import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
@@ -142,30 +143,7 @@ class ArticleCard extends StatelessWidget {
               {deleteArticle(context)},
             },
         confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder:
-                (BuildContext context) => AlertDialog(
-                  title: Text(context.tr('article.alert.confirm.title')),
-                  content: Text(
-                    context.tr('article.alert.confirm.description.one'),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(
-                        context.tr('article.alert.confirm.action.no'),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text(
-                        context.tr('article.alert.confirm.action.yes'),
-                      ),
-                    ),
-                  ],
-                ),
-          );
+          return await DeleteAlertDialog.dialog(context, 'article', description: false);
         },
         background: Container(
           color: Color(0xff93000a),

@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
@@ -192,30 +193,7 @@ class CategoryCard extends StatelessWidget {
               {deleteCategory(context)},
             },
         confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder:
-                (BuildContext context) => AlertDialog(
-                  title: Text(context.tr('category.alert.confirm.title')),
-                  content: Text(
-                    context.tr('category.alert.confirm.description.one'),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(
-                        context.tr('category.alert.confirm.action.no'),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text(
-                        context.tr('category.alert.confirm.action.yes'),
-                      ),
-                    ),
-                  ],
-                ),
-          );
+          return await DeleteAlertDialog.dialog(context, 'category', description: false);
         },
         background: Container(
           color: Color(0xff93000a),

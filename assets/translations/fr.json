@@ -1,5 +1,6 @@
 {
     "core": {
+        "cancel_scan": "Annuler",
         "error": "Une erreur est survenue !",
         "deep_link_error": "Une erreur s'est produite..\nVeuillez nous excuser pour le dérangement.",
         "deep_link_button": "Retourner à l'accueil",
@@ -109,7 +110,7 @@
             },
             "confirm": {
                 "title": "Confirmez",
-                "description": "Voulez-vous vraiment le supprimer ?",
+                "description": "Voulez-vous vraiment la supprimer ?",
                 "action": {
                     "yes": "Oui",
                     "no": "Non"
@@ -127,7 +128,6 @@
                 }
             }
         },
-        "cancel": "Annuler",
         "empty": "Aucune carte enregistré !",
         "add": "Ajouter une carte"
     },

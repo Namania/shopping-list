@@ -1,23 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
+import 'package:shopping_list/core/utils/handle_menu_button.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 import 'package:shopping_list/features/category/presentation/widgets/category_card.dart';
-
-import '../../../../core/shared/utils.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key});
@@ -41,30 +34,7 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   void handleDelete(BuildContext context) async {
-    bool? res = await showDialog(
-      context: context,
-      builder:
-          (BuildContext context) => AlertDialog(
-            title: Text(context.tr('category.alert.confirm.title')),
-            content: Text(context.tr('category.alert.confirm.description.all')),
-            actions: <Widget>[
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(null),
-                  child: Text(context.tr('category.alert.confirm.action.no')),
-                ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(context.tr('category.alert.confirm.action.yes')),
-                ),
-              ),
-            ],
-          ),
-    );
+    bool? res = await DeleteAlertDialog.dialog(context, 'category', description: true);
     if (res != null && context.mounted) {
       context.read<CategoryBloc>().add(ClearCategoryEvent());
     }
@@ -165,318 +135,26 @@ class _CategoryListState extends State<CategoryList> {
     }
   }
 
-  Future<String> handleScaning(BuildContext context) async {
-    String barcodeScanRes = '';
-    try {
-      String res = await FlutterBarcodeScanner.scanBarcode(
-        "#ffffff",
-        context.tr('card.cancel'),
-        false,
-        ScanMode.QR,
-      );
-      if (res != "-1") {
-        barcodeScanRes = res;
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Erreur lors du scan");
-      }
-    }
-    return barcodeScanRes;
-  }
-
   void handleClick(BuildContext context, String value) async {
-    switch (value) {
-      case 'share':
-        showModalBottomSheet<void>(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
-                    child: Container(
-                      width: 75,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (BuildContext context, CategoryState state) {
-                      switch (state) {
-                        case CategoryFailure _:
-                          if (kDebugMode) print(state.message);
-                          return Text(
-                            context.tr('core.error'),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          );
-                        case CategorySuccess _:
-                          final rawJson = {
-                            "action": "importCategories",
-                            "json":
-                                state.categories.map((a) => a.toMap()).toList(),
-                          };
-
-                          final encodedData = Uri.encodeComponent(
-                            Utils.compressJson(jsonEncode(rawJson)),
-                          );
-                          final deepLink =
-                              'shopping-list://launch?data=$encodedData';
-
-                          return SizedBox(
-                            height: 250,
-                            width: 250,
-                            child: PrettyQrView.data(
-                              data: deepLink,
-                              decoration: const PrettyQrDecoration(
-                                shape: PrettyQrSmoothSymbol(
-                                  color: Colors.black,
-                                  roundFactor: 0.0,
-                                ),
-                                quietZone: PrettyQrQuietZone.pixels(20),
-                                background: Colors.white,
-                              ),
-                            ),
-                          );
-                        default:
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40),
-                            child: CircularProgressIndicator(),
-                          );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (context, state) {
-                      switch (state) {
-                        case CategorySuccess _:
-                          return TextButton.icon(
-                            onPressed: () async {
-                              if (state.categories.isNotEmpty) {
-                                String data = jsonEncode(
-                                  state.categories
-                                      .map((a) => a.toMap())
-                                      .toList(),
-                                );
-                                Directory temp = await getTemporaryDirectory();
-                                String path = "${temp.path}/categories.json";
-                                File(path).writeAsStringSync(data);
-
-                                if (context.mounted) {
-                                  await SharePlus.instance.share(
-                                    ShareParams(
-                                      files: [XFile(path)],
-                                      text: context.tr(
-                                        'core.settings.shareCategoryMessage',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      context.tr('category.empty'),
-                                      style: TextTheme.of(context).labelLarge,
-                                    ),
-                                    backgroundColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                    duration: Durations.extralong4,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.insert_drive_file_rounded),
-                            label: Text(context.tr('modal.send_file')),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              textStyle: Theme.of(context).textTheme.labelLarge,
-                            ),
-                          );
-                        default:
-                          return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    context.tr('modal.export'),
-                    style: TextTheme.of(context).bodySmall!.apply(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          },
+    HandleMenuButton.click(
+      context: context,
+      action: value,
+      data: context.read<CategoryBloc>().getAllCategory(),
+      deepLinkAction: "importCategories",
+      import: (data) {
+        context.read<CategoryBloc>().add(
+          CategoryImportEvent(json: data),
         );
-        break;
-      case 'import':
-        showModalBottomSheet<void>(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
-                    child: Container(
-                      width: 75,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            String res = await handleScaning(context);
-                            Uri? uri = Uri.tryParse(res);
-                            if (res != "" && uri != null && context.mounted) {
-                              final decoded = json.decode(
-                                Utils.decompressJson(
-                                  uri.queryParameters['data'] ?? '',
-                                ),
-                              );
-                              context.read<CategoryBloc>().add(
-                                CategoryImportEvent(
-                                  json: jsonEncode(decoded['json']),
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.qr_code_scanner_rounded,
-                                  size: 36,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  context.tr('modal.scan'),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles(
-                                  type: FileType.custom,
-                                  allowMultiple: false,
-                                  allowedExtensions: ["json"],
-                                );
-                            if (context.mounted && result != null) {
-                              context.read<CategoryBloc>().add(
-                                CategoryImportEvent(
-                                  json:
-                                      await result.files.first.xFile
-                                          .readAsString(),
-                                ),
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.insert_drive_file_rounded,
-                                  size: 36,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  context.tr('modal.pick_file'),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-        break;
-      case 'delete':
+      },
+      onDelete: () {
         handleDelete(context);
-        break;
-      case 'move':
+      },
+      onMove: () {
         setState(() {
           movableMode = true;
         });
-        break;
-    }
+      }
+    );
   }
 
   void removeCategory(CategoryModel category) {

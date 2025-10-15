@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
@@ -146,24 +147,7 @@ class CustomCard extends StatelessWidget {
               removeCard(card);
             },
         confirmDismiss: (direction) async {
-          return await showDialog(
-            context: context,
-            builder:
-                (BuildContext context) => AlertDialog(
-                  title: Text(context.tr('card.alert.confirm.title')),
-                  content: Text(context.tr('card.alert.confirm.description')),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: Text(context.tr('card.alert.confirm.action.no')),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text(context.tr('card.alert.confirm.action.yes')),
-                    ),
-                  ],
-                ),
-          );
+          return await DeleteAlertDialog.dialog(context, 'card');
         },
         background: Container(
           color: Color(0xff93000a),

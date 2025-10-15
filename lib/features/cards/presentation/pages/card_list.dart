@@ -1,25 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:shopping_list/core/utils/handle_menu_button.dart';
+import 'package:shopping_list/core/utils/handle_scaning.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
 import 'package:shopping_list/features/cards/presentation/widgets/custom_card.dart';
-
-import '../../../../core/shared/utils.dart';
 
 class CardList extends StatefulWidget {
   const CardList({super.key});
@@ -42,318 +36,25 @@ class _CardListState extends State<CardList> {
     super.dispose();
   }
 
-  Future<String> handleScaning(BuildContext context, ScanMode mode) async {
-    String barcodeScanRes = '';
-    try {
-      String res = await FlutterBarcodeScanner.scanBarcode(
-        "#ffffff",
-        context.tr('card.cancel'),
-        false,
-        mode,
-      );
-      if (res != "-1") {
-        barcodeScanRes = res;
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Erreur lors du scan");
-      }
-    }
-    return barcodeScanRes;
-  }
-
   void handleClick(BuildContext context, String value) async {
-    switch (value) {
-      case 'share':
-        showModalBottomSheet<void>(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    HandleMenuButton.click(
+      context: context,
+      action: value,
+      data: context.read<CardBloc>().getAllCard(),
+      deepLinkAction: "importCards",
+      import: (data) {
+        context.read<CardBloc>().add(
+          CardImportEvent(
+            json: data,
           ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
-                    child: Container(
-                      width: 75,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  BlocBuilder<CardBloc, CardState>(
-                    builder: (BuildContext context, CardState state) {
-                      switch (state) {
-                        case CardFailure _:
-                          if (kDebugMode) print(state.message);
-                          return Text(
-                            context.tr('core.error'),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          );
-                        case CardSuccess _:
-                          final rawJson = {
-                            "action": "importCards",
-                            "json": state.cards.map((a) => a.toMap()).toList(),
-                          };
-
-                          final encodedData = Uri.encodeComponent(
-                            Utils.compressJson(jsonEncode(rawJson)),
-                          );
-                          final deepLink =
-                              'shopping-list://launch?data=$encodedData';
-
-                          return Column(
-                            children: [
-                              SizedBox(
-                                height: 250,
-                                width: 250,
-                                child: PrettyQrView.data(
-                                  data: deepLink,
-                                  decoration: const PrettyQrDecoration(
-                                    shape: PrettyQrSmoothSymbol(
-                                      color: Colors.black,
-                                      roundFactor: 0.0,
-                                    ),
-                                    quietZone: PrettyQrQuietZone.pixels(20),
-                                    background: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextButton.icon(
-                                onPressed: () async {
-                                  if (state.cards.isNotEmpty) {
-                                    String data = jsonEncode(
-                                      state.cards
-                                          .map((a) => a.toMap())
-                                          .toList(),
-                                    );
-                                    Directory temp =
-                                        await getTemporaryDirectory();
-                                    String path = "${temp.path}/cards.json";
-                                    File(path).writeAsStringSync(data);
-
-                                    if (context.mounted) {
-                                      await SharePlus.instance.share(
-                                        ShareParams(
-                                          files: [XFile(path)],
-                                          text: context.tr(
-                                            'core.settings.shareCardMessage',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          context.tr('card.empty'),
-                                          style:
-                                              TextTheme.of(context).labelLarge,
-                                        ),
-                                        backgroundColor:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.surfaceContainer,
-                                        duration: Durations.extralong4,
-                                      ),
-                                    );
-                                  }
-                                },
-                                icon: const Icon(
-                                  Icons.insert_drive_file_rounded,
-                                ),
-                                label: Text(context.tr('modal.send_file')),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  textStyle:
-                                      Theme.of(context).textTheme.labelLarge,
-                                ),
-                              ),
-                            ],
-                          );
-                        default:
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40),
-                            child: CircularProgressIndicator(),
-                          );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    context.tr('modal.export'),
-                    style: TextTheme.of(context).bodySmall!.apply(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          },
         );
-        break;
-      case 'import':
-        showModalBottomSheet<void>(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          builder: (BuildContext context) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 30),
-                    child: Container(
-                      width: 75,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            String res = await handleScaning(
-                              context,
-                              ScanMode.QR,
-                            );
-                            Uri? uri = Uri.tryParse(res);
-                            if (res != "" && uri != null && context.mounted) {
-                              final decoded = json.decode(
-                                Utils.decompressJson(
-                                  uri.queryParameters['data'] ?? '',
-                                ),
-                              );
-
-                              context.read<CardBloc>().add(
-                                CardImportEvent(
-                                  json: jsonEncode(decoded['json']),
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.qr_code_scanner_rounded,
-                                  size: 36,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  context.tr('modal.scan'),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles(
-                                  type: FileType.custom,
-                                  allowMultiple: false,
-                                  allowedExtensions: ["json"],
-                                );
-                            if (context.mounted && result != null) {
-                              context.read<CardBloc>().add(
-                                CardImportEvent(
-                                  json:
-                                      await result.files.first.xFile
-                                          .readAsString(),
-                                ),
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.insert_drive_file_rounded,
-                                  size: 36,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  context.tr('modal.pick_file'),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-        break;
-      case 'move':
+      },
+      onMove: () {
         setState(() {
           movableMode = true;
         });
-        break;
-    }
+      },
+    );
   }
 
   String capitalize(String string) {
@@ -587,7 +288,7 @@ class _CardListState extends State<CardList> {
                                 border: OutlineInputBorder(),
                                 suffixIcon: IconButton(
                                   onPressed: () async {
-                                    String res = await handleScaning(
+                                    String res = await HandleScaning.scan(
                                       context,
                                       ScanMode.BARCODE,
                                     );
