@@ -248,7 +248,9 @@ class _CardListState extends State<CardList> {
                             Uri? uri = Uri.tryParse(res);
                             if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
-                                Utils.decompressJson(uri.queryParameters['data'] ?? ''),
+                                Utils.decompressJson(
+                                  uri.queryParameters['data'] ?? '',
+                                ),
                               );
 
                               context.read<CardBloc>().add(
@@ -461,86 +463,84 @@ class _CardListState extends State<CardList> {
           if (cards.isEmpty) {
             return Center(child: (Text(context.tr('card.empty'))));
           }
-          return Padding(
-            padding: const EdgeInsets.all(5),
-            child:
-                movableMode
-                    ? Listener(
-                      behavior: HitTestBehavior.translucent,
-                      onPointerMove: (event) {
-                        if (_isDragging) {
-                          final y = event.position.dy;
-                          final screenHeight = MediaQuery.of(context).size.height;
+          return movableMode
+              ? Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerMove: (event) {
+                  if (_isDragging) {
+                    final y = event.position.dy;
+                    final screenHeight = MediaQuery.of(context).size.height;
 
-                          if (y < 100) {
-                            _startScroll(-10);
-                          } else if (y > screenHeight - 100) {
-                            _startScroll(10);
-                          } else {
-                            _stopScroll();
-                          }
-                        }
-                      },
-                      onPointerUp: (_) {
-                        _stopScroll();
-                        _isDragging = false;
-                      },
-                      child: ReorderableListView.builder(
-                        scrollController: _scrollController,
-                        proxyDecorator: (
-                          Widget child,
-                          int index,
-                          Animation<double> animation,
-                        ) {
-                          _isDragging = true;
-                          return Material(
-                            elevation: 10,
-                            color: Colors.transparent,
-                            child: child,
-                          );
-                        },
-                        onReorder: (int oldIndex, int newIndex) {
-                          _isDragging = false;
-                          _stopScroll();
-                          if (newIndex > oldIndex) newIndex -= 1;
-                          context.read<CardBloc>().add(
-                            RerangeCardEvent(
-                              oldIndex: oldIndex,
-                              newIndex: newIndex,
-                            ),
-                          );
-                          setState(() {
-                            final item = cards.removeAt(oldIndex);
-                            cards.insert(newIndex, item);
-                          });
-                        },
-                        padding: EdgeInsets.only(bottom: 60),
-                        shrinkWrap: true,
-                        itemCount: cards.length,
-                        itemBuilder: (context, index) {
-                          return CustomCard(
-                            key: ValueKey(
-                              "${cards[index].label}${cards[index].code}${cards[index].color.toHexString()}",
-                            ),
-                            card: cards[index],
-                            movableMode: movableMode,
-                            removeCard: removeCard,
-                          );
-                        },
+                    if (y < 100) {
+                      _startScroll(-10);
+                    } else if (y > screenHeight - 100) {
+                      _startScroll(10);
+                    } else {
+                      _stopScroll();
+                    }
+                  }
+                },
+                onPointerUp: (_) {
+                  _stopScroll();
+                  _isDragging = false;
+                },
+                child: ReorderableListView.builder(
+                  scrollController: _scrollController,
+                  proxyDecorator: (
+                    Widget child,
+                    int index,
+                    Animation<double> animation,
+                  ) {
+                    _isDragging = true;
+                    return Material(
+                      elevation: 10,
+                      color: Colors.transparent,
+                      child: child,
+                    );
+                  },
+                  onReorder: (int oldIndex, int newIndex) {
+                    _isDragging = false;
+                    _stopScroll();
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    context.read<CardBloc>().add(
+                      RerangeCardEvent(oldIndex: oldIndex, newIndex: newIndex),
+                    );
+                    setState(() {
+                      final item = cards.removeAt(oldIndex);
+                      cards.insert(newIndex, item);
+                    });
+                  },
+                  padding: EdgeInsets.only(
+                    top: 5,
+                    left: 5,
+                    right: 5,
+                    bottom: 65,
+                  ),
+                  shrinkWrap: true,
+                  itemCount: cards.length,
+                  itemBuilder: (context, index) {
+                    return CustomCard(
+                      key: ValueKey(
+                        "${cards[index].label}${cards[index].code}${cards[index].color.toHexString()}",
                       ),
-                    )
-                    : ListView.builder(
-                      padding: EdgeInsets.only(bottom: 60),
-                      itemCount: cards.length,
-                      itemBuilder: (context, index) {
-                        return CustomCard(
-                          card: cards[index],
-                          movableMode: movableMode,
-                          removeCard: removeCard,
-                        );
-                      },
-                    ),
-          );
+                      card: cards[index],
+                      movableMode: movableMode,
+                      removeCard: removeCard,
+                    );
+                  },
+                ),
+              )
+              : ListView.builder(
+                padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
+                itemCount: cards.length,
+                itemBuilder: (context, index) {
+                  return CustomCard(
+                    card: cards[index],
+                    movableMode: movableMode,
+                    removeCard: removeCard,
+                  );
+                },
+              );
         },
       ),
       floatingActionButton: Padding(

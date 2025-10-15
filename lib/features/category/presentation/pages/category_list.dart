@@ -369,7 +369,9 @@ class _CategoryListState extends State<CategoryList> {
                             Uri? uri = Uri.tryParse(res);
                             if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
-                                Utils.decompressJson(uri.queryParameters['data'] ?? ''),
+                                Utils.decompressJson(
+                                  uri.queryParameters['data'] ?? '',
+                                ),
                               );
                               context.read<CategoryBloc>().add(
                                 CategoryImportEvent(
@@ -581,89 +583,89 @@ class _CategoryListState extends State<CategoryList> {
           if (categories.isEmpty) {
             return Center(child: (Text(context.tr('category.empty'))));
           }
-          return Padding(
-            padding: const EdgeInsets.all(5),
-            child:
-                movableMode
-                    ? Listener(
-                      behavior: HitTestBehavior.translucent,
-                      onPointerMove: (event) {
-                        if (_isDragging) {
-                          final y = event.position.dy;
-                          final screenHeight =
-                              MediaQuery.of(context).size.height;
+          return movableMode
+              ? Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerMove: (event) {
+                  if (_isDragging) {
+                    final y = event.position.dy;
+                    final screenHeight = MediaQuery.of(context).size.height;
 
-                          if (y < 100) {
-                            _startScroll(-10);
-                          } else if (y > screenHeight - 100) {
-                            _startScroll(10);
-                          } else {
-                            _stopScroll();
-                          }
-                        }
-                      },
-                      onPointerUp: (_) {
-                        _stopScroll();
-                        _isDragging = false;
-                      },
-                      child: ReorderableListView.builder(
-                        scrollController: _scrollController,
-                        proxyDecorator: (
-                          Widget child,
-                          int index,
-                          Animation<double> animation,
-                        ) {
-                          _isDragging = true;
-                          return Material(
-                            elevation: 10,
-                            color: Colors.transparent,
-                            child: child,
-                          );
-                        },
-                        onReorder: (int oldIndex, int newIndex) {
-                          _isDragging = false;
-                          _stopScroll();
-                          if (newIndex > oldIndex) newIndex -= 1;
-                          context.read<CategoryBloc>().add(
-                            RerangeCategoryEvent(
-                              oldIndex: oldIndex,
-                              newIndex: newIndex,
-                            ),
-                          );
-                          setState(() {
-                            final item = categories.removeAt(oldIndex);
-                            categories.insert(newIndex, item);
-                          });
-                        },
-                        padding: EdgeInsets.only(bottom: 60),
-                        shrinkWrap: true,
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {
-                          return CategoryCard(
-                            key: ValueKey(
-                              "${categories[index].label}${categories[index].color.toHexString()}",
-                            ),
-                            index: index,
-                            category: categories[index],
-                            movableMode: movableMode,
-                            removeCategory: removeCategory,
-                          );
-                        },
+                    if (y < 100) {
+                      _startScroll(-10);
+                    } else if (y > screenHeight - 100) {
+                      _startScroll(10);
+                    } else {
+                      _stopScroll();
+                    }
+                  }
+                },
+                onPointerUp: (_) {
+                  _stopScroll();
+                  _isDragging = false;
+                },
+                child: ReorderableListView.builder(
+                  scrollController: _scrollController,
+                  proxyDecorator: (
+                    Widget child,
+                    int index,
+                    Animation<double> animation,
+                  ) {
+                    _isDragging = true;
+                    return Material(
+                      elevation: 10,
+                      color: Colors.transparent,
+                      child: child,
+                    );
+                  },
+                  onReorder: (int oldIndex, int newIndex) {
+                    _isDragging = false;
+                    _stopScroll();
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    context.read<CategoryBloc>().add(
+                      RerangeCategoryEvent(
+                        oldIndex: oldIndex,
+                        newIndex: newIndex,
                       ),
-                    )
-                    : ListView.builder(
-                      padding: EdgeInsets.only(bottom: 60),
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        return CategoryCard(
-                          category: categories[index],
-                          index: index,
-                          movableMode: movableMode,
-                          removeCategory: removeCategory,
-                        );
-                      },
-                    ),
-          );
+                    );
+                    setState(() {
+                      final item = categories.removeAt(oldIndex);
+                      categories.insert(newIndex, item);
+                    });
+                  },
+                  padding: EdgeInsets.only(
+                    top: 5,
+                    left: 5,
+                    right: 5,
+                    bottom: 65,
+                  ),
+                  shrinkWrap: true,
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return CategoryCard(
+                      key: ValueKey(
+                        "${categories[index].label}${categories[index].color.toHexString()}",
+                      ),
+                      index: index,
+                      category: categories[index],
+                      movableMode: movableMode,
+                      removeCategory: removeCategory,
+                    );
+                  },
+                ),
+              )
+              : ListView.builder(
+                padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  return CategoryCard(
+                    category: categories[index],
+                    index: index,
+                    movableMode: movableMode,
+                    removeCategory: removeCategory,
+                  );
+                },
+              );
         },
       ),
       floatingActionButton: Padding(

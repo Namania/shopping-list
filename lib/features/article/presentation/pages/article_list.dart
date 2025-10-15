@@ -576,19 +576,16 @@ class _ArticleListState extends State<ArticleList> {
           if (articles.isEmpty) {
             return Center(child: (Text(context.tr('article.empty'))));
           }
-          return Padding(
-            padding: const EdgeInsets.all(5),
-            child: ListView.builder(
-              padding: EdgeInsets.only(bottom: 60),
-              itemCount: articles.length,
-              itemBuilder: (context, index) {
-                return index == 0 ||
-                        articles[index - 1].category.label !=
-                            articles[index].category.label
-                    ? ArticleCategory(article: articles[index])
-                    : ArticleCard(article: articles[index]);
-              },
-            ),
+          return ListView.builder(
+            padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
+            itemCount: articles.length,
+            itemBuilder: (context, index) {
+              return index == 0 ||
+                      articles[index - 1].category.label !=
+                          articles[index].category.label
+                  ? ArticleCategory(article: articles[index])
+                  : ArticleCard(article: articles[index]);
+            },
           );
         },
       ),
