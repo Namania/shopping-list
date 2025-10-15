@@ -26,10 +26,11 @@
                 "theme": "Theme",
                 "lang": "Language",
                 "route": {
-                    "article": "Navigate to articles upon app launch.",
-                    "category": "Navigate to cards upon app launch."
+                    "article": "Navigate to articles upon app launch ?",
+                    "category": "Navigate to cards upon app launch ?"
                 },
-                "category": "Show uncategorized items at the top of the list."
+                "category": "Show uncategorized items at the top of the list ?",
+                "calculator": "Enable calculator ?"
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",

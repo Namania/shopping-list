@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/core/router/app_router.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/theme/app_theme.dart';
@@ -26,6 +27,7 @@ void main() async {
         BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => SettingRouterCubit()),
         BlocProvider(create: (context) => SettingDefaultCategoryPosition()),
+        BlocProvider(create: (context) => SettingEnableCalculator()),
         BlocProvider(create: (context) => getIt<ArticleBloc>()),
         BlocProvider(create: (context) => getIt<CardBloc>()),
         BlocProvider(create: (context) => getIt<CategoryBloc>()),

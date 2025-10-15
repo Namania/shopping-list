@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
@@ -22,6 +23,7 @@ class _SettingsState extends State<Settings> {
   late bool isArticleRoute;
   late bool isCardRoute;
   late bool isCategoryFirst;
+  late bool isCalculatorEnabled;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _SettingsState extends State<Settings> {
     isArticleRoute = currentState == AvailableRoute.article;
     isCardRoute = currentState == AvailableRoute.card;
     isCategoryFirst = context.read<SettingDefaultCategoryPosition>().getValue();
+    isCalculatorEnabled = context.read<SettingEnableCalculator>().isEnabled();
   }
 
   String getThemeName(String theme, String lang) {
@@ -159,6 +162,20 @@ class _SettingsState extends State<Settings> {
                     selectedTrailingIcon: Icon(Icons.arrow_drop_up_rounded),
                     trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
+                ),
+                SettingsItem.toggle(
+                  context: context,
+                  icon: Icons.calculate_rounded,
+                  title: context.tr('core.settings.item.calculator'),
+                  value: isCalculatorEnabled,
+                  onToggle: (value) {
+                    context.read<SettingEnableCalculator>().selectValue(
+                      value ? AvailableCalculatorState.enable : AvailableCalculatorState.disable,
+                    );
+                    setState(() {
+                      isCalculatorEnabled = value;
+                    });
+                  },
                 ),
                 SettingsItem.toggle(
                   context: context,
