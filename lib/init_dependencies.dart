@@ -16,6 +16,13 @@ import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/calculator/data/datasources/calculator_remote_datasource.dart';
+import 'package:shopping_list/features/calculator/data/repositories/calculator_repository_impl.dart';
+import 'package:shopping_list/features/calculator/domain/repositories/calculator_repository.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_reset.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_subtract.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/get_value.dart';
+import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/cards/data/datasources/card_remote_datasource.dart';
 import 'package:shopping_list/features/cards/data/repositories/card_repository_impl.dart';
 import 'package:shopping_list/features/cards/domain/repositories/card_repository.dart';
@@ -39,6 +46,7 @@ import 'package:shopping_list/features/category/domain/usecases/update_category.
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 import 'core/shared/cubit/theme_cubit.dart';
+import 'features/calculator/domain/usecases/calculator_add.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -52,6 +60,15 @@ Future<void> initDependencies() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey("articles") || prefs.getString("articles") == "") {
     await prefs.setString("articles", "[]");
+  }
+  if (!prefs.containsKey("cards") || prefs.getString("cards") == "") {
+    await prefs.setString("cards", "[]");
+  }
+  if (!prefs.containsKey("categories") || prefs.getString("categories") == "") {
+    await prefs.setString("categories", "[]");
+  }
+  if (!prefs.containsKey("calculator")) {
+    await prefs.setInt("calculator", 0);
   }
 
   getIt.registerLazySingleton(() => prefs);
@@ -68,6 +85,7 @@ Future<void> initDependencies() async {
   initArticle();
   initCard();
   initCategory();
+  initCalculator();
 }
 
 void initArticle() {
@@ -154,6 +172,30 @@ void initCategory() {
         categoryImport: getIt(),
         clearCategory: getIt(),
         rerangeCategory: getIt(),
+      ),
+    );
+}
+
+void initCalculator() {
+  getIt
+    // Datasource
+    ..registerFactory<CalculatorRemoteDatasource>(
+      () => CalculatorRemoteDatasourceImpl(getIt()),
+    )
+    // repositories
+    ..registerCachedFactory<CalculatorRepository>(() => CalculatorRepositoryImpl(getIt()))
+    // usecases
+    ..registerFactory<GetValue>(() => GetValue(getIt()))
+    ..registerFactory<CalculatorAdd>(() => CalculatorAdd(getIt()))
+    ..registerFactory<CalculatorSubtract>(() => CalculatorSubtract(getIt()))
+    ..registerFactory<CalculatorReset>(() => CalculatorReset(getIt()))
+    // bloc
+    ..registerLazySingleton<CalculatorBloc>(
+      () => CalculatorBloc(
+        getValue: getIt(),
+        calculatorAdd: getIt(),
+        calculatorSubtract: getIt(),
+        calculatorReset: getIt(),
       ),
     );
 }

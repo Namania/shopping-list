@@ -3,13 +3,17 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
+
+import '../../../../core/shared/widget/custom_bottom_modal.dart';
 
 class ArticleCard extends StatelessWidget {
   final ArticleModel article;
@@ -17,7 +21,42 @@ class ArticleCard extends StatelessWidget {
   const ArticleCard({super.key, required this.article});
 
   void toogleArticleDoneState(BuildContext context) {
-    context.read<ArticleBloc>().add(ToogleArticleDoneStateEvent(article: article));
+    context.read<ArticleBloc>().add(
+      ToogleArticleDoneStateEvent(article: article),
+    );
+  }
+
+  void updateCalculator(BuildContext context, bool value) {
+    if (value) {
+      final inputController = TextEditingController();
+      CustomBottomModal.modal(
+        context,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: inputController,
+              decoration: InputDecoration(
+                hintText: context.tr('calculator.add'),
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
+              autofocus: true,
+            ),
+          ),
+        ],
+        whenComplete: () {
+          double? value = double.tryParse(inputController.text.replaceAll(',', '.'));
+          if (value != null) {
+            context.read<CalculatorBloc>().add(
+              CalculatorAddEvent(amount: value),
+            );
+          }
+        },
+      );
+    }
   }
 
   void deleteArticle(BuildContext context) {
@@ -105,7 +144,8 @@ class ArticleCard extends StatelessWidget {
 
     try {
       if (response != null && response != '') {
-        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<ArticleBloc>().add(
             UpdateArticleEvent(
@@ -143,7 +183,11 @@ class ArticleCard extends StatelessWidget {
               {deleteArticle(context)},
             },
         confirmDismiss: (direction) async {
-          return await DeleteAlertDialog.dialog(context, 'article', description: false);
+          return await DeleteAlertDialog.dialog(
+            context,
+            'article',
+            description: false,
+          );
         },
         background: Container(
           color: Color(0xff93000a),
@@ -153,15 +197,12 @@ class ArticleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: 5,
               children: [
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
                 Text(
                   context.tr('article.delete'),
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
               ],
             ),
@@ -177,14 +218,11 @@ class ArticleCard extends StatelessWidget {
               children: [
                 Text(
                   context.tr('article.delete'),
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
               ],
             ),
           ),
@@ -220,6 +258,9 @@ class ArticleCard extends StatelessWidget {
             value: article.done,
             onChanged: (bool? value) {
               toogleArticleDoneState(context);
+              if (value != null) {
+                updateCalculator(context, value);
+              }
             },
           ),
         ),

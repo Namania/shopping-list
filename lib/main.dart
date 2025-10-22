@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 import 'package:shopping_list/init_dependencies.dart';
@@ -31,6 +32,7 @@ void main() async {
         BlocProvider(create: (context) => getIt<ArticleBloc>()),
         BlocProvider(create: (context) => getIt<CardBloc>()),
         BlocProvider(create: (context) => getIt<CategoryBloc>()),
+        BlocProvider(create: (context) => getIt<CalculatorBloc>()),
       ],
       child: EasyLocalization(
         supportedLocales: [

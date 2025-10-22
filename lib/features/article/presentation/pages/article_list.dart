@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/core/utils/handle_menu_button.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
@@ -14,6 +15,8 @@ import 'package:shopping_list/features/article/presentation/widgets/article_card
 import 'package:shopping_list/features/article/presentation/widgets/article_category.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
+
+import '../../../calculator/presentation/widgets/display_amount.dart';
 
 class ArticleList extends StatefulWidget {
   const ArticleList({super.key});
@@ -166,6 +169,7 @@ class _ArticleListState extends State<ArticleList> {
   @override
   Widget build(BuildContext context) {
     context.read<CategoryBloc>().add(CategoryGetAllEvent());
+    final calculator = context.read<SettingEnableCalculator>().isEnabled();
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -178,6 +182,7 @@ class _ArticleListState extends State<ArticleList> {
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [
+          calculator ? DisplayAmount() : const SizedBox(),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: PopupMenuButton<String>(

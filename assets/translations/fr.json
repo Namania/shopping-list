@@ -180,6 +180,10 @@
             "exist": "Une catégorie existe déjà pour ce label !"
         }
     },
+    "calculator": {
+        "success": "{}€",
+        "failure": "--.--€"
+    },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",
         "send_file": "Envoyer un fichier",
