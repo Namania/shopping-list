@@ -9,6 +9,7 @@ import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
+import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
@@ -172,6 +173,9 @@ class _SettingsState extends State<Settings> {
                     context.read<SettingEnableCalculator>().selectValue(
                       value ? AvailableCalculatorState.enable : AvailableCalculatorState.disable,
                     );
+                    if (!context.read<SettingEnableCalculator>().isEnabled()) {
+                      context.read<CalculatorBloc>().add(CalculatorResetEvent());
+                    }
                     setState(() {
                       isCalculatorEnabled = value;
                     });

@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/calculator/data/models/Calculator_model.dart';
 
 abstract interface class CalculatorRemoteDatasource {
   Future<List<CalculatorModel>> getAll();
   Future<List<CalculatorModel>> add({required CalculatorModel value});
   Future<List<CalculatorModel>> subtract({required CalculatorModel value});
-  Future<List<CalculatorModel>> reset();
+  Future<List<CalculatorModel>> reset({List<ArticleModel> articles = const []});
 }
 
 class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
@@ -72,9 +73,19 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
   }
 
   @override
-  Future<List<CalculatorModel>> reset() async {
+  Future<List<CalculatorModel>> reset({List<ArticleModel> articles = const []}) async {
     try {
-      prefs.setString(STORED_KEY, "[]");
+      if (articles.isEmpty) {
+        prefs.setString(STORED_KEY, "[]");
+      } else {
+        List<CalculatorModel> data = await getAll();
+        List<String> uuid = articles.where((a) => a.done).map((a) => a.id).toList();
+        data.removeWhere((c) => uuid.contains(c.idArticle));
+        await prefs.setString(
+          STORED_KEY,
+          jsonEncode(data.map((c) => c.toJson()).toList()),
+        );
+      }
       return await getAll();
     } catch (e) {
       return await getAll();

@@ -35,9 +35,12 @@ class _CalculatorListState extends State<CalculatorList> {
               context.read<ArticleBloc>().getAllArticle();
           if (data.isEmpty) {
             return Center(
-              child: Text(
-                context.tr('calculator.empty'),
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                  context.tr('calculator.empty'),
+                  textAlign: TextAlign.center,
+                ),
               ),
             );
           }

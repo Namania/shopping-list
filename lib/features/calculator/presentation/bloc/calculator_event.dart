@@ -21,4 +21,8 @@ class CalculatorSubtractEvent extends CalculatorEvent {
   const CalculatorSubtractEvent({required this.value});
 }
 
-class CalculatorResetEvent extends CalculatorEvent {}
+class CalculatorResetEvent extends CalculatorEvent {
+  final List<ArticleModel> articles;
+  
+  const CalculatorResetEvent({this.articles = const []});
+}

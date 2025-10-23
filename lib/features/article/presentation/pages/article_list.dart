@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
@@ -16,6 +17,7 @@ import 'package:shopping_list/features/article/presentation/widgets/article_cate
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
+import '../../../calculator/presentation/bloc/calculator_bloc.dart';
 import '../../../calculator/presentation/widgets/display_amount.dart';
 
 class ArticleList extends StatefulWidget {
@@ -37,6 +39,10 @@ class _ArticleListState extends State<ArticleList> {
     );
     if (res != null && context.mounted) {
       context.read<ArticleBloc>().add(ClearEvent(allArticle: res));
+      if (context.read<SettingEnableCalculator>().isEnabled()) {
+        List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+        context.read<CalculatorBloc>().add(CalculatorResetEvent(articles: articles));
+      }
     }
   }
 
@@ -60,6 +66,8 @@ class _ArticleListState extends State<ArticleList> {
       ),
     );
     String categoryEntriesValue = categories.first.label;
+
+    Uuid uuid = Uuid();
 
     String? response = await showDialog<String>(
       context: context,
@@ -105,7 +113,7 @@ class _ArticleListState extends State<ArticleList> {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"label": "${labelController.text}", "category": ${categories.where((c) => c.label == categoryEntriesValue).first.toJson()}, "done": false}'
+                          ? '{"id": "${uuid.v4()}","label": "${labelController.text}", "category": ${categories.where((c) => c.label == categoryEntriesValue).first.toJson()}, "done": false}'
                           : "",
                     ),
                 child: Text(context.tr('article.alert.add.action.add')),

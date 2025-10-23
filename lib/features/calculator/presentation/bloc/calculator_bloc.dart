@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_get_all.dart';
 
 import '../../../../core/usecase/usecase.dart';
+import '../../../article/data/models/article_model.dart';
 import '../../data/models/Calculator_model.dart';
 import '../../domain/usecases/calculator_add.dart';
 import '../../domain/usecases/calculator_reset.dart';
@@ -66,7 +67,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   
   Future<void> _onCalculatorReset(CalculatorResetEvent event, Emitter emit) async {
     emit(CalculatorLoading());
-    final result = await calculatorReset(NoParams());
+    final result = await calculatorReset(CalculatorResetParams(articles: event.articles));
 
     result.fold(
       (l) => emit(CalculatorFailure(message: l.message)),

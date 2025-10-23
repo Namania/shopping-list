@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
@@ -108,6 +109,10 @@ class ArticleCard extends StatelessWidget {
 
   void deleteArticle(BuildContext context) {
     context.read<ArticleBloc>().add(RemoveArticleEvent(article: article));
+    context.read<CalculatorBloc>().add(CalculatorSubtractEvent(value: CalculatorModel.fromMap({
+      "id_article": article.id,
+      "price": 0.0
+    })));
   }
 
   void editArticle(BuildContext context, ArticleModel article) async {
@@ -305,7 +310,7 @@ class ArticleCard extends StatelessWidget {
             value: article.done,
             onChanged: (bool? value) {
               toogleArticleDoneState(context);
-              if (value != null) {
+              if (context.read<SettingEnableCalculator>().isEnabled() && value != null) {
                 updateCalculator(context, value);
               }
             },
