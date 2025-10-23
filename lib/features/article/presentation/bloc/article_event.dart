@@ -51,3 +51,5 @@ class ToogleArticleDoneStateEvent extends ArticleEvent {
 
   const ToogleArticleDoneStateEvent({required this.article});
 }
+
+class ArticleMigrateIdEvent extends ArticleEvent {}

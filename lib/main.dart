@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/core/router/app_router.dart';
+import 'package:shopping_list/core/shared/cubit/migrate_article_id_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
@@ -29,6 +30,7 @@ void main() async {
         BlocProvider(create: (context) => SettingRouterCubit()),
         BlocProvider(create: (context) => SettingDefaultCategoryPosition()),
         BlocProvider(create: (context) => SettingEnableCalculator()),
+        BlocProvider(create: (context) => MigrateArticleIdCubit()),
         BlocProvider(create: (context) => getIt<ArticleBloc>()),
         BlocProvider(create: (context) => getIt<CardBloc>()),
         BlocProvider(create: (context) => getIt<CategoryBloc>()),
@@ -61,6 +63,11 @@ class MainApp extends StatelessWidget {
       "Montserrat",
     );
     final MaterialTheme theme = MaterialTheme(textTheme);
+
+    if (context.read<MigrateArticleIdCubit>().hasNotBeenPlay()) {
+      context.read<ArticleBloc>().add(ArticleMigrateIdEvent());
+      context.read<MigrateArticleIdCubit>().set(true);
+    }
 
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {

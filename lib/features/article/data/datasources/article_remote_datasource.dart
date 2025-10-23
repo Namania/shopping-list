@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 
@@ -10,7 +11,9 @@ abstract interface class ArticleRemoteDatasource {
   Future<List<CategoryModel>> getAllCategories();
   Future<List<ArticleModel>> addArticle({required ArticleModel article});
   Future<List<ArticleModel>> removeArticle({required ArticleModel article});
-  Future<List<ArticleModel>> toogleArticleDoneState({required ArticleModel article});
+  Future<List<ArticleModel>> toogleArticleDoneState({
+    required ArticleModel article,
+  });
   Future<List<ArticleModel>> clear({required bool allArticle});
   Future<List<ArticleModel>> articleImport({
     required String json,
@@ -21,6 +24,7 @@ abstract interface class ArticleRemoteDatasource {
     required String label,
     required CategoryModel category,
   });
+  Future<List<ArticleModel>> migrateArticles();
 }
 
 class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
@@ -79,7 +83,9 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleModel>> removeArticle({required ArticleModel article}) async {
+  Future<List<ArticleModel>> removeArticle({
+    required ArticleModel article,
+  }) async {
     try {
       List<ArticleModel> articles = await getAll();
       articles.remove(article);
@@ -166,6 +172,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       int index = articles.indexOf(article);
       articles.removeAt(index);
       ArticleModel updatedArticle = ArticleModel(
+        id: article.id,
         label: label,
         category: category,
         done: article.done,
@@ -183,6 +190,38 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
         "articles",
         jsonEncode(articles.map((a) => a.toJson()).toList()),
       );
+      return await getAll();
+    } catch (e) {
+      return await getAll();
+    }
+  }
+
+  @override
+  Future<List<ArticleModel>> migrateArticles() async {
+    try {
+      Uuid uuid = Uuid();
+      List<ArticleModel> articles = await getAll();
+      List<ArticleModel> migratedArticles = [];
+      for (ArticleModel article in articles) {
+        if (article.id == "") {
+          ArticleModel newA = ArticleModel(
+            id: uuid.v4(),
+            label: article.label,
+            category: article.category,
+            done: article.done
+          );
+          migratedArticles.add(newA);
+        } else {
+          migratedArticles.add(article);
+        }
+      }
+
+      if (articles.length == migratedArticles.length) {
+        await prefs.setString(
+          "articles",
+          jsonEncode(migratedArticles.map((a) => a.toJson()).toList()),
+        );
+      }
       return await getAll();
     } catch (e) {
       return await getAll();

@@ -24,4 +24,5 @@ abstract interface class ArticleRepository {
     required String label,
     required CategoryModel category,
   });
+  Future<Either<Failure, List<ArticleModel>>> migrateArticles();
 }

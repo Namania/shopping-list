@@ -7,6 +7,7 @@ import 'package:shopping_list/features/category/data/models/category_model.dart'
 class ArticleModel extends Article {
 
   ArticleModel({
+    required super.id,
     required super.label,
     required super.category,
     required super.done,
@@ -14,6 +15,7 @@ class ArticleModel extends Article {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'label': label,
       'category': category.toMap(),
       'done': done,
@@ -22,6 +24,7 @@ class ArticleModel extends Article {
 
   factory ArticleModel.fromMap(Map<String, dynamic> map) {
     return ArticleModel(
+      id: (map.containsKey('id') ? map['id'] : "") as String,
       label: map['label'] as String,
       category: CategoryModel.fromMap(map['category']),
       done: map['done'] as bool,
