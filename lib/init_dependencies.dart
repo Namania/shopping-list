@@ -20,9 +20,10 @@ import 'package:shopping_list/features/article/presentation/bloc/article_bloc.da
 import 'package:shopping_list/features/calculator/data/datasources/calculator_remote_datasource.dart';
 import 'package:shopping_list/features/calculator/data/repositories/calculator_repository_impl.dart';
 import 'package:shopping_list/features/calculator/domain/repositories/calculator_repository.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_add.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_reset.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_subtract.dart';
-import 'package:shopping_list/features/calculator/domain/usecases/get_value.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_get_all.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/cards/data/datasources/card_remote_datasource.dart';
 import 'package:shopping_list/features/cards/data/repositories/card_repository_impl.dart';
@@ -47,7 +48,6 @@ import 'package:shopping_list/features/category/domain/usecases/update_category.
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
 import 'core/shared/cubit/theme_cubit.dart';
-import 'features/calculator/domain/usecases/calculator_add.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -69,7 +69,7 @@ Future<void> initDependencies() async {
     await prefs.setString("categories", "[]");
   }
   if (!prefs.containsKey("calculator")) {
-    await prefs.setInt("calculator", 0);
+    await prefs.setString("calculator", "[]");
   }
 
   getIt.registerLazySingleton(() => prefs);
@@ -188,14 +188,14 @@ void initCalculator() {
     // repositories
     ..registerCachedFactory<CalculatorRepository>(() => CalculatorRepositoryImpl(getIt()))
     // usecases
-    ..registerFactory<GetValue>(() => GetValue(getIt()))
+    ..registerFactory<CalculatorGetAll>(() => CalculatorGetAll(getIt()))
     ..registerFactory<CalculatorAdd>(() => CalculatorAdd(getIt()))
     ..registerFactory<CalculatorSubtract>(() => CalculatorSubtract(getIt()))
     ..registerFactory<CalculatorReset>(() => CalculatorReset(getIt()))
     // bloc
     ..registerLazySingleton<CalculatorBloc>(
       () => CalculatorBloc(
-        getValue: getIt(),
+        getAll: getIt(),
         calculatorAdd: getIt(),
         calculatorSubtract: getIt(),
         calculatorReset: getIt(),

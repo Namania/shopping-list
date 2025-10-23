@@ -9,9 +9,9 @@ abstract class CalculatorState extends Equatable {
 class CalculatorInitial extends CalculatorState {}
 
 class CalculatorSuccess extends CalculatorState {
-  final double value;
+  final List<CalculatorModel> data;
 
-  const CalculatorSuccess({required this.value});
+  const CalculatorSuccess({required this.data});
 }
 
 final class CalculatorFailure extends CalculatorState {

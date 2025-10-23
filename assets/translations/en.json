@@ -183,8 +183,11 @@
     "calculator": {
         "success": "${}",
         "failure": "$--.--",
+        "total": "Total amount",
         "add": "Enter the amount of the item",
-        "modalMessage": "Click outside the modal to validate."
+        "modalMessage": "Click outside the modal to validate.",
+        "title": "Calculator",
+        "empty": "You have no items to save in the calculator."
     },
     "modal": {
         "export": "Scan the QR code via the \"Import\" feature of the Shopping List app",

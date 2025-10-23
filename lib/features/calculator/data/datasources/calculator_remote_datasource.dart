@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shopping_list/features/calculator/data/models/Calculator_model.dart';
 
 abstract interface class CalculatorRemoteDatasource {
-  Future<int> getStored();
-  Future<double> getValue();
-  Future<double> add({required double amount});
-  Future<double> subtract({required double amount});
-  Future<double> reset();
+  Future<List<CalculatorModel>> getAll();
+  Future<List<CalculatorModel>> add({required CalculatorModel value});
+  Future<List<CalculatorModel>> subtract({required CalculatorModel value});
+  Future<List<CalculatorModel>> reset();
 }
 
 class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
@@ -17,57 +19,65 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
 
   
   @override
-  Future<int> getStored() async {
+  Future<List<CalculatorModel>> getAll() async {
     bool hasKey = prefs.containsKey(STORED_KEY);
 
-    int amount = 0;
+    List<CalculatorModel> data = [];
     if (hasKey) {
-      int? response = prefs.getInt(STORED_KEY);
+      String? response = prefs.getString(STORED_KEY);
       if (response != null) {
-        amount = response;
+        List<dynamic> calculators = jsonDecode(response);
+        data = calculators.map((c) => CalculatorModel.fromJson(c)).toList();
       }
     }
 
-    return amount;
-  }
-
-  @override
-  Future<double> getValue() async {
-    int stored = await getStored();
-    return stored / 100;
+    return data;
   }
   
   @override
-  Future<double> add({required double amount}) async {
+  Future<List<CalculatorModel>> add({required CalculatorModel value}) async {
     try {
-      int stored = await getStored();
-      int newValue = stored += (amount * 100).toInt();
-      prefs.setInt(STORED_KEY, newValue);
-      return await getValue();
+      List<CalculatorModel> data = await getAll();
+      List<CalculatorModel> exist =
+          data.where((a) => a.idArticle == value.idArticle).toList();
+      if (exist.isEmpty) {
+        data.add(CalculatorModel(
+          idArticle: value.idArticle,
+          price: value.price * 100
+        ));
+        await prefs.setString(
+          STORED_KEY,
+          jsonEncode(data.map((c) => c.toJson()).toList()),
+        );
+      }
+      return await getAll();
     } catch (e) {
-      return await getValue();
+      return await getAll();
     }
   }
   
   @override
-  Future<double> subtract({required double amount}) async {
+  Future<List<CalculatorModel>> subtract({required CalculatorModel value}) async {
     try {
-      int stored = await getStored();
-      int newValue = stored -= (amount * 100).toInt();
-      prefs.setInt(STORED_KEY, newValue);
-      return await getValue();
+      List<CalculatorModel> data = await getAll();
+      data.removeWhere((c) => c.idArticle == value.idArticle);
+      await prefs.setString(
+        STORED_KEY,
+        jsonEncode(data.map((c) => c.toJson()).toList()),
+      );
+      return await getAll();
     } catch (e) {
-      return await getValue();
+      return await getAll();
     }
   }
 
   @override
-  Future<double> reset() async {
+  Future<List<CalculatorModel>> reset() async {
     try {
-      prefs.setInt(STORED_KEY, 0);
-      return await getValue();
+      prefs.setString(STORED_KEY, "[]");
+      return await getAll();
     } catch (e) {
-      return await getValue();
+      return await getAll();
     }
   }
 }

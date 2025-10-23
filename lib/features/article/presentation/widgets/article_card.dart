@@ -9,6 +9,7 @@ import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/calculator/data/models/Calculator_model.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
@@ -27,12 +28,15 @@ class ArticleCard extends StatelessWidget {
   }
 
   void addToCalculator(BuildContext context, String data) {
-    double? value = double.tryParse(
-      data.replaceAll(',', '.'),
-    );
+    double? value = double.tryParse(data.replaceAll(',', '.'));
     if (value != null) {
       context.read<CalculatorBloc>().add(
-        CalculatorAddEvent(amount: value),
+        CalculatorAddEvent(
+          value: CalculatorModel.fromMap({
+            "id_article": article.id,
+            "price": value,
+          }),
+        ),
       );
     }
   }
@@ -91,7 +95,14 @@ class ArticleCard extends StatelessWidget {
         },
       );
     } else {
-      context.read<CalculatorBloc>().add(CalculatorResetEvent());
+      context.read<CalculatorBloc>().add(
+        CalculatorSubtractEvent(
+          value: CalculatorModel.fromMap({
+            "id_article": article.id,
+            "price": 0.0,
+          }),
+        ),
+      );
     }
   }
 

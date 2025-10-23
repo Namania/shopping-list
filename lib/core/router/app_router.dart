@@ -5,6 +5,7 @@ import 'package:shopping_list/core/shared/pages/home_page.dart';
 import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_list.dart';
+import 'package:shopping_list/features/calculator/presentation/pages/calculator_list.dart';
 import 'package:shopping_list/features/cards/presentation/pages/card_list.dart';
 import 'package:shopping_list/features/category/presentation/pages/category_list.dart';
 
@@ -81,6 +82,12 @@ final GoRouter appRouter = GoRouter(
       pageBuilder:
           (context, state) =>
               pageBuilder(context: context, state: state, page: Settings()),
+    ),
+    GoRoute(
+      path: '/calculator',
+      pageBuilder:
+          (context, state) =>
+              pageBuilder(context: context, state: state, page: CalculatorList()),
     ),
   ],
 );

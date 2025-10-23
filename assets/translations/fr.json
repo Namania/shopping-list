@@ -183,8 +183,11 @@
     "calculator": {
         "success": "{}€",
         "failure": "--.--€",
+        "total": "Montant total",
         "add": "Entrez le montant de l'article",
-        "modalMessage": "Clickez en dehors du modal pour valider."
+        "modalMessage": "Clickez en dehors du modal pour valider.",
+        "title": "Calculatrice",
+        "empty": "Vous n'avez aucun article d'enregistrer dans la calculatrice."
     },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",

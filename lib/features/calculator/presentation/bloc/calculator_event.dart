@@ -7,18 +7,18 @@ abstract class CalculatorEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class CalculatorGetValueEvent extends CalculatorEvent {}
+class CalculatorGetAllEvent extends CalculatorEvent {}
 
 class CalculatorAddEvent extends CalculatorEvent {
-  final double amount;
+  final CalculatorModel value;
 
-  const CalculatorAddEvent({required this.amount});
+  const CalculatorAddEvent({required this.value});
 }
 
 class CalculatorSubtractEvent extends CalculatorEvent {
-  final double amount;
+  final CalculatorModel value;
 
-  const CalculatorSubtractEvent({required this.amount});
+  const CalculatorSubtractEvent({required this.value});
 }
 
 class CalculatorResetEvent extends CalculatorEvent {}
