@@ -32,11 +32,7 @@ class CustomBottomModal {
                   ),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: children,
-              ),
+              ...children
             ],
           ),
         );

@@ -26,36 +26,72 @@ class ArticleCard extends StatelessWidget {
     );
   }
 
+  void addToCalculator(BuildContext context, String data) {
+    double? value = double.tryParse(
+      data.replaceAll(',', '.'),
+    );
+    if (value != null) {
+      context.read<CalculatorBloc>().add(
+        CalculatorAddEvent(amount: value),
+      );
+    }
+  }
+
   void updateCalculator(BuildContext context, bool value) {
     if (value) {
       final inputController = TextEditingController();
       CustomBottomModal.modal(
         context,
         children: [
-          Expanded(
-            child: TextField(
-              controller: inputController,
-              decoration: InputDecoration(
-                hintText: context.tr('calculator.add'),
-                border: OutlineInputBorder(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 10,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: inputController,
+                  decoration: InputDecoration(
+                    hintText: context.tr('calculator.add'),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                  autofocus: true,
+                  onSubmitted: (data) {
+                    addToCalculator(context, data);
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    context.tr('calculator.modalMessage'),
+                    style: TextTheme.of(context).bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
-              autofocus: true,
             ),
           ),
         ],
         whenComplete: () {
-          double? value = double.tryParse(inputController.text.replaceAll(',', '.'));
-          if (value != null) {
-            context.read<CalculatorBloc>().add(
-              CalculatorAddEvent(amount: value),
-            );
-          }
+          addToCalculator(context, inputController.text);
         },
       );
+    } else {
+      context.read<CalculatorBloc>().add(CalculatorResetEvent());
     }
   }
 

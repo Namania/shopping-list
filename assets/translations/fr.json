@@ -182,7 +182,9 @@
     },
     "calculator": {
         "success": "{}€",
-        "failure": "--.--€"
+        "failure": "--.--€",
+        "add": "Entrez le montant de l'article",
+        "modalMessage": "Clickez en dehors du modal pour valider."
     },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",

@@ -182,7 +182,9 @@
     },
     "calculator": {
         "success": "${}",
-        "failure": "$--.--"
+        "failure": "$--.--",
+        "add": "Enter the amount of the item",
+        "modalMessage": "Click outside the modal to validate."
     },
     "modal": {
         "export": "Scan the QR code via the \"Import\" feature of the Shopping List app",
