@@ -194,7 +194,19 @@
             "title": "Que voulez-vous supprimer ?",
             "with": "Avec article",
             "without": "Sans article",
-            "all": "Tout"
+            "all": "Vider la calculatrice"
+        },
+        "alert": {
+            "confirm": {
+                "title": "Confirmez",
+                "description": {
+                    "one": "Voulez-vous vraiment le supprimer ?"
+                },
+                "action": {
+                    "yes": "Oui",
+                    "no": "Non"
+                }
+            }
         }
     },
     "modal": {

@@ -194,7 +194,19 @@
             "title": "What do you want to delete?",
             "with": "With article",
             "without": "Without article",
-            "all": "All"
+            "all": "Clear calculator"
+        },
+        "alert": {
+            "confirm": {
+                "title": "Confirm",
+                "description": {
+                    "one": "Do you really want to delete it ?"
+                },
+                "action": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            }
         }
     },
     "modal": {
