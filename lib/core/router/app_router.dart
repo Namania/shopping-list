@@ -4,12 +4,11 @@ import 'package:shopping_list/core/shared/pages/deep_link_handler.dart';
 import 'package:shopping_list/core/shared/pages/home_page.dart';
 import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
+import 'package:shopping_list/core/utils/custom_json.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_list.dart';
 import 'package:shopping_list/features/calculator/presentation/pages/calculator_list.dart';
 import 'package:shopping_list/features/cards/presentation/pages/card_list.dart';
 import 'package:shopping_list/features/category/presentation/pages/category_list.dart';
-
-import '../shared/utils.dart';
 
 pageBuilder({
   required BuildContext context,
@@ -55,7 +54,7 @@ final GoRouter appRouter = GoRouter(
       path: '/deeplink',
       builder: (context, state) {
         final uri = state.uri;
-        final jsonData = Utils.decompressJson(uri.queryParameters['data'] ?? '');
+        final jsonData = CustomJson.decompressJson(uri.queryParameters['data'] ?? '');
         return DeepLinkHandler(jsonData: jsonData);
       },
     ),

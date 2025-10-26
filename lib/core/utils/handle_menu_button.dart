@@ -8,7 +8,7 @@ import 'package:flutter_barcode_scanner_plus/flutter_barcode_scanner_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shopping_list/core/shared/utils.dart';
+import 'package:shopping_list/core/utils/custom_json.dart';
 import 'package:shopping_list/core/utils/handle_scaning.dart';
 
 class HandleMenuButton {
@@ -26,7 +26,7 @@ class HandleMenuButton {
         final rawJson = {"action": deepLinkAction, "json": data.map((a) => a.toMap()).toList()};
 
         final encodedData = Uri.encodeComponent(
-          Utils.compressJson(jsonEncode(rawJson)),
+          CustomJson.compressJson(jsonEncode(rawJson)),
         );
         final deepLink = 'shopping-list://launch?data=$encodedData';
         final qrCode = PrettyQrView.data(
@@ -160,7 +160,7 @@ class HandleMenuButton {
                             Uri? uri = Uri.tryParse(res);
                             if (res != "" && uri != null && context.mounted) {
                               final decoded = json.decode(
-                                Utils.decompressJson(
+                                CustomJson.decompressJson(
                                   uri.queryParameters['data'] ?? '',
                                 ),
                               );

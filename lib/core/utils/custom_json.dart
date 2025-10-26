@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-class Utils {
+class CustomJson {
 
   static String compressJson(String json) {
     final inputBytes = utf8.encode(json);

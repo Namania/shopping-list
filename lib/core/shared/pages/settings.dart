@@ -121,7 +121,7 @@ class _SettingsState extends State<Settings> {
                 SettingsItem(
                   icon: Icons.system_update_rounded,
                   title: context.tr('core.settings.item.version'),
-                  trailing: Text("1.3.2"),
+                  trailing: Text("1.3.3"),
                 ),
                 SettingsItem(
                   icon: Icons.contrast_rounded,
