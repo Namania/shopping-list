@@ -185,9 +185,17 @@
         "failure": "$--.--",
         "total": "Total amount",
         "add": "Enter the amount of the item",
+        "addButton": "Add an amount",
+        "withoutArticle": "Without article",
         "modalMessage": "Click outside the modal to validate.",
         "title": "Calculator",
-        "empty": "You have no items to save in the calculator."
+        "empty": "You have no items to save in the calculator.",
+        "delete": {
+            "title": "What do you want to delete?",
+            "with": "With article",
+            "without": "Without article",
+            "all": "All"
+        }
     },
     "modal": {
         "export": "Scan the QR code via the \"Import\" feature of the Shopping List app",

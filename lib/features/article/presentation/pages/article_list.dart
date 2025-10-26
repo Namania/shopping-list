@@ -41,7 +41,7 @@ class _ArticleListState extends State<ArticleList> {
       context.read<ArticleBloc>().add(ClearEvent(allArticle: res));
       if (context.read<SettingEnableCalculator>().isEnabled()) {
         List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
-        context.read<CalculatorBloc>().add(CalculatorResetEvent(articles: articles));
+        context.read<CalculatorBloc>().add(CalculatorResetWithEvent(articles: articles));
       }
     }
   }

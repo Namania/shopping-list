@@ -20,9 +20,15 @@ import 'package:shopping_list/features/calculator/data/datasources/calculator_re
 import 'package:shopping_list/features/calculator/data/repositories/calculator_repository_impl.dart';
 import 'package:shopping_list/features/calculator/domain/repositories/calculator_repository.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_add.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_add_without_article.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_get_all_with_article.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_get_all_without_article.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_reset.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_reset_with.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_reset_without_article.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_subtract.dart';
 import 'package:shopping_list/features/calculator/domain/usecases/calculator_get_all.dart';
+import 'package:shopping_list/features/calculator/domain/usecases/calculator_subtract_without_article.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/cards/data/datasources/card_remote_datasource.dart';
 import 'package:shopping_list/features/cards/data/repositories/card_repository_impl.dart';
@@ -45,6 +51,7 @@ import 'package:shopping_list/features/category/domain/usecases/remove_category_
 import 'package:shopping_list/features/category/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/category/domain/usecases/update_category.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 import 'core/shared/cubit/theme_cubit.dart';
 
@@ -66,8 +73,14 @@ Future<void> initDependencies() async {
   if (!prefs.containsKey("calculator")) {
     await prefs.setString("calculator", "[]");
   }
+  if (!prefs.containsKey("calculator_without_article")) {
+    await prefs.setString("calculator_without_article", "[]");
+  }
 
   getIt.registerLazySingleton(() => prefs);
+
+  Uuid uuid = Uuid();
+  getIt.registerLazySingleton(() => uuid);
 
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory:
@@ -178,22 +191,34 @@ void initCalculator() {
   getIt
     // Datasource
     ..registerFactory<CalculatorRemoteDatasource>(
-      () => CalculatorRemoteDatasourceImpl(getIt()),
+      () => CalculatorRemoteDatasourceImpl(getIt(), getIt()),
     )
     // repositories
     ..registerCachedFactory<CalculatorRepository>(() => CalculatorRepositoryImpl(getIt()))
     // usecases
     ..registerFactory<CalculatorGetAll>(() => CalculatorGetAll(getIt()))
+    ..registerFactory<CalculatorGetAllWithArticle>(() => CalculatorGetAllWithArticle(getIt()))
+    ..registerFactory<CalculatorGetAllWithoutArticle>(() => CalculatorGetAllWithoutArticle(getIt()))
     ..registerFactory<CalculatorAdd>(() => CalculatorAdd(getIt()))
+    ..registerFactory<CalculatorAddWithoutArticle>(() => CalculatorAddWithoutArticle(getIt()))
     ..registerFactory<CalculatorSubtract>(() => CalculatorSubtract(getIt()))
+    ..registerFactory<CalculatorSubtractWithoutArticle>(() => CalculatorSubtractWithoutArticle(getIt()))
     ..registerFactory<CalculatorReset>(() => CalculatorReset(getIt()))
+    ..registerFactory<CalculatorResetWith>(() => CalculatorResetWith(getIt()))
+    ..registerFactory<CalculatorResetWithoutArticle>(() => CalculatorResetWithoutArticle(getIt()))
     // bloc
     ..registerLazySingleton<CalculatorBloc>(
       () => CalculatorBloc(
         getAll: getIt(),
+        getAllWithArticle: getIt(),
+        getAllWithoutArticle: getIt(),
         calculatorAdd: getIt(),
+        calculatorAddWithoutArticle: getIt(),
         calculatorSubtract: getIt(),
+        calculatorSubtractWithoutArticle: getIt(),
         calculatorReset: getIt(),
+        calculatorResetWith: getIt(),
+        calculatorResetWithoutArticle: getIt(),
       ),
     );
 }

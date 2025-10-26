@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomBottomModal {
   static void modal(BuildContext context, {required List<Widget> children, Function? whenComplete}) {
@@ -42,5 +44,61 @@ class CustomBottomModal {
         whenComplete();
       }
     });
+  }
+
+  static void calculator(BuildContext context, {required TextEditingController controller, Function? onSubmitted, Function? whenComplete}) {
+    CustomBottomModal.modal(
+      context,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: context.tr('calculator.add'),
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                autofocus: true,
+                onSubmitted: (data) {
+                  if (onSubmitted != null) {
+                    onSubmitted(data);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  context.tr('calculator.modalMessage'),
+                  style: TextTheme.of(context).bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      whenComplete: () {
+        if (whenComplete != null) {
+          whenComplete();
+        }
+      },
+    );
   }
 }

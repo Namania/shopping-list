@@ -185,9 +185,17 @@
         "failure": "--.--€",
         "total": "Montant total",
         "add": "Entrez le montant de l'article",
+        "addButton": "Ajouter un montant",
+        "withoutArticle": "Sans article",
         "modalMessage": "Clickez en dehors du modal pour valider.",
         "title": "Calculatrice",
-        "empty": "Vous n'avez aucun article d'enregistrer dans la calculatrice."
+        "empty": "Vous n'avez aucun article d'enregistrer dans la calculatrice.",
+        "delete": {
+            "title": "Que voulez-vous supprimer ?",
+            "with": "Avec article",
+            "without": "Sans article",
+            "all": "Tout"
+        }
     },
     "modal": {
         "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",

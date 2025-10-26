@@ -45,55 +45,16 @@ class ArticleCard extends StatelessWidget {
   void updateCalculator(BuildContext context, bool value) {
     if (value) {
       final inputController = TextEditingController();
-      CustomBottomModal.modal(
+      CustomBottomModal.calculator(
         context,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 10,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: inputController,
-                  decoration: InputDecoration(
-                    hintText: context.tr('calculator.add'),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                  ],
-                  autofocus: true,
-                  onSubmitted: (data) {
-                    addToCalculator(context, data);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    context.tr('calculator.modalMessage'),
-                    style: TextTheme.of(context).bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        controller: inputController,
+        onSubmitted: (data) {
+          addToCalculator(context, data);
+          Navigator.pop(context);
+        },
         whenComplete: () {
           addToCalculator(context, inputController.text);
-        },
+        }
       );
     } else {
       context.read<CalculatorBloc>().add(

@@ -22,9 +22,36 @@ class CalculatorRepositoryImpl implements CalculatorRepository {
   }
 
   @override
+  Future<Either<Failure, List<CalculatorModel>>> getAllWithArticle() async {
+    try {
+      return Right(await calculatorRemoteDatasource.getAllWithArticle());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CalculatorModel>>> getAllWithoutArticle() async {
+    try {
+      return Right(await calculatorRemoteDatasource.getAllWithoutArticle());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<CalculatorModel>>> add({required CalculatorModel value}) async {
     try {
       return Right(await calculatorRemoteDatasource.add(value: value));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CalculatorModel>>> addWithoutArticle({required double price}) async {
+    try {
+      return Right(await calculatorRemoteDatasource.addWithoutArticle(price: price));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
@@ -40,9 +67,36 @@ class CalculatorRepositoryImpl implements CalculatorRepository {
   }
   
   @override
-  Future<Either<Failure, List<CalculatorModel>>> reset({List<ArticleModel> articles = const []}) async {
+  Future<Either<Failure, List<CalculatorModel>>> subtractWithoutArticle({required CalculatorModel value}) async {
     try {
-      return Right(await calculatorRemoteDatasource.reset(articles: articles));
+      return Right(await calculatorRemoteDatasource.subtractWithoutArticle(value: value));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, List<CalculatorModel>>> reset() async {
+    try {
+      return Right(await calculatorRemoteDatasource.reset());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, List<CalculatorModel>>> resetWith({List<ArticleModel> articles = const []}) async {
+    try {
+      return Right(await calculatorRemoteDatasource.resetWith(articles: articles));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, List<CalculatorModel>>> resetWithoutArticle({List<String> articles = const []}) async {
+    try {
+      return Right(await calculatorRemoteDatasource.resetWithoutArticle(articles: articles));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
