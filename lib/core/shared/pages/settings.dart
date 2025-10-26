@@ -26,6 +26,9 @@ class _SettingsState extends State<Settings> {
   late bool isCategoryFirst;
   late bool isCalculatorEnabled;
 
+  // ignore: non_constant_identifier_names
+  final String VERSION = "1.3.4";
+
   @override
   void initState() {
     super.initState();
@@ -121,7 +124,7 @@ class _SettingsState extends State<Settings> {
                 SettingsItem(
                   icon: Icons.system_update_rounded,
                   title: context.tr('core.settings.item.version'),
-                  trailing: Text("1.3.3"),
+                  trailing: Text(VERSION),
                 ),
                 SettingsItem(
                   icon: Icons.contrast_rounded,

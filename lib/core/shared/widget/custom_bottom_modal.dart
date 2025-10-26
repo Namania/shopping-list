@@ -63,7 +63,7 @@ class CustomBottomModal {
                 ),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')),
                 ],
                 autofocus: true,
                 onSubmitted: (data) {
