@@ -6,7 +6,7 @@ import 'package:shopping_list/features/calculator/presentation/bloc/calculator_b
 import '../../../../core/utils/delete_alert_dialog.dart';
 import '../../../article/data/models/article_model.dart';
 import '../../../category/data/models/category_model.dart';
-import '../../data/models/Calculator_model.dart';
+import '../../data/models/calculator_model.dart';
 
 // ignore: must_be_immutable
 class CalculatorCard extends StatelessWidget {

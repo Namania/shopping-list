@@ -3,7 +3,7 @@ import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:shopping_list/features/calculator/domain/repositories/calculator_repository.dart';
 
-import '../../data/models/Calculator_model.dart';
+import '../../data/models/calculator_model.dart';
 
 class CalculatorSubtract implements UseCase<List<CalculatorModel>, CalculatorSubtractParams> {
   final CalculatorRepository calculatorRepository;

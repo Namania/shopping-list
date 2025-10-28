@@ -9,7 +9,7 @@ import 'package:shopping_list/features/calculator/domain/usecases/calculator_sub
 
 import '../../../../core/usecase/usecase.dart';
 import '../../../article/data/models/article_model.dart';
-import '../../data/models/Calculator_model.dart';
+import '../../data/models/calculator_model.dart';
 import '../../domain/usecases/calculator_add.dart';
 import '../../domain/usecases/calculator_reset.dart';
 import '../../domain/usecases/calculator_reset_with.dart';

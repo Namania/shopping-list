@@ -5,7 +5,7 @@ import 'package:shopping_list/core/errors/failure.dart';
 import '../../../article/data/models/article_model.dart';
 import '../../domain/repositories/calculator_repository.dart';
 import '../datasources/calculator_remote_datasource.dart';
-import '../models/Calculator_model.dart';
+import '../models/calculator_model.dart';
 
 class CalculatorRepositoryImpl implements CalculatorRepository {
   final CalculatorRemoteDatasource calculatorRemoteDatasource;

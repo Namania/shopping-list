@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
-import 'package:shopping_list/features/calculator/data/models/Calculator_model.dart';
+import 'package:shopping_list/features/calculator/data/models/calculator_model.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class CalculatorRemoteDatasource {

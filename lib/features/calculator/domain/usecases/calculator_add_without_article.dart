@@ -1,7 +1,7 @@
 import 'package:shopping_list/core/errors/failure.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:shopping_list/features/calculator/data/models/Calculator_model.dart';
+import 'package:shopping_list/features/calculator/data/models/calculator_model.dart';
 import 'package:shopping_list/features/calculator/domain/repositories/calculator_repository.dart';
 
 class CalculatorAddWithoutArticle implements UseCase<List<CalculatorModel>, CalculatorAddWithoutArticleParams> {
