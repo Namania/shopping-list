@@ -7,6 +7,7 @@ import 'package:shopping_list/core/shared/cubit/setting_default_category_positio
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
+import 'package:shopping_list/core/shared/widget/buy_me_a_coffee.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
@@ -169,23 +170,6 @@ class _SettingsState extends State<Settings> {
                 ),
                 SettingsItem.toggle(
                   context: context,
-                  icon: Icons.calculate_rounded,
-                  title: context.tr('core.settings.item.calculator'),
-                  value: isCalculatorEnabled,
-                  onToggle: (value) {
-                    context.read<SettingEnableCalculator>().selectValue(
-                      value ? AvailableCalculatorState.enable : AvailableCalculatorState.disable,
-                    );
-                    if (!context.read<SettingEnableCalculator>().isEnabled()) {
-                      context.read<CalculatorBloc>().add(CalculatorResetEvent());
-                    }
-                    setState(() {
-                      isCalculatorEnabled = value;
-                    });
-                  },
-                ),
-                SettingsItem.toggle(
-                  context: context,
                   icon: Icons.swap_vert_rounded,
                   title: context.tr('core.settings.item.category'),
                   value: isCategoryFirst,
@@ -237,6 +221,43 @@ class _SettingsState extends State<Settings> {
                     });
                   },
                 ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.calculator'),
+              children: [
+                SettingsItem.toggle(
+                  context: context,
+                  icon: Icons.calculate_rounded,
+                  title: context.tr('core.settings.item.calculator.enable'),
+                  value: isCalculatorEnabled,
+                  onToggle: (value) {
+                    context.read<SettingEnableCalculator>().selectValue(
+                      value
+                          ? AvailableCalculatorState.enable
+                          : AvailableCalculatorState.disable,
+                    );
+                    if (!context.read<SettingEnableCalculator>().isEnabled()) {
+                      context.read<CalculatorBloc>().add(
+                        CalculatorResetEvent(),
+                      );
+                    }
+                    setState(() {
+                      isCalculatorEnabled = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.developer'),
+              children: [
+                SettingsItem(
+                  icon: Icons.person_rounded,
+                  title: context.tr('core.settings.item.developer.author'),
+                  trailing: Text("Namania"),
+                ),
+                BuyMeACoffee(),
               ],
             ),
           ],

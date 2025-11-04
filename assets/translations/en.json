@@ -30,7 +30,12 @@
                     "category": "Navigate to cards upon app launch ?"
                 },
                 "category": "Show uncategorized items at the top of the list ?",
-                "calculator": "Enable calculator ?"
+                "calculator": {
+                    "enable": "Enable calculator ?"
+                },
+                "developer": {
+                    "author": "Author"
+                }
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",
@@ -38,7 +43,9 @@
             },
             "separator": {
                 "main": "General",
-                "startup": "Upon app launch"
+                "startup": "Upon app launch",
+                "calculator": "Calculator",
+                "developer": "Developer"
             },
             "shareArticleMessage": "Here are my articles !\n[Shopping List]",
             "shareCategoryMessage": "Here are my categories !\n[Shopping List]",
