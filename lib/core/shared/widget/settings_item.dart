@@ -1,16 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
+// ignore: must_be_immutable
 class SettingsItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final Widget trailing;
+  String url;
 
-  const SettingsItem({
+  SettingsItem({
     super.key,
     required this.icon,
     required this.title,
     required this.trailing,
+    this.url = "",
   });
 
   factory SettingsItem.toggle({
@@ -56,13 +61,23 @@ class SettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: ListTile(
-          leading: Icon(icon),
-          title: Text(title),
-          trailing: trailing,
+    return GestureDetector(
+      onTap: () async {
+        if (url != "") {
+          Uri uri = Uri.parse(url);
+          if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && kDebugMode) {
+            print("Can't open url");
+          }
+        }
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: ListTile(
+            leading: Icon(icon),
+            title: Text(title),
+            trailing: trailing,
+          ),
         ),
       ),
     );

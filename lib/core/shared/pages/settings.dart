@@ -112,7 +112,6 @@ class _SettingsState extends State<Settings> {
         title: Text(context.tr('core.settings.title')),
       ),
       body: SingleChildScrollView(
-        key: GlobalKey(),
         padding: EdgeInsets.all(10),
         physics: ScrollPhysics(),
         child: Column(
@@ -256,6 +255,12 @@ class _SettingsState extends State<Settings> {
                   icon: Icons.person_rounded,
                   title: context.tr('core.settings.item.developer.author'),
                   trailing: Text("Namania"),
+                ),
+                SettingsItem(
+                  url: 'https://namania.fr',
+                  icon: Icons.language,
+                  title: context.tr('core.settings.item.developer.website'),
+                  trailing: Icon(Icons.arrow_right_rounded),
                 ),
                 BuyMeACoffee(),
               ],

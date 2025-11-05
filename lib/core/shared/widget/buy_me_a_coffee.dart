@@ -4,8 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import './settings_item.dart';
 
+// ignore: must_be_immutable
 class BuyMeACoffee extends SettingsItem {
-  const BuyMeACoffee({
+  BuyMeACoffee({
     super.key,
     super.icon = Icons.euro_rounded,
     super.title = "",

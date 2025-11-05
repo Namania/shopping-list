@@ -34,7 +34,8 @@
                     "enable": "Activer la calculatrice ?"
                 },
                 "developer": {
-                    "author": "Auteur"
+                    "author": "Auteur",
+                    "website": "Site web"
                 }
             },
             "snack": {

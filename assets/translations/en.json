@@ -34,7 +34,8 @@
                     "enable": "Enable calculator ?"
                 },
                 "developer": {
-                    "author": "Author"
+                    "author": "Author",
+                    "website": "Website"
                 }
             },
             "snack": {
