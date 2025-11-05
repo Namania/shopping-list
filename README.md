@@ -1,20 +1,8 @@
 # shopping_list
 
-A new Flutter project.
+This is a Flutter project to make shopping list & store loyalty card.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-<!-- To DO -->
-<!-- - Déplacer les imports/exports au format fichier dans les pages correspondantes. -->
-<!-- - Qr Code linked to app -->
+## Deployement
+1. Update pubspec.yml (version: code+name)
+2. Edit version in Settings page
+3. run `flutter build aab`
