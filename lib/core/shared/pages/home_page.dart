@@ -32,39 +32,42 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 20,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
-              child: Text(
-                context.tr('core.welcome'),
-                style: TextTheme.of(context).displayMedium,
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 20,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 50),
+                child: Text(
+                  context.tr('core.welcome'),
+                  style: TextTheme.of(context).displayMedium,
+                ),
               ),
-            ),
-            const Divider(indent: 10, endIndent: 10),
-            CustomCard(
-              title: context.tr('core.card.article.title'),
-              redirect: "/articles",
-              body: Text(context.tr('core.card.article.description')),
-              icon: Icons.shopping_bag_rounded,
-            ),
-            CustomCard(
-              title: context.tr('core.card.category.title'),
-              redirect: "/categories",
-              body: Text(context.tr('core.card.category.description')),
-              icon: Icons.category,
-            ),
-            CustomCard(
-              title: context.tr('core.card.card.title'),
-              redirect: "/cards",
-              body: Text(context.tr('core.card.card.description')),
-              icon: Icons.credit_card_rounded,
-            ),
-          ],
+              const Divider(indent: 10, endIndent: 10),
+              CustomCard(
+                title: context.tr('core.card.article.title'),
+                redirect: "/articles",
+                body: Text(context.tr('core.card.article.description')),
+                icon: Icons.shopping_bag_rounded,
+              ),
+              CustomCard(
+                title: context.tr('core.card.category.title'),
+                redirect: "/categories",
+                body: Text(context.tr('core.card.category.description')),
+                icon: Icons.category,
+              ),
+              CustomCard(
+                title: context.tr('core.card.card.title'),
+                redirect: "/cards",
+                body: Text(context.tr('core.card.card.description')),
+                icon: Icons.credit_card_rounded,
+              ),
+            ],
+          ),
         ),
       ),
     );
