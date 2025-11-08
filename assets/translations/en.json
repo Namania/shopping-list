@@ -22,14 +22,19 @@
         "settings": {
             "title": "Settings",
             "item": {
-                "version": "App version",
-                "theme": "Theme",
-                "lang": "Language",
+                "main": {
+                    "version": "App version",
+                    "theme": "Theme",
+                    "lang": "Language",
+                    "backup": "Sauvegarde"
+                },
                 "route": {
                     "article": "Navigate to articles upon app launch ?",
                     "category": "Navigate to cards upon app launch ?"
                 },
-                "category": "Show uncategorized items at the top of the list ?",
+                "article": {
+                    "category": "Show uncategorized items at the top of the list ?"
+                },
                 "calculator": {
                     "enable": "Enable calculator ?"
                 },
@@ -40,13 +45,28 @@
             },
             "snack": {
                 "theme": "Theme has been set to: {theme}",
-                "lang": "Lang has been set to: {lang}"
+                "lang": "Lang has been set to: {lang}",
+                "backup": {
+                    "download": {
+                        "success": "Data downloaded",
+                        "failure": "Data can't be downloaded !"
+                    },
+                    "upload": {
+                        "success": "Data uploaded",
+                        "failure": "Data can't be uploaded !"
+                    }
+                }
             },
             "separator": {
                 "main": "General",
+                "article": "Article",
                 "startup": "Upon app launch",
                 "calculator": "Calculator",
                 "developer": "Developer"
+            },
+            "backup": {
+                "download": "Download",
+                "upload": "Upload"
             },
             "shareArticleMessage": "Here are my articles !\n[Shopping List]",
             "shareCategoryMessage": "Here are my categories !\n[Shopping List]",

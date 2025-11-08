@@ -1,6 +1,9 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
@@ -8,9 +11,18 @@ import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/theme_cubit.dart';
 import 'package:shopping_list/core/shared/widget/buy_me_a_coffee.dart';
+import 'package:shopping_list/core/shared/widget/custom_bottom_modal.dart';
 import 'package:shopping_list/core/shared/widget/settings_category.dart';
 import 'package:shopping_list/core/shared/widget/settings_item.dart';
+import 'package:shopping_list/features/article/data/models/article_model.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
+import 'package:shopping_list/features/cards/data/models/card_model.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
+import 'package:shopping_list/features/category/data/models/category_model.dart';
+import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 typedef MenuEntry = DropdownMenuEntry<String>;
 
@@ -39,6 +51,170 @@ class _SettingsState extends State<Settings> {
     isCardRoute = currentState == AvailableRoute.card;
     isCategoryFirst = context.read<SettingDefaultCategoryPosition>().getValue();
     isCalculatorEnabled = context.read<SettingEnableCalculator>().isEnabled();
+  }
+
+  void openBrowser(String url) async {
+    if (url != "") {
+      Uri uri = Uri.parse(url);
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
+          kDebugMode) {
+        print("Can't open url");
+      }
+    }
+  }
+
+  void handleBackup(BuildContext context) {
+    context.read<ArticleBloc>().add(ArticleGetAllEvent());
+    context.read<CardBloc>().add(CardGetAllEvent());
+    context.read<CategoryBloc>().add(CategoryGetAllEvent());
+    CustomBottomModal.modal(
+      context,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10,
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () async {
+                  DateTime now = DateTime.now();
+
+                  List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+                  List<CardModel> cards = context.read<CardBloc>().getAllCard();
+                  List<CategoryModel> categories = context.read<CategoryBloc>().getAllCategory();
+
+                  String data = jsonEncode({"articles": articles, "cards": cards, "categories": categories});
+                  String? file = await FilePicker.platform.saveFile(
+                    fileName: 'shopping-list_${now.toIso8601String()}.json',
+                    type: FileType.custom,
+                    allowedExtensions: ['json'],
+                    bytes: Uint8List.fromList(utf8.encode(data)),
+                  );
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.tr('core.settings.snack.backup.download.${file == null ? 'success' : 'failure'}'),
+                          style: TextTheme.of(context).labelLarge,
+                        ),
+                        backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainer,
+                        duration: Durations.extralong4,
+                      ),
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.file_download_rounded,
+                        size: 36,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.tr('core.settings.backup.download'),
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () async {
+                  bool imported = false;
+                  FilePickerResult? response = await FilePicker.platform
+                    .pickFiles(
+                      type: FileType.custom,
+                      allowMultiple: false,
+                      allowedExtensions: ["json"],
+                    );
+                  if (response != null) {
+                    String result = await response.files.first.xFile.readAsString();
+                    Map<String, dynamic> data = jsonDecode(result);
+                    if (context.mounted) {
+                      context.read<ArticleBloc>().add(
+                        ArticleImportEvent(
+                          json: jsonEncode(data["articles"]),
+                          defaultCategory: CategoryModel(
+                            label: context.mounted ? context.tr('category.default') : "Other",
+                            color:
+                                context.mounted
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.black,
+                          ),
+                        ),
+                      );
+                      context.read<CardBloc>().add(
+                        CardImportEvent(
+                          json: jsonEncode(data["cards"]),
+                        ),
+                      );
+                      context.read<CategoryBloc>().add(
+                        CategoryImportEvent(
+                          json: jsonEncode(data["categories"]),
+                        ),
+                      );
+                      imported = true;
+                      Navigator.pop(context);
+                    }
+                  }
+
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.tr('core.settings.snack.backup.download.${imported ? 'success' : 'failure'}'),
+                          style: TextTheme.of(context).labelLarge,
+                        ),
+                        backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainer,
+                        duration: Durations.extralong4,
+                      ),
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.upload_rounded,
+                        size: 36,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.tr('core.settings.backup.upload'),
+                        style: Theme.of(context).textTheme.labelLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   String getThemeName(String theme, String lang) {
@@ -123,12 +299,12 @@ class _SettingsState extends State<Settings> {
               children: [
                 SettingsItem(
                   icon: Icons.system_update_rounded,
-                  title: context.tr('core.settings.item.version'),
+                  title: context.tr('core.settings.item.main.version'),
                   trailing: Text(VERSION),
                 ),
                 SettingsItem(
                   icon: Icons.contrast_rounded,
-                  title: context.tr('core.settings.item.theme'),
+                  title: context.tr('core.settings.item.main.theme'),
                   trailing: DropdownMenu<String>(
                     initialSelection: themeMenuEntriesValue,
                     onSelected: (String? value) {
@@ -153,7 +329,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 SettingsItem(
                   icon: Icons.language,
-                  title: context.tr('core.settings.item.lang'),
+                  title: context.tr('core.settings.item.main.lang'),
                   trailing: DropdownMenu<String>(
                     initialSelection: langMenuEntriesValue,
                     onSelected: (String? value) {
@@ -167,10 +343,21 @@ class _SettingsState extends State<Settings> {
                     trailingIcon: Icon(Icons.arrow_drop_down_rounded),
                   ),
                 ),
+                SettingsItem(
+                  onTap: () => handleBackup(context),
+                  icon: Icons.cloud_rounded,
+                  title: context.tr('core.settings.item.main.backup'),
+                  trailing: Icon(Icons.arrow_right_rounded),
+                ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.article'),
+              children: [
                 SettingsItem.toggle(
                   context: context,
                   icon: Icons.swap_vert_rounded,
-                  title: context.tr('core.settings.item.category'),
+                  title: context.tr('core.settings.item.article.category'),
                   value: isCategoryFirst,
                   onToggle: (value) {
                     context.read<SettingDefaultCategoryPosition>().selectValue(
@@ -178,6 +365,32 @@ class _SettingsState extends State<Settings> {
                     );
                     setState(() {
                       isCategoryFirst = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            SettingsCategory(
+              title: context.tr('core.settings.separator.calculator'),
+              children: [
+                SettingsItem.toggle(
+                  context: context,
+                  icon: Icons.calculate_rounded,
+                  title: context.tr('core.settings.item.calculator.enable'),
+                  value: isCalculatorEnabled,
+                  onToggle: (value) {
+                    context.read<SettingEnableCalculator>().selectValue(
+                      value
+                          ? AvailableCalculatorState.enable
+                          : AvailableCalculatorState.disable,
+                    );
+                    if (!context.read<SettingEnableCalculator>().isEnabled()) {
+                      context.read<CalculatorBloc>().add(
+                        CalculatorResetEvent(),
+                      );
+                    }
+                    setState(() {
+                      isCalculatorEnabled = value;
                     });
                   },
                 ),
@@ -223,32 +436,6 @@ class _SettingsState extends State<Settings> {
               ],
             ),
             SettingsCategory(
-              title: context.tr('core.settings.separator.calculator'),
-              children: [
-                SettingsItem.toggle(
-                  context: context,
-                  icon: Icons.calculate_rounded,
-                  title: context.tr('core.settings.item.calculator.enable'),
-                  value: isCalculatorEnabled,
-                  onToggle: (value) {
-                    context.read<SettingEnableCalculator>().selectValue(
-                      value
-                          ? AvailableCalculatorState.enable
-                          : AvailableCalculatorState.disable,
-                    );
-                    if (!context.read<SettingEnableCalculator>().isEnabled()) {
-                      context.read<CalculatorBloc>().add(
-                        CalculatorResetEvent(),
-                      );
-                    }
-                    setState(() {
-                      isCalculatorEnabled = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SettingsCategory(
               title: context.tr('core.settings.separator.developer'),
               children: [
                 SettingsItem(
@@ -257,7 +444,7 @@ class _SettingsState extends State<Settings> {
                   trailing: Text("Namania"),
                 ),
                 SettingsItem(
-                  url: 'https://namania.fr',
+                  onTap: () => openBrowser('https://namania.fr'),
                   icon: Icons.language,
                   title: context.tr('core.settings.item.developer.website'),
                   trailing: Icon(Icons.arrow_right_rounded),
