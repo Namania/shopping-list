@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
@@ -63,6 +64,16 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  void snackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextTheme.of(context).labelLarge),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        duration: Durations.extralong4,
+      ),
+    );
+  }
+
   void handleBackup(BuildContext context) {
     context.read<ArticleBloc>().add(ArticleGetAllEvent());
     context.read<CardBloc>().add(CardGetAllEvent());
@@ -79,28 +90,29 @@ class _SettingsState extends State<Settings> {
                 onTap: () async {
                   DateTime now = DateTime.now();
 
-                  List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+                  List<ArticleModel> articles =
+                      context.read<ArticleBloc>().getAllArticle();
                   List<CardModel> cards = context.read<CardBloc>().getAllCard();
-                  List<CategoryModel> categories = context.read<CategoryBloc>().getAllCategory();
+                  List<CategoryModel> categories =
+                      context.read<CategoryBloc>().getAllCategory();
 
-                  String data = jsonEncode({"articles": articles, "cards": cards, "categories": categories});
+                  Map<String, dynamic> data = {
+                    "articles": articles.map((a) => a.toMap()).toList(),
+                    "cards": cards.map((c) => c.toMap()).toList(),
+                    "categories": categories.map((c) => c.toMap()).toList(),
+                  };
                   String? file = await FilePicker.platform.saveFile(
                     fileName: 'shopping-list_${now.toIso8601String()}.json',
                     type: FileType.custom,
                     allowedExtensions: ['json'],
-                    bytes: Uint8List.fromList(utf8.encode(data)),
+                    bytes: Uint8List.fromList(utf8.encode(jsonEncode(data))),
                   );
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr('core.settings.snack.backup.download.${file == null ? 'success' : 'failure'}'),
-                          style: TextTheme.of(context).labelLarge,
-                        ),
-                        backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer,
-                        duration: Durations.extralong4,
+                    snackBar(
+                      context,
+                      context.tr(
+                        'core.settings.snack.backup.download.${file != null ? 'success' : 'failure'}',
                       ),
                     );
                   }
@@ -133,55 +145,54 @@ class _SettingsState extends State<Settings> {
             Expanded(
               child: InkWell(
                 onTap: () async {
-                  bool imported = false;
                   FilePickerResult? response = await FilePicker.platform
-                    .pickFiles(
-                      type: FileType.custom,
-                      allowMultiple: false,
-                      allowedExtensions: ["json"],
-                    );
+                      .pickFiles(
+                        type: FileType.custom,
+                        allowMultiple: false,
+                        allowedExtensions: ["json"],
+                      );
                   if (response != null) {
-                    String result = await response.files.first.xFile.readAsString();
+                    String result =
+                        await response.files.first.xFile.readAsString();
                     Map<String, dynamic> data = jsonDecode(result);
                     if (context.mounted) {
-                      context.read<ArticleBloc>().add(
-                        ArticleImportEvent(
-                          json: jsonEncode(data["articles"]),
-                          defaultCategory: CategoryModel(
-                            label: context.mounted ? context.tr('category.default') : "Other",
-                            color:
-                                context.mounted
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.black,
-                          ),
-                        ),
-                      );
-                      context.read<CardBloc>().add(
-                        CardImportEvent(
-                          json: jsonEncode(data["cards"]),
-                        ),
+                      StreamSubscription? subscription;
+                      subscription = context.read<CategoryBloc>().stream.listen(
+                        (state) {
+                          if (state is CategorySuccess && context.mounted) {
+                            context.read<ArticleBloc>().add(
+                              ArticleImportEvent(
+                                json: jsonEncode(data["articles"]),
+                                defaultCategory: CategoryModel(
+                                  label: context.tr('category.default'),
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            );
+                            snackBar(
+                              context,
+                              context.tr(
+                                'core.settings.snack.backup.upload.success',
+                              ),
+                            );
+                            Navigator.pop(context);
+                            subscription?.cancel();
+                          }
+                        },
                       );
                       context.read<CategoryBloc>().add(
                         CategoryImportEvent(
                           json: jsonEncode(data["categories"]),
                         ),
                       );
-                      imported = true;
-                      Navigator.pop(context);
+                      context.read<CardBloc>().add(
+                        CardImportEvent(json: jsonEncode(data["cards"])),
+                      );
                     }
-                  }
-
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.tr('core.settings.snack.backup.download.${imported ? 'success' : 'failure'}'),
-                          style: TextTheme.of(context).labelLarge,
-                        ),
-                        backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer,
-                        duration: Durations.extralong4,
-                      ),
+                  } else if (context.mounted) {
+                    snackBar(
+                      context,
+                      context.tr('core.settings.snack.backup.upload.failed'),
                     );
                   }
                 },
