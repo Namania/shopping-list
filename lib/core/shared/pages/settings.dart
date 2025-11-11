@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/shared/cubit/migrate_article_id_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
@@ -100,6 +101,14 @@ class _SettingsState extends State<Settings> {
                     "articles": articles.map((a) => a.toMap()).toList(),
                     "cards": cards.map((c) => c.toMap()).toList(),
                     "categories": categories.map((c) => c.toMap()).toList(),
+                    "cubits": {
+                      "theme": context.read<ThemeCubit>().state.index,
+                      "route": context.read<SettingRouterCubit>().state.index,
+                      "calculator": context.read<SettingEnableCalculator>().state.index,
+                      "category": context.read<SettingDefaultCategoryPosition>().state.index,
+                      "migration_article_id": context.read<MigrateArticleIdCubit>().state,
+                      "lang": context.locale.languageCode,
+                    }
                   };
                   String? file = await FilePicker.platform.saveFile(
                     fileName: 'shopping-list_${now.toIso8601String()}.json',
@@ -169,25 +178,68 @@ class _SettingsState extends State<Settings> {
                                 ),
                               ),
                             );
-                            snackBar(
-                              context,
-                              context.tr(
-                                'core.settings.snack.backup.upload.success',
-                              ),
-                            );
-                            Navigator.pop(context);
                             subscription?.cancel();
                           }
                         },
                       );
-                      context.read<CategoryBloc>().add(
-                        CategoryImportEvent(
-                          json: jsonEncode(data["categories"]),
-                        ),
+                      if (data.containsKey("articles") &&
+                          data.containsKey("categories")) {
+                        context.read<CategoryBloc>().add(
+                          CategoryImportEvent(
+                            json: jsonEncode(data["categories"]),
+                          ),
+                        );
+                      }
+                      if (data.containsKey("cards")) {
+                        context.read<CardBloc>().add(
+                          CardImportEvent(json: jsonEncode(data["cards"])),
+                        );
+                      }
+                      if (data.containsKey("cubits")) {
+                        Map<String, dynamic> cubits = data["cubits"];
+                        for (MapEntry<String, dynamic> cubit
+                            in cubits.entries) {
+                          switch (cubit.key) {
+                            case "theme":
+                              context.read<ThemeCubit>().selectThemeMode(
+                                ThemeMode.values[cubit.value as int],
+                              );
+                              break;
+                            case "route":
+                              context.read<SettingRouterCubit>().selectRoute(
+                                AvailableRoute.values[cubit.value as int],
+                              );
+                              break;
+                            case "calculator":
+                              context.read<SettingEnableCalculator>().selectValue(
+                                AvailableCalculatorState.values[cubit.value as int],
+                              );
+                              break;
+                            case "category":
+                              context.read<SettingDefaultCategoryPosition>().selectValue(
+                                AvailableState.values[cubit.value as int],
+                              );
+                              break;
+                            case "migration_article_id":
+                              context.read<MigrateArticleIdCubit>().set(
+                                cubit.value
+                              );
+                              break;
+                            case "lang":
+                              Locale local = Locale(cubit.value);
+                              if (context.supportedLocales.contains(local)) {
+                                context.setLocale(local);
+                              }
+                              break;
+                          }
+                        }
+                      }
+
+                      snackBar(
+                        context,
+                        context.tr('core.settings.snack.backup.upload.success'),
                       );
-                      context.read<CardBloc>().add(
-                        CardImportEvent(json: jsonEncode(data["cards"])),
-                      );
+                      Navigator.pop(context);
                     }
                   } else if (context.mounted) {
                     snackBar(
