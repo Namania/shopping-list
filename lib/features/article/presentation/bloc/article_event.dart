@@ -53,3 +53,5 @@ class ToogleArticleDoneStateEvent extends ArticleEvent {
 }
 
 class ArticleMigrateIdEvent extends ArticleEvent {}
+
+class ArticleMigrateToMultipleListEvent extends ArticleEvent {}

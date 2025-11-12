@@ -9,6 +9,7 @@ import 'package:shopping_list/features/article/data/repositories/article_reposit
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
+import 'package:shopping_list/features/article/domain/usecases/migrate_article_to_multiple_list.dart';
 import 'package:shopping_list/features/article/domain/usecases/migrate_articles.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
@@ -114,6 +115,7 @@ void initArticle() {
     ..registerFactory<Clear>(() => Clear(getIt()))
     ..registerFactory<ArticleImport>(() => ArticleImport(getIt()))
     ..registerFactory<MigrateArticles>(() => MigrateArticles(getIt()))
+    ..registerFactory<MigrateArticleToMultipleList>(() => MigrateArticleToMultipleList(getIt()))
     // bloc
     ..registerLazySingleton<ArticleBloc>(
       () => ArticleBloc(
@@ -125,6 +127,7 @@ void initArticle() {
         clear: getIt(),
         articleImport: getIt(),
         migrateArticles: getIt(),
+        migrateToMultipleList: getIt(),
       ),
     );
 }

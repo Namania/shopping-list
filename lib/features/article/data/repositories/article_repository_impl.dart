@@ -1,4 +1,5 @@
 import 'package:shopping_list/features/article/data/datasources/article_remote_datasource.dart';
+import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:fpdart/fpdart.dart';
@@ -12,7 +13,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   ArticleRepositoryImpl(this.articleRemoteDatasource);
 
   @override
-  Future<Either<Failure, List<ArticleModel>>> getAll() async {
+  Future<Either<Failure, List<ArticleListModel>>> getAll() async {
     try {
       return Right(
         await articleRemoteDatasource.getAll(),
@@ -23,7 +24,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<Either<Failure, List<ArticleModel>>> addArticle({
+  Future<Either<Failure, List<ArticleListModel>>> addArticle({
     required ArticleModel article,
   }) async {
     try {
@@ -36,7 +37,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<Either<Failure, List<ArticleModel>>> removeArticle({
+  Future<Either<Failure, List<ArticleListModel>>> removeArticle({
     required ArticleModel article,
   }) async {
     try {
@@ -49,7 +50,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<Either<Failure, List<ArticleModel>>> toogleArticleDoneState({
+  Future<Either<Failure, List<ArticleListModel>>> toogleArticleDoneState({
     required ArticleModel article,
   }) async {
     try {
@@ -62,7 +63,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  Future<Either<Failure, List<ArticleModel>>> clear({
+  Future<Either<Failure, List<ArticleListModel>>> clear({
     required bool allArticle
   }) async {
     try {
@@ -77,7 +78,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<Either<Failure, List<ArticleModel>>> articleImport({
+  Future<Either<Failure, List<ArticleListModel>>> articleImport({
     required String json,
     required CategoryModel defaultCategory
   }) async {
@@ -94,7 +95,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
   
   @override
-  Future<Either<Failure, List<ArticleModel>>> updateArticle({
+  Future<Either<Failure, List<ArticleListModel>>> updateArticle({
     required ArticleModel article,
     required String label,
     required CategoryModel category,
@@ -113,10 +114,21 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  Future<Either<Failure, List<ArticleModel>>> migrateArticles() async {
+  Future<Either<Failure, List<ArticleListModel>>> migrateArticles() async {
     try {
       return Right(
         await articleRemoteDatasource.migrateArticles(),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ArticleListModel>>> migrateArticleToMultipleList() async {
+    try {
+      return Right(
+        await articleRemoteDatasource.migrateArticleToMultipleList(),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

@@ -1,16 +1,17 @@
 import 'package:shopping_list/core/errors/failure.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
-import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
-class GetAll implements UseCase<void, NoParams> {
+import '../../data/models/article_list_model.dart';
+
+class MigrateArticleToMultipleList implements UseCase<List<ArticleListModel>, NoParams> {
   final ArticleRepository articleRepository;
 
-  GetAll(this.articleRepository);
+  MigrateArticleToMultipleList(this.articleRepository);
 
   @override
   Future<Either<Failure, List<ArticleListModel>>> call(NoParams params) async {
-    return await articleRepository.getAll();
+    return await articleRepository.migrateArticleToMultipleList();
   }
 }

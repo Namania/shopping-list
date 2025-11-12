@@ -27,21 +27,21 @@ class CategoryCard extends StatelessWidget {
   void deleteCategory(BuildContext context) {
     context.read<CategoryBloc>().add(RemoveCategoryEvent(index: index));
     removeCategory(category);
-    List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
-    for (ArticleModel article in articles) {
-      if (article.category == category) {
-        context.read<ArticleBloc>().add(
-          UpdateArticleEvent(
-            article: article,
-            label: article.label,
-            category: CategoryModel(
-              label: context.tr('category.default'),
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        );
-      }
-    }
+    // List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+    // for (ArticleModel article in articles) {
+    //   if (article.category == category) {
+    //     context.read<ArticleBloc>().add(
+    //       UpdateArticleEvent(
+    //         article: article,
+    //         label: article.label,
+    //         category: CategoryModel(
+    //           label: context.tr('category.default'),
+    //           color: Theme.of(context).colorScheme.primary,
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // }
   }
 
   void editCategory(BuildContext context, CategoryModel category) async {
@@ -136,22 +136,22 @@ class CategoryCard extends StatelessWidget {
                 color: updatedCategory.color,
               ),
             );
-            List<ArticleModel> articles =
-                context.read<ArticleBloc>().getAllArticle();
-            for (ArticleModel article in articles) {
-              if (article.category == category) {
-                context.read<ArticleBloc>().add(
-                  UpdateArticleEvent(
-                    article: article,
-                    label: article.label,
-                    category: CategoryModel(
-                      label: updatedCategory.label,
-                      color: updatedCategory.color,
-                    ),
-                  ),
-                );
-              }
-            }
+            // List<ArticleModel> articles =
+            //     context.read<ArticleBloc>().getAllArticle();
+            // for (ArticleModel article in articles) {
+            //   if (article.category == category) {
+            //     context.read<ArticleBloc>().add(
+            //       UpdateArticleEvent(
+            //         article: article,
+            //         label: article.label,
+            //         category: CategoryModel(
+            //           label: updatedCategory.label,
+            //           color: updatedCategory.color,
+            //         ),
+            //       ),
+            //     );
+            //   }
+            // }
           } else if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

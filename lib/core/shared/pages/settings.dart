@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/shared/cubit/migrate_article_id_cubit.dart';
+import 'package:shopping_list/core/shared/cubit/migrate_article_to_multiple_list.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
@@ -89,42 +90,43 @@ class _SettingsState extends State<Settings> {
             Expanded(
               child: InkWell(
                 onTap: () async {
-                  DateTime now = DateTime.now();
+                  // DateTime now = DateTime.now();
 
-                  List<ArticleModel> articles =
-                      context.read<ArticleBloc>().getAllArticle();
-                  List<CardModel> cards = context.read<CardBloc>().getAllCard();
-                  List<CategoryModel> categories =
-                      context.read<CategoryBloc>().getAllCategory();
+                  // List<ArticleModel> articles =
+                  //     context.read<ArticleBloc>().getAllArticle();
+                  // List<CardModel> cards = context.read<CardBloc>().getAllCard();
+                  // List<CategoryModel> categories =
+                  //     context.read<CategoryBloc>().getAllCategory();
 
-                  Map<String, dynamic> data = {
-                    "articles": articles.map((a) => a.toMap()).toList(),
-                    "cards": cards.map((c) => c.toMap()).toList(),
-                    "categories": categories.map((c) => c.toMap()).toList(),
-                    "cubits": {
-                      "theme": context.read<ThemeCubit>().state.index,
-                      "route": context.read<SettingRouterCubit>().state.index,
-                      "calculator": context.read<SettingEnableCalculator>().state.index,
-                      "category": context.read<SettingDefaultCategoryPosition>().state.index,
-                      "migration_article_id": context.read<MigrateArticleIdCubit>().state,
-                      "lang": context.locale.languageCode,
-                    }
-                  };
-                  String? file = await FilePicker.platform.saveFile(
-                    fileName: 'shopping-list_${now.toIso8601String()}.json',
-                    type: FileType.custom,
-                    allowedExtensions: ['json'],
-                    bytes: Uint8List.fromList(utf8.encode(jsonEncode(data))),
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    snackBar(
-                      context,
-                      context.tr(
-                        'core.settings.snack.backup.download.${file != null ? 'success' : 'failure'}',
-                      ),
-                    );
-                  }
+                  // Map<String, dynamic> data = {
+                  //   "articles": articles.map((a) => a.toMap()).toList(),
+                  //   "cards": cards.map((c) => c.toMap()).toList(),
+                  //   "categories": categories.map((c) => c.toMap()).toList(),
+                  //   "cubits": {
+                  //     "theme": context.read<ThemeCubit>().state.index,
+                  //     "route": context.read<SettingRouterCubit>().state.index,
+                  //     "calculator": context.read<SettingEnableCalculator>().state.index,
+                  //     "category": context.read<SettingDefaultCategoryPosition>().state.index,
+                  //     "migration_article_id": context.read<MigrateArticleIdCubit>().state,
+                  //     "migrate_article_to_multiple_list": context.read<MigrateArticleToMultipleListCubit>().state,
+                  //     "lang": context.locale.languageCode,
+                  //   }
+                  // };
+                  // String? file = await FilePicker.platform.saveFile(
+                  //   fileName: 'shopping-list_${now.toIso8601String()}.json',
+                  //   type: FileType.custom,
+                  //   allowedExtensions: ['json'],
+                  //   bytes: Uint8List.fromList(utf8.encode(jsonEncode(data))),
+                  // );
+                  // if (context.mounted) {
+                  //   Navigator.pop(context);
+                  //   snackBar(
+                  //     context,
+                  //     context.tr(
+                  //       'core.settings.snack.backup.download.${file != null ? 'success' : 'failure'}',
+                  //     ),
+                  //   );
+                  // }
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
@@ -222,6 +224,11 @@ class _SettingsState extends State<Settings> {
                               break;
                             case "migration_article_id":
                               context.read<MigrateArticleIdCubit>().set(
+                                cubit.value
+                              );
+                              break;
+                            case "migrate_article_to_multiple_list":
+                              context.read<MigrateArticleToMultipleListCubit>().set(
                                 cubit.value
                               );
                               break;

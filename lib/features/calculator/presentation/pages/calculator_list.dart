@@ -112,68 +112,68 @@ class _CalculatorListState extends State<CalculatorList> {
           ),
         ],
       ),
-      body: BlocBuilder<CalculatorBloc, CalculatorState>(
-        buildWhen: (previous, state) {
-          return state is CalculatorSuccess;
-        },
-        builder: (context, state) {
-          final data = context.read<CalculatorBloc>().getAllCalculator();
-          final amount = context.read<CalculatorBloc>().getValue();
-          final List<ArticleModel> articles =
-              context.read<ArticleBloc>().getAllArticle();
-          if (data.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Text(
-                  context.tr('calculator.empty'),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 30,
-                    horizontal: 10,
-                  ),
-                  child: Text(
-                    "${context.tr('calculator.total')}\n${amount != null ? context.tr('calculator.success', args: [amount.toString()]) : context.tr('calculator.failure')}",
-                    textAlign: TextAlign.center,
-                    style: TextTheme.of(context).displaySmall!.apply(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-                const Divider(indent: 10, endIndent: 10),
-                ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                    top: 20,
-                    bottom: 60,
-                  ),
-                  shrinkWrap: true,
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    CalculatorModel model = data[index];
-                    List<ArticleModel> result =
-                        articles.where((a) => a.id == model.idArticle).toList();
-                    return CalculatorCard(
-                      result.isEmpty ? null : result.first,
-                      model: model,
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      // body: BlocBuilder<CalculatorBloc, CalculatorState>(
+      //   buildWhen: (previous, state) {
+      //     return state is CalculatorSuccess;
+      //   },
+      //   builder: (context, state) {
+      //     final data = context.read<CalculatorBloc>().getAllCalculator();
+      //     final amount = context.read<CalculatorBloc>().getValue();
+      //     final List<ArticleModel> articles =
+      //         context.read<ArticleBloc>().getAllArticle();
+      //     if (data.isEmpty) {
+      //       return Center(
+      //         child: Padding(
+      //           padding: const EdgeInsets.symmetric(horizontal: 30),
+      //           child: Text(
+      //             context.tr('calculator.empty'),
+      //             textAlign: TextAlign.center,
+      //           ),
+      //         ),
+      //       );
+      //     }
+      //     return SingleChildScrollView(
+      //       child: Column(
+      //         children: [
+      //           Padding(
+      //             padding: const EdgeInsets.symmetric(
+      //               vertical: 30,
+      //               horizontal: 10,
+      //             ),
+      //             child: Text(
+      //               "${context.tr('calculator.total')}\n${amount != null ? context.tr('calculator.success', args: [amount.toString()]) : context.tr('calculator.failure')}",
+      //               textAlign: TextAlign.center,
+      //               style: TextTheme.of(context).displaySmall!.apply(
+      //                 color: Theme.of(context).colorScheme.onSurface,
+      //               ),
+      //             ),
+      //           ),
+      //           const Divider(indent: 10, endIndent: 10),
+      //           ListView.builder(
+      //             physics: BouncingScrollPhysics(),
+      //             padding: EdgeInsets.only(
+      //               left: 10,
+      //               right: 10,
+      //               top: 20,
+      //               bottom: 60,
+      //             ),
+      //             shrinkWrap: true,
+      //             itemCount: data.length,
+      //             itemBuilder: (context, index) {
+      //               CalculatorModel model = data[index];
+      //               List<ArticleModel> result =
+      //                   articles.where((a) => a.id == model.idArticle).toList();
+      //               return CalculatorCard(
+      //                 result.isEmpty ? null : result.first,
+      //                 model: model,
+      //               );
+      //             },
+      //           ),
+      //         ],
+      //       ),
+      //     );
+      //   },
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),

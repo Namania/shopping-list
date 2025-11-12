@@ -7,8 +7,8 @@
         "welcome": "Bienvenue !",
         "card": {
             "article": {
-                "title": "Ma liste",
-                "description": "Voir ma liste d'article"
+                "title": "Mes listes",
+                "description": "Voir mes listes d'articles"
             },
             "card": {
                 "title": "Mes cartes",
@@ -72,6 +72,16 @@
             "shareCategoryMessage": "Voici mes catégories !\n[Shopping List]",
             "shareCardMessage": "Voici mes cartes !\n[Shopping List]"
         }
+    },
+    "articles": {
+        "options": {
+            "delete": "Supprimer",
+            "import": "Importer",
+            "share": "Partager"
+        },
+        "empty": "Aucune liste !",
+        "delete": "Supprimer",
+        "add": "Ajouter une liste"
     },
     "article": {
         "options": {

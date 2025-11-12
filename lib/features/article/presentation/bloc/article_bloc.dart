@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:shopping_list/core/usecase/usecase.dart';
+import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
+import 'package:shopping_list/features/article/domain/usecases/migrate_article_to_multiple_list.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
@@ -25,6 +27,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final Clear clear;
   final ArticleImport articleImport;
   final MigrateArticles migrateArticles;
+  final MigrateArticleToMultipleList migrateToMultipleList;
 
   ArticleBloc({
     required this.getAll,
@@ -35,6 +38,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     required this.clear,
     required this.articleImport,
     required this.migrateArticles,
+    required this.migrateToMultipleList,
   }) : super(ArticleInitial()) {
     on<ArticleEvent>((event, emit) {
       emit(ArticleLoading());
@@ -49,6 +53,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     );
     on<ArticleImportEvent>((event, emit) => _onArticleImport(event, emit));
     on<ArticleMigrateIdEvent>((event, emit) => _onMigrate(event, emit));
+    on<ArticleMigrateToMultipleListEvent>((event, emit) => _onMigrateArticleToMultipleList(event, emit));
     add(ArticleGetAllEvent());
   }
 
@@ -138,7 +143,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     );
   }
 
-  List<ArticleModel> getAllArticle() {
+  List<ArticleListModel> getAllArticle() {
     if (state is ArticleSuccess) {
       return (state as ArticleSuccess).articles.toList();
     }
@@ -148,6 +153,16 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   Future<void> _onMigrate(ArticleMigrateIdEvent event, Emitter emit) async {
     emit(ArticleLoading());
     final result = await migrateArticles(NoParams());
+
+    result.fold(
+      (l) => emit(ArticleFailure(message: l.message)),
+      (r) => emit(ArticleSuccess(articles: r)),
+    );
+  }
+
+  Future<void> _onMigrateArticleToMultipleList(ArticleMigrateToMultipleListEvent event, Emitter emit) async {
+    emit(ArticleLoading());
+    final result = await migrateToMultipleList(NoParams());
 
     result.fold(
       (l) => emit(ArticleFailure(message: l.message)),

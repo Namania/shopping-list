@@ -5,7 +5,9 @@ import 'package:shopping_list/core/shared/pages/home_page.dart';
 import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/core/utils/custom_json.dart';
+import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_list.dart';
+import 'package:shopping_list/features/article/presentation/pages/article_lists.dart';
 import 'package:shopping_list/features/calculator/presentation/pages/calculator_list.dart';
 import 'package:shopping_list/features/cards/presentation/pages/card_list.dart';
 import 'package:shopping_list/features/category/presentation/pages/category_list.dart';
@@ -62,7 +64,13 @@ final GoRouter appRouter = GoRouter(
       path: '/articles',
       pageBuilder:
           (context, state) =>
-              pageBuilder(context: context, state: state, page: ArticleList()),
+              pageBuilder(context: context, state: state, page: ArticleLists()),
+    ),
+    GoRoute(
+      path: '/article',
+      pageBuilder:
+          (context, state) =>
+              pageBuilder(context: context, state: state, page: ArticleList(articleList: state.extra as ArticleListModel)),
     ),
     GoRoute(
       path: '/cards',
