@@ -145,15 +145,6 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  Future<Either<Failure, List<ArticleListModel>>> migrateArticles() async {
-    try {
-      return Right(await articleRemoteDatasource.migrateArticles());
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
-    }
-  }
-
-  @override
   Future<Either<Failure, List<ArticleListModel>>>
   migrateArticleToMultipleList() async {
     try {

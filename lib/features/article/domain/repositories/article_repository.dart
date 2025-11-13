@@ -38,7 +38,5 @@ abstract interface class ArticleRepository {
     required String label,
     required CategoryModel category,
   });
-  Future<Either<Failure, List<ArticleListModel>>> migrateArticles();
-  Future<Either<Failure, List<ArticleListModel>>>
-  migrateArticleToMultipleList();
+  Future<Either<Failure, List<ArticleListModel>>> migrateArticleToMultipleList();
 }

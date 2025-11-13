@@ -73,6 +73,4 @@ class ToogleArticleDoneStateEvent extends ArticleEvent {
   const ToogleArticleDoneStateEvent({required this.id, required this.article});
 }
 
-class ArticleMigrateIdEvent extends ArticleEvent {}
-
 class ArticleMigrateToMultipleListEvent extends ArticleEvent {}

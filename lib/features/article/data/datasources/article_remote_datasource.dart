@@ -42,7 +42,6 @@ abstract interface class ArticleRemoteDatasource {
     required String label,
     required CategoryModel category,
   });
-  Future<List<ArticleListModel>> migrateArticles();
   Future<List<ArticleListModel>> migrateArticleToMultipleList();
 }
 
@@ -298,7 +297,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleListModel>> migrateArticles() async {
+  Future<List<ArticleListModel>> migrateArticleToMultipleList() async {
     try {
       Uuid uuid = Uuid();
       bool hasKey = prefs.containsKey("articles");
@@ -324,46 +323,20 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
             migratedArticles.add(article);
           }
         }
-
-        if (articles.length == migratedArticles.length) {
-          await prefs.setString(
-            "articles",
-            jsonEncode(migratedArticles.map((a) => a.toJson()).toList()),
-          );
-        }
-      }
-      return await getAll();
-    } catch (e) {
-      return await getAll();
-    }
-  }
-
-  @override
-  Future<List<ArticleListModel>> migrateArticleToMultipleList() async {
-    try {
-      Uuid uuid = Uuid();
-      bool hasKey = prefs.containsKey("articles");
-      String? response = prefs.getString("articles");
-
-      List<ArticleListModel> articleList = [];
-      if (hasKey && response != null) {
-        List<dynamic> articles = jsonDecode(response);
-        articleList.add(
+        
+        List<ArticleListModel> articleLists = [];
+        articleLists.add(
           ArticleListModel(
             id: uuid.v4(),
             label: "Default",
-            articles:
-                articles
-                    .map((article) => ArticleModel.fromJson(article))
-                    .toList(),
+            articles: migratedArticles,
           ),
         );
+        await prefs.setString(
+          "articles",
+          jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+        );
       }
-
-      await prefs.setString(
-        "articles",
-        jsonEncode(articleList.map((a) => a.toJson()).toList()),
-      );
       return await getAll();
     } catch (e) {
       return await getAll();

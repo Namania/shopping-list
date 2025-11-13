@@ -7,7 +7,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shopping_list/core/shared/cubit/migrate_article_id_cubit.dart';
 import 'package:shopping_list/core/shared/cubit/migrate_article_to_multiple_list.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
@@ -107,7 +106,6 @@ class _SettingsState extends State<Settings> {
                       "route": context.read<SettingRouterCubit>().state.index,
                       "calculator": context.read<SettingEnableCalculator>().state.index,
                       "category": context.read<SettingDefaultCategoryPosition>().state.index,
-                      "migration_article_id": context.read<MigrateArticleIdCubit>().state,
                       "migrate_article_to_multiple_list": context.read<MigrateArticleToMultipleListCubit>().state,
                       "lang": context.locale.languageCode,
                     }
@@ -220,11 +218,6 @@ class _SettingsState extends State<Settings> {
                             case "category":
                               context.read<SettingDefaultCategoryPosition>().selectValue(
                                 AvailableState.values[cubit.value as int],
-                              );
-                              break;
-                            case "migration_article_id":
-                              context.read<MigrateArticleIdCubit>().set(
-                                cubit.value
                               );
                               break;
                             case "migrate_article_to_multiple_list":

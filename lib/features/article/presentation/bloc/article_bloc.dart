@@ -15,8 +15,6 @@ import 'package:shopping_list/features/article/domain/usecases/toogle_article_do
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 
-import '../../domain/usecases/migrate_articles.dart';
-
 part 'article_event.dart';
 part 'article_state.dart';
 
@@ -30,7 +28,6 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final ToogleArticleDoneState toogleArticleDoneState;
   final Clear clear;
   final ArticleImport articleImport;
-  final MigrateArticles migrateArticles;
   final MigrateArticleToMultipleList migrateToMultipleList;
 
   ArticleBloc({
@@ -43,7 +40,6 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     required this.toogleArticleDoneState,
     required this.clear,
     required this.articleImport,
-    required this.migrateArticles,
     required this.migrateToMultipleList,
   }) : super(ArticleInitial()) {
     on<ArticleEvent>((event, emit) {
@@ -60,7 +56,6 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       (event, emit) => _onToogleArticleDoneState(event, emit),
     );
     on<ArticleImportEvent>((event, emit) => _onArticleImport(event, emit));
-    on<ArticleMigrateIdEvent>((event, emit) => _onMigrate(event, emit));
     on<ArticleMigrateToMultipleListEvent>(
       (event, emit) => _onMigrateArticleToMultipleList(event, emit),
     );
@@ -189,16 +184,6 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       return (state as ArticleSuccess).articles.toList();
     }
     return [];
-  }
-
-  Future<void> _onMigrate(ArticleMigrateIdEvent event, Emitter emit) async {
-    emit(ArticleLoading());
-    final result = await migrateArticles(NoParams());
-
-    result.fold(
-      (l) => emit(ArticleFailure(message: l.message)),
-      (r) => emit(ArticleSuccess(articles: r)),
-    );
   }
 
   Future<void> _onMigrateArticleToMultipleList(
