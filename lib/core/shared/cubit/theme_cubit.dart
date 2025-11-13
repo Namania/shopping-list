@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class ThemeCubit extends HydratedCubit<ThemeMode> {
@@ -24,35 +23,10 @@ class ThemeCubit extends HydratedCubit<ThemeMode> {
       case ThemeMode.dark:
         emit(ThemeMode.light);
     }
-    updateNavigationColor();
-  }
-
-  void updateNavigationColor() {
-    switch (state) {
-      case ThemeMode.system:
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: systemBrightness,
-        ));
-      case ThemeMode.light:
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ));
-      case ThemeMode.dark:
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
-        ));
-    }
   }
 
   void selectThemeMode(ThemeMode themeMode) {
     emit(themeMode);
-    updateNavigationColor();
   }
 
   @override
