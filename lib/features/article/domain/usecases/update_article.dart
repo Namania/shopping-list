@@ -17,6 +17,7 @@ class UpdateArticle
     UpdateArticleParams params,
   ) async {
     return await articleRepository.updateArticle(
+      id: params.id,
       article: params.article,
       label: params.label,
       category: params.category,
@@ -25,11 +26,13 @@ class UpdateArticle
 }
 
 class UpdateArticleParams {
+  final String id;
   final ArticleModel article;
   final String label;
   final CategoryModel category;
 
   UpdateArticleParams({
+    required this.id,
     required this.article,
     required this.label,
     required this.category,

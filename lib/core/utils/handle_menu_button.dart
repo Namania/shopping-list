@@ -15,15 +15,31 @@ class HandleMenuButton {
   static void click({
     required BuildContext context,
     required String action,
-    required List<dynamic> data,
-    required String deepLinkAction,
-    required Function import,
+    List<dynamic>? data,
+    String? deepLinkAction,
+    Function? import,
     Function? onDelete,
     Function? onMove,
   }) async {
     switch (action) {
       case 'share':
-        final rawJson = {"action": deepLinkAction, "json": data.map((a) => a.toMap()).toList()};
+        if (data == null || deepLinkAction == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                context.tr('core.error'),
+                style: TextTheme.of(context).labelLarge,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              duration: Durations.extralong4,
+            ),
+          );
+          return;
+        }
+        final rawJson = {
+          "action": deepLinkAction,
+          "json": data.map((a) => a.toMap()).toList(),
+        };
 
         final encodedData = Uri.encodeComponent(
           CustomJson.compressJson(jsonEncode(rawJson)),
@@ -67,7 +83,9 @@ class HandleMenuButton {
                   TextButton.icon(
                     onPressed: () async {
                       if (data.isNotEmpty) {
-                        String json = jsonEncode(data.map((a) => a.toMap()).toList());
+                        String json = jsonEncode(
+                          data.map((a) => a.toMap()).toList(),
+                        );
                         Directory temp = await getTemporaryDirectory();
                         String path = "${temp.path}/articles.json";
                         File(path).writeAsStringSync(json);
@@ -158,7 +176,10 @@ class HandleMenuButton {
                               ScanMode.QR,
                             );
                             Uri? uri = Uri.tryParse(res);
-                            if (res != "" && uri != null && context.mounted) {
+                            if (res != "" &&
+                                uri != null &&
+                                context.mounted &&
+                                import != null) {
                               final decoded = json.decode(
                                 CustomJson.decompressJson(
                                   uri.queryParameters['data'] ?? '',
@@ -205,7 +226,9 @@ class HandleMenuButton {
                                   allowMultiple: false,
                                   allowedExtensions: ["json"],
                                 );
-                            if (context.mounted && result != null) {
+                            if (context.mounted &&
+                                result != null &&
+                                import != null) {
                               import(
                                 await result.files.first.xFile.readAsString(),
                               );

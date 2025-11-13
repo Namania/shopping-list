@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
+import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
@@ -27,21 +28,24 @@ class CategoryCard extends StatelessWidget {
   void deleteCategory(BuildContext context) {
     context.read<CategoryBloc>().add(RemoveCategoryEvent(index: index));
     removeCategory(category);
-    // List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
-    // for (ArticleModel article in articles) {
-    //   if (article.category == category) {
-    //     context.read<ArticleBloc>().add(
-    //       UpdateArticleEvent(
-    //         article: article,
-    //         label: article.label,
-    //         category: CategoryModel(
-    //           label: context.tr('category.default'),
-    //           color: Theme.of(context).colorScheme.primary,
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // }
+    List<ArticleListModel> articleLists = context.read<ArticleBloc>().getAllArticle();
+    for (ArticleListModel list in articleLists) {
+      for (ArticleModel article in list.articles) {
+        if (article.category == category) {
+          context.read<ArticleBloc>().add(
+            UpdateArticleEvent(
+              id: list.id,
+              article: article,
+              label: article.label,
+              category: CategoryModel(
+                label: context.tr('category.default'),
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          );
+        }
+      }
+    }
   }
 
   void editCategory(BuildContext context, CategoryModel category) async {
@@ -136,22 +140,25 @@ class CategoryCard extends StatelessWidget {
                 color: updatedCategory.color,
               ),
             );
-            // List<ArticleModel> articles =
-            //     context.read<ArticleBloc>().getAllArticle();
-            // for (ArticleModel article in articles) {
-            //   if (article.category == category) {
-            //     context.read<ArticleBloc>().add(
-            //       UpdateArticleEvent(
-            //         article: article,
-            //         label: article.label,
-            //         category: CategoryModel(
-            //           label: updatedCategory.label,
-            //           color: updatedCategory.color,
-            //         ),
-            //       ),
-            //     );
-            //   }
-            // }
+            List<ArticleListModel> articleLists =
+                context.read<ArticleBloc>().getAllArticle();
+            for (ArticleListModel list in articleLists) {
+              for (ArticleModel article in list.articles) {
+                if (article.category == category) {
+                  context.read<ArticleBloc>().add(
+                    UpdateArticleEvent(
+                      id: list.id,
+                      article: article,
+                      label: article.label,
+                      category: CategoryModel(
+                        label: updatedCategory.label,
+                        color: updatedCategory.color,
+                      ),
+                    ),
+                  );
+                }
+              }
+            }
           } else if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

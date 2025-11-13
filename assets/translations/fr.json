@@ -68,33 +68,56 @@
                 "download": "Télécharger",
                 "upload": "Rétablir"
             },
-            "shareArticleMessage": "Voici mes articles !\n[Shopping List]",
+            "shareArticleMessage": "Voici ma list !\n[Shopping List]",
             "shareCategoryMessage": "Voici mes catégories !\n[Shopping List]",
             "shareCardMessage": "Voici mes cartes !\n[Shopping List]"
         }
     },
     "articles": {
         "options": {
-            "delete": "Supprimer",
-            "import": "Importer",
-            "share": "Partager"
+            "import": "Importer"
         },
-        "empty": "Aucune liste !",
+        "alert": {
+            "add": {
+                "title": "Ajouter une Liste",
+                "placeholder": {
+                    "label": "Entrez le nom de la liste"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "add": "Ajouter"
+                }
+            },
+            "confirm": {
+                "title": "Confirmez",
+                "description": "Voulez-vous vraiment la supprimer ?",
+                "action": {
+                    "yes": "Oui",
+                    "no": "Non"
+                }
+            }
+        },
+        "count": {
+            "zero": "Pas d'article",
+            "one": "{} article",
+            "many": "{} articles",
+            "other": "{} articles"
+        },
+        "card": "Voir la carte associée",
+        "empty": "Vous n'avez pas de liste !",
         "delete": "Supprimer",
         "add": "Ajouter une liste"
     },
     "article": {
         "options": {
-            "delete": "Supprimer",
-            "import": "Importer",
+            "delete": "Retirer",
             "share": "Partager"
         },
         "alert": {
             "add": {
                 "title": "Ajouter un article",
                 "placeholder": {
-                    "name": "Entrez le nom de l'article",
-                    "quantity": "Entrez sa quantité"
+                    "name": "Entrez le nom de l'article"
                 },
                 "action": {
                     "cancel": "Annuler",
@@ -116,8 +139,7 @@
             "edit": {
                 "title": "Modifier un article",
                 "placeholder": {
-                    "name": "Entrez le nom de l'article",
-                    "quantity": "Entrez sa quantité"
+                    "name": "Entrez le nom de l'article"
                 },
                 "action": {
                     "cancel": "Annuler",

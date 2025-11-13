@@ -48,15 +48,14 @@ final GoRouter appRouter = GoRouter(
           (context, state) =>
               pageBuilder(context: context, state: state, page: HomePage()),
     ),
-    GoRoute(
-      path: '/loading',
-      builder: (builder, state) => LoadingPage(),
-    ),
+    GoRoute(path: '/loading', builder: (builder, state) => LoadingPage()),
     GoRoute(
       path: '/deeplink',
       builder: (context, state) {
         final uri = state.uri;
-        final jsonData = CustomJson.decompressJson(uri.queryParameters['data'] ?? '');
+        final jsonData = CustomJson.decompressJson(
+          uri.queryParameters['data'] ?? '',
+        );
         return DeepLinkHandler(jsonData: jsonData);
       },
     ),
@@ -69,8 +68,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/article',
       pageBuilder:
-          (context, state) =>
-              pageBuilder(context: context, state: state, page: ArticleList(articleList: state.extra as ArticleListModel)),
+          (context, state) => pageBuilder(
+            context: context,
+            state: state,
+            page: ArticleList(
+              articleList: state.extra as ArticleListModel,
+            ),
+          ),
     ),
     GoRoute(
       path: '/cards',
@@ -93,8 +97,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/calculator',
       pageBuilder:
-          (context, state) =>
-              pageBuilder(context: context, state: state, page: CalculatorList()),
+          (context, state) => pageBuilder(
+            context: context,
+            state: state,
+            page: CalculatorList(),
+          ),
     ),
   ],
 );

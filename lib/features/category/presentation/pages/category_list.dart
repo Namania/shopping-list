@@ -217,7 +217,6 @@ class _CategoryListState extends State<CategoryList> {
                       ),
                       color: Theme.of(context).colorScheme.surfaceContainer,
                       icon: const Icon(Icons.more_vert),
-                      tooltip: context.tr("category.options.tooltip"),
                       itemBuilder: (context) {
                         final choices = [
                           {'label': 'share', 'icon': Icons.share_rounded},

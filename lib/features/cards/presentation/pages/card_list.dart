@@ -123,7 +123,6 @@ class _CardListState extends State<CardList> {
                       ),
                       color: Theme.of(context).colorScheme.surfaceContainer,
                       icon: const Icon(Icons.more_vert),
-                      tooltip: context.tr("card.options.tooltip"),
                       itemBuilder: (context) {
                         final choices = [
                           {'label': 'share', 'icon': Icons.share_rounded},

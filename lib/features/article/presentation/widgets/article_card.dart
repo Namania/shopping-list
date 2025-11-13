@@ -17,13 +17,18 @@ import 'package:shopping_list/features/category/presentation/bloc/category_bloc.
 import '../../../../core/shared/widget/custom_bottom_modal.dart';
 
 class ArticleCard extends StatelessWidget {
+  final String articleListId;
   final ArticleModel article;
 
-  const ArticleCard({super.key, required this.article});
+  const ArticleCard({
+    super.key,
+    required this.articleListId,
+    required this.article,
+  });
 
   void toogleArticleDoneState(BuildContext context) {
     context.read<ArticleBloc>().add(
-      ToogleArticleDoneStateEvent(article: article),
+      ToogleArticleDoneStateEvent(id: articleListId, article: article),
     );
   }
 
@@ -53,7 +58,7 @@ class ArticleCard extends StatelessWidget {
         },
         whenComplete: () {
           addToCalculator(context, inputController.text);
-        }
+        },
       );
     } else {
       context.read<CalculatorBloc>().add(
@@ -68,11 +73,17 @@ class ArticleCard extends StatelessWidget {
   }
 
   void deleteArticle(BuildContext context) {
-    context.read<ArticleBloc>().add(RemoveArticleEvent(article: article));
-    context.read<CalculatorBloc>().add(CalculatorSubtractEvent(value: CalculatorModel.fromMap({
-      "id_article": article.id,
-      "price": 0.0
-    })));
+    context.read<ArticleBloc>().add(
+      RemoveArticleEvent(id: articleListId, article: article),
+    );
+    context.read<CalculatorBloc>().add(
+      CalculatorSubtractEvent(
+        value: CalculatorModel.fromMap({
+          "id_article": article.id,
+          "price": 0.0,
+        }),
+      ),
+    );
   }
 
   void editArticle(BuildContext context, ArticleModel article) async {
@@ -161,6 +172,7 @@ class ArticleCard extends StatelessWidget {
         if (context.mounted) {
           context.read<ArticleBloc>().add(
             UpdateArticleEvent(
+              id: articleListId,
               article: article,
               label: data["label"],
               category: CategoryModel.fromMap(data["category"]),
@@ -270,7 +282,8 @@ class ArticleCard extends StatelessWidget {
             value: article.done,
             onChanged: (bool? value) {
               toogleArticleDoneState(context);
-              if (context.read<SettingEnableCalculator>().isEnabled() && value != null) {
+              if (context.read<SettingEnableCalculator>().isEnabled() &&
+                  value != null) {
                 updateCalculator(context, value);
               }
             },

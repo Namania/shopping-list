@@ -73,18 +73,51 @@
             "shareCardMessage": "Here are my cards !\n[Shopping List]"
         }
     },
+    "articles": {
+        "options": {
+            "import": "Import"
+        },
+        "alert": {
+            "add": {
+                "title": "Add new List",
+                "placeholder": {
+                    "label": "Entrer list name"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "add": "Add"
+                }
+            },
+            "confirm": {
+                "title": "Confirm",
+                "description": "Do you really want to delete it ?",
+                "action": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            }
+        },
+        "count": {
+            "zero": "No article",
+            "one": "{} article",
+            "many": "{} articles",
+            "other": "{} articles"
+        },
+        "card": "See linked card",
+        "empty": "You have any list !",
+        "delete": "Delete",
+        "add": "Add new list"
+    },
     "article": {
         "options": {
             "delete": "Delete",
-            "import": "Import",
             "export": "Export"
         },
         "alert": {
             "add": {
                 "title": "Add an article",
                 "placeholder": {
-                    "name": "Enter the name of the article",
-                    "quantity": "Enter his quantity"
+                    "name": "Enter the name of the article"
                 },
                 "action": {
                     "cancel": "Cancel",
@@ -106,8 +139,7 @@
             "edit": {
                 "title": "Update article",
                 "placeholder": {
-                    "name": "Enter the name of the article",
-                    "quantity": "Enter his quantity"
+                    "name": "Enter the name of the article"
                 },
                 "action": {
                     "cancel": "Cancel",

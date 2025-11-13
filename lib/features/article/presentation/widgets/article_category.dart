@@ -3,10 +3,12 @@ import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/widgets/article_card.dart';
 
 class ArticleCategory extends StatelessWidget {
+  final String articleListId;
   final ArticleModel article;
 
   const ArticleCategory({
     super.key,
+    required this.articleListId,
     required this.article,
   });
 
@@ -19,10 +21,13 @@ class ArticleCategory extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(5),
-            child: Text(article.category.label, style: TextTheme.of(context).titleLarge),
+            child: Text(
+              article.category.label,
+              style: TextTheme.of(context).titleLarge,
+            ),
           ),
           const Divider(indent: 10, endIndent: 10),
-          ArticleCard(article: article),
+          ArticleCard(articleListId: articleListId, article: article),
         ],
       ),
     );

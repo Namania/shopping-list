@@ -10,17 +10,34 @@ import '../models/article_model.dart';
 abstract interface class ArticleRemoteDatasource {
   Future<List<ArticleListModel>> getAll();
   Future<List<CategoryModel>> getAllCategories();
-  Future<List<ArticleListModel>> addArticle({required ArticleModel article});
-  Future<List<ArticleListModel>> removeArticle({required ArticleModel article});
-  Future<List<ArticleListModel>> toogleArticleDoneState({
+  Future<List<ArticleListModel>> addArticle({
+    required String id,
     required ArticleModel article,
   });
-  Future<List<ArticleListModel>> clear({required bool allArticle});
+  Future<List<ArticleListModel>> addList({
+    required ArticleListModel articleList,
+  });
+  Future<List<ArticleListModel>> removeArticle({
+    required String id,
+    required ArticleModel article,
+  });
+  Future<List<ArticleListModel>> removeList({
+    required ArticleListModel articleList,
+  });
+  Future<List<ArticleListModel>> toogleArticleDoneState({
+    required String id,
+    required ArticleModel article,
+  });
+  Future<List<ArticleListModel>> clear({
+    required String id,
+    required bool allArticle,
+  });
   Future<List<ArticleListModel>> articleImport({
     required String json,
     required CategoryModel defaultCategory,
   });
   Future<List<ArticleListModel>> updateArticle({
+    required String id,
     required ArticleModel article,
     required String label,
     required CategoryModel category,
@@ -42,7 +59,8 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
     List<ArticleListModel> data = [];
     if (hasKey && response != null) {
       List<dynamic> articleList = jsonDecode(response);
-      data = articleList.map((list) => ArticleListModel.fromJson(list)).toList();
+      data =
+          articleList.map((list) => ArticleListModel.fromJson(list)).toList();
     }
 
     return data;
@@ -66,18 +84,46 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleListModel>> addArticle({required ArticleModel article}) async {
+  Future<List<ArticleListModel>> addArticle({
+    required String id,
+    required ArticleModel article,
+  }) async {
     try {
-      // List<ArticleModel> articles = await getAll();
-      // List<ArticleModel> exist =
-      //     articles.where((a) => a.label == article.label).toList();
-      // if (exist.isEmpty) {
-      //   articles.add(article);
-      //   await prefs.setString(
-      //     "articles",
-      //     jsonEncode(articles.map((a) => a.toJson()).toList()),
-      //   );
-      // }
+      List<ArticleListModel> articleLists = await getAll();
+      ArticleListModel articleList = articleLists.singleWhere(
+        (l) => l.id == id,
+      );
+      List<ArticleModel> articles = articleList.articles;
+      List<ArticleModel> exist =
+          articles.where((a) => a.label == article.label).toList();
+      if (exist.isEmpty) {
+        articles.add(article);
+        await prefs.setString(
+          "articles",
+          jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+        );
+      }
+      return await getAll();
+    } catch (e) {
+      return await getAll();
+    }
+  }
+
+  @override
+  Future<List<ArticleListModel>> addList({
+    required ArticleListModel articleList,
+  }) async {
+    try {
+      List<ArticleListModel> articleLists = await getAll();
+      List<ArticleListModel> exist =
+          articleLists.where((a) => a.label == articleList.label).toList();
+      if (exist.isEmpty) {
+        articleLists.add(articleList);
+        await prefs.setString(
+          "articles",
+          jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+        );
+      }
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -86,15 +132,37 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
 
   @override
   Future<List<ArticleListModel>> removeArticle({
+    required String id,
     required ArticleModel article,
   }) async {
     try {
-      // List<ArticleModel> articles = await getAll();
-      // articles.remove(article);
-      // await prefs.setString(
-      //   "articles",
-      //   jsonEncode(articles.map((a) => a.toJson()).toList()),
-      // );
+      List<ArticleListModel> articleLists = await getAll();
+      ArticleListModel articleList = articleLists.singleWhere(
+        (l) => l.id == id,
+      );
+      List<ArticleModel> articles = articleList.articles;
+      articles.remove(article);
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
+      return await getAll();
+    } catch (e) {
+      return await getAll();
+    }
+  }
+
+  @override
+  Future<List<ArticleListModel>> removeList({
+    required ArticleListModel articleList,
+  }) async {
+    try {
+      List<ArticleListModel> articleLists = await getAll();
+      articleLists.remove(articleList);
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -103,16 +171,21 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
 
   @override
   Future<List<ArticleListModel>> toogleArticleDoneState({
+    required String id,
     required ArticleModel article,
   }) async {
     try {
-      // List<ArticleModel> articles = await getAll();
-      // int index = articles.indexOf(article);
-      // articles[index].done = !articles[index].done;
-      // await prefs.setString(
-      //   "articles",
-      //   jsonEncode(articles.map((a) => a.toJson()).toList()),
-      // );
+      List<ArticleListModel> articleLists = await getAll();
+      ArticleListModel articleList = articleLists.singleWhere(
+        (l) => l.id == id,
+      );
+      List<ArticleModel> articles = articleList.articles;
+      int index = articles.indexOf(article);
+      articles[index].done = !articles[index].done;
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -120,18 +193,33 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleListModel>> clear({required bool allArticle}) async {
+  Future<List<ArticleListModel>> clear({
+    required String id,
+    required bool allArticle,
+  }) async {
     try {
-      // if (allArticle) {
-      //   await prefs.setString("articles", "[]");
-      // } else {
-      //   List<ArticleModel> articles = await getAll();
-      //   articles.removeWhere((a) => a.done);
-      //   await prefs.setString(
-      //     "articles",
-      //     jsonEncode(articles.map((a) => a.toJson()).toList()),
-      //   );
-      // }
+      if (allArticle) {
+        List<ArticleListModel> articleLists = await getAll();
+        ArticleListModel articleList = articleLists.singleWhere(
+          (l) => l.id == id,
+        );
+        articleList.articles = [];
+        await prefs.setString(
+          "articles",
+          jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+        );
+      } else {
+        List<ArticleListModel> articleLists = await getAll();
+        ArticleListModel articleList = articleLists.singleWhere(
+          (l) => l.id == id,
+        );
+        List<ArticleModel> articles = articleList.articles;
+        articles.removeWhere((a) => a.done);
+        await prefs.setString(
+          "articles",
+          jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+        );
+      }
       return await getAll();
     } catch (e) {
       return [];
@@ -144,19 +232,25 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
     required CategoryModel defaultCategory,
   }) async {
     try {
-      // List<ArticleModel> articles = await getAll();
-      // List<CategoryModel> categories = await getAllCategories();
+      Uuid uuid = Uuid();
+      List<ArticleListModel> articleLists = await getAll();
+      List<CategoryModel> categories = await getAllCategories();
 
-      // List<dynamic> data = jsonDecode(json);
-      // for (Map<String, dynamic> element in data) {
-      //   ArticleModel article = ArticleModel.fromMap(element);
-      //   if (!categories.contains(article.category)) {
-      //     article.category = defaultCategory;
-      //   }
-      //   if (!articles.contains(article)) {
-      //     await addArticle(article: article);
-      //   }
-      // }
+      List<dynamic> data = jsonDecode(json);
+      for (Map<String, dynamic> list in data) {
+        list["id"] = uuid.v4();
+        ArticleListModel articleList = ArticleListModel.fromMap(list);
+        for (ArticleModel article in articleList.articles) {
+          if (!categories.contains(article.category)) {
+            article.category = defaultCategory;
+          }
+        }
+        articleLists.add(articleList);
+      }
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -165,33 +259,38 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
 
   @override
   Future<List<ArticleListModel>> updateArticle({
+    required String id,
     required ArticleModel article,
     required String label,
     required CategoryModel category,
   }) async {
     try {
-      // List<ArticleModel> articles = await getAll();
-      // int index = articles.indexOf(article);
-      // articles.removeAt(index);
-      // ArticleModel updatedArticle = ArticleModel(
-      //   id: article.id,
-      //   label: label,
-      //   category: category,
-      //   done: article.done,
-      // );
-      // articles.insert(index, updatedArticle);
-      // articles.sort(
-      //   (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
-      // );
-      // articles.sort(
-      //   (a, b) => a.category.label.toLowerCase().compareTo(
-      //     b.category.label.toLowerCase(),
-      //   ),
-      // );
-      // await prefs.setString(
-      //   "articles",
-      //   jsonEncode(articles.map((a) => a.toJson()).toList()),
-      // );
+      List<ArticleListModel> articleLists = await getAll();
+      ArticleListModel articleList = articleLists.singleWhere(
+        (l) => l.id == id,
+      );
+      List<ArticleModel> articles = articleList.articles;
+      int index = articles.indexOf(article);
+      articles.removeAt(index);
+      ArticleModel updatedArticle = ArticleModel(
+        id: article.id,
+        label: label,
+        category: category,
+        done: article.done,
+      );
+      articles.insert(index, updatedArticle);
+      articles.sort(
+        (a, b) => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
+      );
+      articles.sort(
+        (a, b) => a.category.label.toLowerCase().compareTo(
+          b.category.label.toLowerCase(),
+        ),
+      );
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -201,29 +300,38 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   @override
   Future<List<ArticleListModel>> migrateArticles() async {
     try {
-      // Uuid uuid = Uuid();
-      // List<ArticleModel> articles = await getAll();
-      // List<ArticleModel> migratedArticles = [];
-      // for (ArticleModel article in articles) {
-      //   if (article.id == "") {
-      //     ArticleModel newA = ArticleModel(
-      //       id: uuid.v4(),
-      //       label: article.label,
-      //       category: article.category,
-      //       done: article.done
-      //     );
-      //     migratedArticles.add(newA);
-      //   } else {
-      //     migratedArticles.add(article);
-      //   }
-      // }
+      Uuid uuid = Uuid();
+      bool hasKey = prefs.containsKey("articles");
+      String? response = prefs.getString("articles");
 
-      // if (articles.length == migratedArticles.length) {
-      //   await prefs.setString(
-      //     "articles",
-      //     jsonEncode(migratedArticles.map((a) => a.toJson()).toList()),
-      //   );
-      // }
+      if (hasKey && response != null) {
+        List<ArticleModel> articles = [];
+        List<dynamic> articleList = jsonDecode(response);
+        articles =
+            articleList.map((list) => ArticleModel.fromJson(list)).toList();
+
+        List<ArticleModel> migratedArticles = [];
+        for (ArticleModel article in articles) {
+          if (article.id == "") {
+            ArticleModel newA = ArticleModel(
+              id: uuid.v4(),
+              label: article.label,
+              category: article.category,
+              done: article.done,
+            );
+            migratedArticles.add(newA);
+          } else {
+            migratedArticles.add(article);
+          }
+        }
+
+        if (articles.length == migratedArticles.length) {
+          await prefs.setString(
+            "articles",
+            jsonEncode(migratedArticles.map((a) => a.toJson()).toList()),
+          );
+        }
+      }
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -240,11 +348,16 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       List<ArticleListModel> articleList = [];
       if (hasKey && response != null) {
         List<dynamic> articles = jsonDecode(response);
-        articleList.add(ArticleListModel(
-          id: uuid.v4(),
-          label: "Default",
-          articles: articles.map((article) => ArticleModel.fromJson(article)).toList()
-        ));
+        articleList.add(
+          ArticleListModel(
+            id: uuid.v4(),
+            label: "Default",
+            articles:
+                articles
+                    .map((article) => ArticleModel.fromJson(article))
+                    .toList(),
+          ),
+        );
       }
 
       await prefs.setString(

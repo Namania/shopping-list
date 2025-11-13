@@ -15,47 +15,77 @@ class ArticleRepositoryImpl implements ArticleRepository {
   @override
   Future<Either<Failure, List<ArticleListModel>>> getAll() async {
     try {
-      return Right(
-        await articleRemoteDatasource.getAll(),
-      );
+      return Right(await articleRemoteDatasource.getAll());
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<ArticleListModel>>> addArticle({
+    required String id,
     required ArticleModel article,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.addArticle(article: article),
+        await articleRemoteDatasource.addArticle(id: id, article: article),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
+  @override
+  Future<Either<Failure, List<ArticleListModel>>> addList({
+    required ArticleListModel articleList,
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.addList(articleList: articleList),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
   @override
   Future<Either<Failure, List<ArticleListModel>>> removeArticle({
+    required String id,
     required ArticleModel article,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.removeArticle(article: article),
+        await articleRemoteDatasource.removeArticle(id: id, article: article),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
+  @override
+  Future<Either<Failure, List<ArticleListModel>>> removeList({
+    required ArticleListModel articleList,
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.removeList(articleList: articleList),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
   @override
   Future<Either<Failure, List<ArticleListModel>>> toogleArticleDoneState({
+    required String id,
     required ArticleModel article,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.toogleArticleDoneState(article: article),
+        await articleRemoteDatasource.toogleArticleDoneState(
+          id: id,
+          article: article,
+        ),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
@@ -64,38 +94,38 @@ class ArticleRepositoryImpl implements ArticleRepository {
 
   @override
   Future<Either<Failure, List<ArticleListModel>>> clear({
-    required bool allArticle
+    required String id,
+    required bool allArticle,
   }) async {
     try {
       return Right(
-        await articleRemoteDatasource.clear(
-          allArticle: allArticle
-        ),
+        await articleRemoteDatasource.clear(id: id, allArticle: allArticle),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<ArticleListModel>>> articleImport({
     required String json,
-    required CategoryModel defaultCategory
+    required CategoryModel defaultCategory,
   }) async {
     try {
       return Right(
         await articleRemoteDatasource.articleImport(
           json: json,
-          defaultCategory: defaultCategory
+          defaultCategory: defaultCategory,
         ),
       );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<ArticleListModel>>> updateArticle({
+    required String id,
     required ArticleModel article,
     required String label,
     required CategoryModel category,
@@ -103,6 +133,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       return Right(
         await articleRemoteDatasource.updateArticle(
+          id: id,
           article: article,
           label: label,
           category: category,
@@ -116,16 +147,15 @@ class ArticleRepositoryImpl implements ArticleRepository {
   @override
   Future<Either<Failure, List<ArticleListModel>>> migrateArticles() async {
     try {
-      return Right(
-        await articleRemoteDatasource.migrateArticles(),
-      );
+      return Right(await articleRemoteDatasource.migrateArticles());
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, List<ArticleListModel>>> migrateArticleToMultipleList() async {
+  Future<Either<Failure, List<ArticleListModel>>>
+  migrateArticleToMultipleList() async {
     try {
       return Right(
         await articleRemoteDatasource.migrateArticleToMultipleList(),

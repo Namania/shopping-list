@@ -17,7 +17,7 @@ import 'package:shopping_list/features/article/presentation/widgets/article_cate
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
-import '../../../calculator/presentation/bloc/calculator_bloc.dart';
+// import '../../../calculator/presentation/bloc/calculator_bloc.dart';
 import '../../../calculator/presentation/widgets/display_amount.dart';
 
 class ArticleList extends StatefulWidget {
@@ -32,6 +32,7 @@ class ArticleList extends StatefulWidget {
 typedef MenuEntry = DropdownMenuEntry<String>;
 
 class _ArticleListState extends State<ArticleList> {
+
   void handleDelete(BuildContext context) async {
     bool? res = await DeleteAlertDialog.dialog(
       context,
@@ -40,11 +41,13 @@ class _ArticleListState extends State<ArticleList> {
       hasSelection: true,
     );
     if (res != null && context.mounted) {
-      context.read<ArticleBloc>().add(ClearEvent(allArticle: res));
-      if (context.read<SettingEnableCalculator>().isEnabled()) {
-        // List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
-        // context.read<CalculatorBloc>().add(CalculatorResetWithEvent(articles: articles));
-      }
+      context.read<ArticleBloc>().add(
+        ClearEvent(id: widget.articleList.id, allArticle: res),
+      );
+      // if (context.read<SettingEnableCalculator>().isEnabled()) {
+      // List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
+      // context.read<CalculatorBloc>().add(CalculatorResetWithEvent(articles: articles));
+      // }
     }
   }
 
@@ -130,7 +133,10 @@ class _ArticleListState extends State<ArticleList> {
             json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<ArticleBloc>().add(
-            AddArticleEvent(article: ArticleModel.fromMap(data)),
+            AddArticleEvent(
+              id: widget.articleList.id,
+              article: ArticleModel.fromMap(data),
+            ),
           );
         }
       }
@@ -154,22 +160,8 @@ class _ArticleListState extends State<ArticleList> {
     HandleMenuButton.click(
       context: context,
       action: value,
-      data: context.read<ArticleBloc>().getAllArticle(),
+      data: [context.read<ArticleBloc>().getAllArticle().singleWhere((l) => l.id == widget.articleList.id)],
       deepLinkAction: "importArticles",
-      import: (data) {
-        context.read<ArticleBloc>().add(
-          ArticleImportEvent(
-            json: data,
-            defaultCategory: CategoryModel(
-              label: context.mounted ? context.tr('category.default') : "Other",
-              color:
-                  context.mounted
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.black,
-            ),
-          ),
-        );
-      },
       onDelete: () {
         handleDelete(context);
       },
@@ -180,22 +172,6 @@ class _ArticleListState extends State<ArticleList> {
   Widget build(BuildContext context) {
     context.read<CategoryBloc>().add(CategoryGetAllEvent());
     final calculator = context.read<SettingEnableCalculator>().isEnabled();
-    final List<CategoryModel> categories =
-      context.read<CategoryBloc>().getAllCategory();
-
-    final List<ArticleModel> data = [];
-    categories.insert(
-      context.read<SettingDefaultCategoryPosition>().getValue()
-          ? 0
-          : categories.length,
-      CategoryModel(
-        label: context.tr('category.default'),
-        color: Theme.of(context).colorScheme.primary,
-      ),
-    );
-    for (CategoryModel category in categories) {
-      data.addAll(widget.articleList.articles.where((a) => a.category == category));
-    }
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -216,10 +192,8 @@ class _ArticleListState extends State<ArticleList> {
               itemBuilder: (context) {
                 final choices = [
                   {'label': 'share', 'icon': Icons.share_rounded},
-                  {'label': 'import', 'icon': Icons.download_rounded},
-                  {'label': 'delete', 'icon': Icons.delete},
+                  {'label': 'delete', 'icon': Icons.delete_rounded},
                 ];
-
                 return choices.map((choice) {
                   return PopupMenuItem<String>(
                     padding: EdgeInsets.only(left: 20, right: 10),
@@ -246,19 +220,56 @@ class _ArticleListState extends State<ArticleList> {
           ),
         ],
       ),
-      body: data.isEmpty ?
-        Center(child: (Text(context.tr('article.empty')))) :
-        ListView.builder(
-          padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            return index == 0 ||
-                    data[index - 1].category.label !=
-                        data[index].category.label
-                ? ArticleCategory(article: data[index])
-                : ArticleCard(article: data[index]);
-          },
-        ),
+      body: BlocBuilder<ArticleBloc, ArticleState>(
+        buildWhen: (previous, state) {
+          return state is ArticleSuccess;
+        },
+        builder: (context, state) {
+          final List<ArticleModel> articles =
+              context
+                  .read<ArticleBloc>()
+                  .getAllArticle()
+                  .singleWhere((l) => l.id == widget.articleList.id)
+                  .articles;
+
+          final List<CategoryModel> categories =
+              context.read<CategoryBloc>().getAllCategory();
+
+          final List<ArticleModel> data = [];
+          categories.insert(
+            context.read<SettingDefaultCategoryPosition>().getValue()
+                ? 0
+                : categories.length,
+            CategoryModel(
+              label: context.tr('category.default'),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          );
+          for (CategoryModel category in categories) {
+            data.addAll(articles.where((a) => a.category == category));
+          }
+
+          return data.isEmpty
+              ? Center(child: (Text(context.tr('article.empty'))))
+              : ListView.builder(
+                padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return index == 0 ||
+                          data[index - 1].category.label !=
+                              data[index].category.label
+                      ? ArticleCategory(
+                        articleListId: widget.articleList.id,
+                        article: data[index],
+                      )
+                      : ArticleCard(
+                        articleListId: widget.articleList.id,
+                        article: data[index],
+                      );
+                },
+              );
+        },
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FilledButton.icon(

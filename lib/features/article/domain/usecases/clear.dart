@@ -10,13 +10,19 @@ class Clear implements UseCase<void, ClearParams> {
   Clear(this.articleRepository);
 
   @override
-  Future<Either<Failure, List<ArticleListModel>>> call(ClearParams params) async {
-    return await articleRepository.clear(allArticle: params.allArticle);
+  Future<Either<Failure, List<ArticleListModel>>> call(
+    ClearParams params,
+  ) async {
+    return await articleRepository.clear(
+      id: params.id,
+      allArticle: params.allArticle,
+    );
   }
 }
 
 class ClearParams {
+  final String id;
   final bool allArticle;
 
-  ClearParams({required this.allArticle});
+  ClearParams({required this.id, required this.allArticle});
 }

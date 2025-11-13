@@ -25,5 +25,8 @@ class ArticleImportParams {
   final String json;
   final CategoryModel defaultCategory;
 
-  ArticleImportParams({required this.json, required this.defaultCategory});
+  ArticleImportParams({
+    required this.json,
+    required this.defaultCategory,
+  });
 }

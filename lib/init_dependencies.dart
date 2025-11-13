@@ -8,12 +8,14 @@ import 'package:shopping_list/features/article/data/datasources/article_remote_d
 import 'package:shopping_list/features/article/data/repositories/article_repository_impl.dart';
 import 'package:shopping_list/features/article/domain/repositories/article_repository.dart';
 import 'package:shopping_list/features/article/domain/usecases/add_article_from_map.dart';
+import 'package:shopping_list/features/article/domain/usecases/add_list.dart';
 import 'package:shopping_list/features/article/domain/usecases/article_import.dart';
 import 'package:shopping_list/features/article/domain/usecases/migrate_article_to_multiple_list.dart';
 import 'package:shopping_list/features/article/domain/usecases/migrate_articles.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_article_from_map.dart';
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
+import 'package:shopping_list/features/article/domain/usecases/remove_list.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
@@ -109,8 +111,10 @@ void initArticle() {
     // usecases
     ..registerFactory<GetAll>(() => GetAll(getIt()))
     ..registerFactory<AddArticle>(() => AddArticle(getIt()))
+    ..registerFactory<AddList>(() => AddList(getIt()))
     ..registerFactory<UpdateArticle>(() => UpdateArticle(getIt()))
     ..registerFactory<RemoveArticle>(() => RemoveArticle(getIt()))
+    ..registerFactory<RemoveList>(() => RemoveList(getIt()))
     ..registerFactory<ToogleArticleDoneState>(() => ToogleArticleDoneState(getIt()))
     ..registerFactory<Clear>(() => Clear(getIt()))
     ..registerFactory<ArticleImport>(() => ArticleImport(getIt()))
@@ -121,8 +125,10 @@ void initArticle() {
       () => ArticleBloc(
         getAll: getIt(),
         addArticle: getIt(),
+        addList: getIt(),
         updateArticle: getIt(),
         removeArticle: getIt(),
+        removeList: getIt(),
         toogleArticleDoneState: getIt(),
         clear: getIt(),
         articleImport: getIt(),
