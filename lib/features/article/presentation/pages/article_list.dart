@@ -20,7 +20,7 @@ import 'package:shopping_list/features/article/presentation/widgets/article_cate
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 
-// import '../../../calculator/presentation/bloc/calculator_bloc.dart';
+import '../../../calculator/presentation/bloc/calculator_bloc.dart';
 import '../../../calculator/presentation/widgets/display_amount.dart';
 
 // ignore: must_be_immutable
@@ -47,10 +47,11 @@ class _ArticleListState extends State<ArticleList> {
       context.read<ArticleBloc>().add(
         ClearEvent(id: widget.articleList.id, allArticle: res),
       );
-      // if (context.read<SettingEnableCalculator>().isEnabled()) {
-      // List<ArticleModel> articles = context.read<ArticleBloc>().getAllArticle();
-      // context.read<CalculatorBloc>().add(CalculatorResetWithEvent(articles: articles));
-      // }
+      if (context.read<SettingEnableCalculator>().isEnabled()) {
+        context.read<CalculatorBloc>().add(
+          CalculatorResetWithEvent(articles: widget.articleList.articles),
+        );
+      }
     }
   }
 
@@ -309,6 +310,7 @@ class _ArticleListState extends State<ArticleList> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ArticleBloc>().add(ArticleGetAllEvent());
     context.read<CategoryBloc>().add(CategoryGetAllEvent());
     context.read<CardBloc>().add(CardGetAllEvent());
     final calculator = context.read<SettingEnableCalculator>().isEnabled();
@@ -320,7 +322,13 @@ class _ArticleListState extends State<ArticleList> {
         ),
         title: Text(widget.articleList.label),
         actions: [
-          calculator ? DisplayAmount() : const SizedBox(),
+          calculator
+              ? DisplayAmount(
+                specificId: true,
+                idList: widget.articleList.id,
+                articles: widget.articleList.articles,
+              )
+              : const SizedBox(),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: PopupMenuButton<String>(

@@ -38,6 +38,7 @@ class ArticleCard extends StatelessWidget {
       context.read<CalculatorBloc>().add(
         CalculatorAddEvent(
           value: CalculatorModel.fromMap({
+            "id_list": articleListId,
             "id_article": article.id,
             "price": value,
           }),

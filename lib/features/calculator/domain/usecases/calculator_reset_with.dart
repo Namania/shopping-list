@@ -13,12 +13,13 @@ class CalculatorResetWith implements UseCase<void, CalculatorResetWithParams> {
 
   @override
   Future<Either<Failure, List<CalculatorModel>>> call(CalculatorResetWithParams params) async {
-    return await calculatorRepository.resetWith(articles: params.articles);
+    return await calculatorRepository.resetWith(idList: params.idList, articles: params.articles);
   }
 }
 
 class CalculatorResetWithParams {
+  final String? idList;
   final List<ArticleModel> articles;
 
-  const CalculatorResetWithParams({this.articles = const []});
+  const CalculatorResetWithParams({this.idList, this.articles = const []});
 }

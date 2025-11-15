@@ -5,13 +5,19 @@ import 'package:fpdart/fpdart.dart';
 import '../../data/models/calculator_model.dart';
 import '../repositories/calculator_repository.dart';
 
-class CalculatorReset implements UseCase<void, NoParams> {
+class CalculatorReset implements UseCase<void, CalculatorResetParams> {
   final CalculatorRepository calculatorRepository;
 
   CalculatorReset(this.calculatorRepository);
 
   @override
-  Future<Either<Failure, List<CalculatorModel>>> call(NoParams params) async {
-    return await calculatorRepository.reset();
+  Future<Either<Failure, List<CalculatorModel>>> call(CalculatorResetParams params) async {
+    return await calculatorRepository.reset(idList: params.idList);
   }
+}
+
+class CalculatorResetParams {
+  final String? idList;
+
+  const CalculatorResetParams({this.idList});
 }

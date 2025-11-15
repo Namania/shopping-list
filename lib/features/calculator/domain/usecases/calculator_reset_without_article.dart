@@ -12,12 +12,13 @@ class CalculatorResetWithoutArticle implements UseCase<void, CalculatorResetWith
 
   @override
   Future<Either<Failure, List<CalculatorModel>>> call(CalculatorResetWithoutArticleParams params) async {
-    return await calculatorRepository.resetWithoutArticle(articles: params.articles);
+    return await calculatorRepository.resetWithoutArticle(idList: params.idList, articles: params.articles);
   }
 }
 
 class CalculatorResetWithoutArticleParams {
+  final String? idList;
   final List<String> articles;
 
-  const CalculatorResetWithoutArticleParams({this.articles = const []});
+  const CalculatorResetWithoutArticleParams({this.idList, this.articles = const []});
 }

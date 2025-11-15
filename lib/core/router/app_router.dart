@@ -6,6 +6,7 @@ import 'package:shopping_list/core/shared/pages/loading_page.dart';
 import 'package:shopping_list/core/shared/pages/settings.dart';
 import 'package:shopping_list/core/utils/custom_json.dart';
 import 'package:shopping_list/features/article/data/models/article_list_model.dart';
+import 'package:shopping_list/features/article/data/models/article_model.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_list.dart';
 import 'package:shopping_list/features/article/presentation/pages/article_lists.dart';
 import 'package:shopping_list/features/calculator/presentation/pages/calculator_list.dart';
@@ -100,7 +101,11 @@ final GoRouter appRouter = GoRouter(
           (context, state) => pageBuilder(
             context: context,
             state: state,
-            page: CalculatorList(),
+            page: CalculatorList(
+              idList: (state.extra as Map<String, dynamic>)["idList"] as String,
+              specificId: (state.extra as Map<String, dynamic>)["specificId"] as bool,
+              articles: (state.extra as Map<String, dynamic>)["articles"] as List<ArticleModel>,
+            ),
           ),
     ),
   ],

@@ -11,12 +11,13 @@ class CalculatorAddWithoutArticle implements UseCase<List<CalculatorModel>, Calc
 
   @override
   Future<Either<Failure, List<CalculatorModel>>> call(CalculatorAddWithoutArticleParams params) async {
-    return await calculatorRepository.addWithoutArticle(price: params.price);
+    return await calculatorRepository.addWithoutArticle(idList: params.idList, price: params.price);
   }
 }
 
 class CalculatorAddWithoutArticleParams {
+  final String idList;
   final double price;
 
-  CalculatorAddWithoutArticleParams({required this.price});
+  CalculatorAddWithoutArticleParams({required this.idList, required this.price});
 }

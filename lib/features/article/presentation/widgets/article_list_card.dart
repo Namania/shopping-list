@@ -5,10 +5,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/widget/custom_bottom_modal.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
+import 'package:shopping_list/features/calculator/presentation/widgets/display_amount.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 
@@ -109,8 +111,12 @@ class ArticleListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final calculator = context.read<SettingEnableCalculator>().isEnabled();
     List<Widget> leftChildren = [
       Text(articleList.label, style: TextTheme.of(context).titleLarge),
+    ];
+    List<Widget> rightChildren = [
+      Text(context.plural('articles.count', articleList.articles.length)),
     ];
     if (articleList.card != "") {
       leftChildren.add(
@@ -136,7 +142,10 @@ class ArticleListCard extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: Text(card.label, style: TextTheme.of(context).titleLarge),
+                    child: Text(
+                      card.label,
+                      style: TextTheme.of(context).titleLarge,
+                    ),
                   ),
                   Container(
                     color: Colors.white,
@@ -153,6 +162,11 @@ class ArticleListCard extends StatelessWidget {
           },
           icon: Icon(Icons.credit_card_rounded),
         ),
+      );
+    }
+    if (calculator) {
+      rightChildren.add(
+        DisplayAmount(idList: articleList.id, articles: articleList.articles),
       );
     }
     return Card(
@@ -228,14 +242,7 @@ class ArticleListCard extends StatelessWidget {
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        context.plural(
-                          'articles.count',
-                          articleList.articles.length,
-                        ),
-                      ),
-                    ],
+                    children: rightChildren,
                   ),
                 ],
               ),

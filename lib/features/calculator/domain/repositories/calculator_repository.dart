@@ -9,10 +9,10 @@ abstract interface class CalculatorRepository {
   Future<Either<Failure, List<CalculatorModel>>> getAllWithArticle();
   Future<Either<Failure, List<CalculatorModel>>> getAllWithoutArticle();
   Future<Either<Failure, List<CalculatorModel>>> add({required CalculatorModel value});
-  Future<Either<Failure, List<CalculatorModel>>> addWithoutArticle({required double price});
+  Future<Either<Failure, List<CalculatorModel>>> addWithoutArticle({required String idList, required double price});
   Future<Either<Failure, List<CalculatorModel>>> subtract({required CalculatorModel value});
   Future<Either<Failure, List<CalculatorModel>>> subtractWithoutArticle({required CalculatorModel value});
-  Future<Either<Failure, List<CalculatorModel>>> reset();
-  Future<Either<Failure, List<CalculatorModel>>> resetWith({List<ArticleModel> articles = const []});
-  Future<Either<Failure, List<CalculatorModel>>> resetWithoutArticle({List<String> articles = const []});
+  Future<Either<Failure, List<CalculatorModel>>> reset({String? idList});
+  Future<Either<Failure, List<CalculatorModel>>> resetWith({String? idList, List<ArticleModel> articles = const []});
+  Future<Either<Failure, List<CalculatorModel>>> resetWithoutArticle({String? idList, List<String> articles = const []});
 }

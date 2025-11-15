@@ -10,12 +10,12 @@ abstract interface class CalculatorRemoteDatasource {
   Future<List<CalculatorModel>> getAllWithArticle();
   Future<List<CalculatorModel>> getAllWithoutArticle();
   Future<List<CalculatorModel>> add({required CalculatorModel value});
-  Future<List<CalculatorModel>> addWithoutArticle({required double price});
+  Future<List<CalculatorModel>> addWithoutArticle({required String idList, required double price});
   Future<List<CalculatorModel>> subtract({required CalculatorModel value});
   Future<List<CalculatorModel>> subtractWithoutArticle({required CalculatorModel value});
-  Future<List<CalculatorModel>> reset();
-  Future<List<CalculatorModel>> resetWith({List<ArticleModel> articles = const []});
-  Future<List<CalculatorModel>> resetWithoutArticle({List<String> articles = const []});
+  Future<List<CalculatorModel>> reset({String? idList});
+  Future<List<CalculatorModel>> resetWith({String? idList, List<ArticleModel> articles = const []});
+  Future<List<CalculatorModel>> resetWithoutArticle({String? idList, List<String> articles = const []});
 }
 
 class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
@@ -76,6 +76,7 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
           data.where((a) => a.idArticle == value.idArticle).toList();
       if (exist.isEmpty) {
         data.add(CalculatorModel(
+          idList: value.idList,
           idArticle: value.idArticle,
           price: value.price * 100
         ));
@@ -91,7 +92,7 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
   }
   
   @override
-  Future<List<CalculatorModel>> addWithoutArticle({required double price}) async {
+  Future<List<CalculatorModel>> addWithoutArticle({required String idList, required double price}) async {
     try {
       List<CalculatorModel> data = await getAllWithoutArticle();
       String id = uuid.v4();
@@ -99,6 +100,7 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
           data.where((a) => a.idArticle == id).toList();
       if (exist.isEmpty) {
         data.add(CalculatorModel(
+          idList: idList,
           idArticle: id,
           price: price * 100
         ));
@@ -144,10 +146,10 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
   }
 
   @override
-  Future<List<CalculatorModel>> reset() async {
+  Future<List<CalculatorModel>> reset({String? idList}) async {
     try {
-      await resetWith();
-      await resetWithoutArticle();
+      await resetWith(idList: idList);
+      await resetWithoutArticle(idList: idList);
       return await getAll();
     } catch (e) {
       return await getAll();
@@ -155,14 +157,18 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
   }
 
   @override
-  Future<List<CalculatorModel>> resetWith({List<ArticleModel> articles = const []}) async {
+  Future<List<CalculatorModel>> resetWith({String? idList, List<ArticleModel> articles = const []}) async {
     try {
       if (articles.isEmpty) {
         prefs.setString(STORED_KEY, "[]");
       } else {
         List<CalculatorModel> data = await getAllWithArticle();
         List<String> uuid = articles.where((a) => a.done).map((a) => a.id).toList();
-        data.removeWhere((c) => uuid.contains(c.idArticle));
+        if (idList != null) {
+          data.removeWhere((c) => c.idList == idList && uuid.contains(c.idArticle));
+        } else {
+          data.removeWhere((c) => uuid.contains(c.idArticle));
+        }
         await prefs.setString(
           STORED_KEY,
           jsonEncode(data.map((c) => c.toJson()).toList()),
@@ -175,13 +181,17 @@ class CalculatorRemoteDatasourceImpl implements CalculatorRemoteDatasource {
   }
 
   @override
-  Future<List<CalculatorModel>> resetWithoutArticle({List<String> articles = const []}) async {
+  Future<List<CalculatorModel>> resetWithoutArticle({String? idList, List<String> articles = const []}) async {
     try {
       if (articles.isEmpty) {
         prefs.setString(STORED_WITHOUT_ARTICLE_KEY, "[]");
       } else {
         List<CalculatorModel> data = await getAllWithoutArticle();
-        data.removeWhere((c) => articles.contains(c.idArticle));
+        if (idList != null) {
+          data.removeWhere((c) => c.idList == idList && articles.contains(c.idArticle));
+        } else {
+          data.removeWhere((c) => articles.contains(c.idArticle));
+        }
         await prefs.setString(
           STORED_WITHOUT_ARTICLE_KEY,
           jsonEncode(data.map((c) => c.toJson()).toList()),

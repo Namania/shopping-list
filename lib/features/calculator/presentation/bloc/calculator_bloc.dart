@@ -101,7 +101,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   
   Future<void> _onCalculatorAddWithoutArticle(CalculatorAddWithoutArticleEvent event, Emitter emit) async {
     emit(CalculatorLoading());
-    final result = await calculatorAddWithoutArticle(CalculatorAddWithoutArticleParams(price: event.price));
+    final result = await calculatorAddWithoutArticle(CalculatorAddWithoutArticleParams(idList: event.idList, price: event.price));
 
     result.fold(
       (l) => emit(CalculatorFailure(message: l.message)),
@@ -131,7 +131,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   
   Future<void> _onCalculatorReset(CalculatorResetEvent event, Emitter emit) async {
     emit(CalculatorLoading());
-    final result = await calculatorReset(NoParams());
+    final result = await calculatorReset(CalculatorResetParams(idList: event.idList));
 
     result.fold(
       (l) => emit(CalculatorFailure(message: l.message)),
@@ -151,7 +151,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   
   Future<void> _onCalculatorResetWithoutArticle(CalculatorResetWithoutArticleEvent event, Emitter emit) async {
     emit(CalculatorLoading());
-    final result = await calculatorResetWithoutArticle(CalculatorResetWithoutArticleParams(articles: event.articles));
+    final result = await calculatorResetWithoutArticle(CalculatorResetWithoutArticleParams(idList: event.idList, articles: event.articles));
 
     result.fold(
       (l) => emit(CalculatorFailure(message: l.message)),
@@ -170,9 +170,27 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     return null;
   }
 
+  double? getValueByListId(String id) {
+    if (state is CalculatorSuccess) {
+      double amount = 0;
+      for (CalculatorModel model in (state as CalculatorSuccess).data.where((c) => c.idList == id).toList()) {
+        amount += model.price;
+      }
+      return amount / 100;
+    }
+    return null;
+  }
+
   List<CalculatorModel> getAllCalculator() {
     if (state is CalculatorSuccess) {
       return (state as CalculatorSuccess).data;
+    }
+    return [];
+  }
+
+  List<CalculatorModel> getCalculatorByListId(String id) {
+    if (state is CalculatorSuccess) {
+      return (state as CalculatorSuccess).data.where((c) => c.idList == id).toList();
     }
     return [];
   }

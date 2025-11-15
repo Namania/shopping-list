@@ -49,9 +49,9 @@ class CalculatorRepositoryImpl implements CalculatorRepository {
   }
 
   @override
-  Future<Either<Failure, List<CalculatorModel>>> addWithoutArticle({required double price}) async {
+  Future<Either<Failure, List<CalculatorModel>>> addWithoutArticle({required String idList, required double price}) async {
     try {
-      return Right(await calculatorRemoteDatasource.addWithoutArticle(price: price));
+      return Right(await calculatorRemoteDatasource.addWithoutArticle(idList: idList, price: price));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
@@ -76,27 +76,27 @@ class CalculatorRepositoryImpl implements CalculatorRepository {
   }
   
   @override
-  Future<Either<Failure, List<CalculatorModel>>> reset() async {
+  Future<Either<Failure, List<CalculatorModel>>> reset({String? idList}) async {
     try {
-      return Right(await calculatorRemoteDatasource.reset());
+      return Right(await calculatorRemoteDatasource.reset(idList: idList));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
   
   @override
-  Future<Either<Failure, List<CalculatorModel>>> resetWith({List<ArticleModel> articles = const []}) async {
+  Future<Either<Failure, List<CalculatorModel>>> resetWith({String? idList, List<ArticleModel> articles = const []}) async {
     try {
-      return Right(await calculatorRemoteDatasource.resetWith(articles: articles));
+      return Right(await calculatorRemoteDatasource.resetWith(idList: idList, articles: articles));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
   }
   
   @override
-  Future<Either<Failure, List<CalculatorModel>>> resetWithoutArticle({List<String> articles = const []}) async {
+  Future<Either<Failure, List<CalculatorModel>>> resetWithoutArticle({String? idList, List<String> articles = const []}) async {
     try {
-      return Right(await calculatorRemoteDatasource.resetWithoutArticle(articles: articles));
+      return Right(await calculatorRemoteDatasource.resetWithoutArticle(idList: idList, articles: articles));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }

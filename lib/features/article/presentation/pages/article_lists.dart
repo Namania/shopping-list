@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/utils/handle_menu_button.dart';
 import 'package:shopping_list/features/article/data/models/article_list_model.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/article/presentation/widgets/article_list_card.dart';
+import 'package:shopping_list/features/calculator/presentation/widgets/display_amount.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -163,6 +165,7 @@ class _ArticleListsState extends State<ArticleLists> {
 
   @override
   Widget build(BuildContext context) {
+    final calculator = context.read<SettingEnableCalculator>().isEnabled();
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -171,6 +174,12 @@ class _ArticleListsState extends State<ArticleLists> {
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [
+          calculator
+              ? DisplayAmount(
+                idList: "",
+                articles: articleLists.expand((m) => m.articles).toList(),
+              )
+              : const SizedBox(),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child:

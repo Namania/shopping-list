@@ -20,9 +20,10 @@ class CalculatorAddEvent extends CalculatorEvent {
 }
 
 class CalculatorAddWithoutArticleEvent extends CalculatorEvent {
+  final String idList;
   final double price;
 
-  const CalculatorAddWithoutArticleEvent({required this.price});
+  const CalculatorAddWithoutArticleEvent({required this.idList, required this.price});
 }
 
 class CalculatorSubtractEvent extends CalculatorEvent {
@@ -37,16 +38,22 @@ class CalculatorSubtractWithoutArticleEvent extends CalculatorEvent {
   const CalculatorSubtractWithoutArticleEvent({required this.value});
 }
 
-class CalculatorResetEvent extends CalculatorEvent {}
+class CalculatorResetEvent extends CalculatorEvent {
+  final String? idList;
+
+  const CalculatorResetEvent({this.idList});
+}
 
 class CalculatorResetWithEvent extends CalculatorEvent {
+  final String? idList;
   final List<ArticleModel> articles;
   
-  const CalculatorResetWithEvent({this.articles = const []});
+  const CalculatorResetWithEvent({this.idList, this.articles = const []});
 }
 
 class CalculatorResetWithoutArticleEvent extends CalculatorEvent {
+  final String? idList;
   final List<String> articles;
   
-  const CalculatorResetWithoutArticleEvent({this.articles = const []});
+  const CalculatorResetWithoutArticleEvent({this.idList, this.articles = const []});
 }
