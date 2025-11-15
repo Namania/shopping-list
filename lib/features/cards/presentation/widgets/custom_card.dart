@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
+import 'package:shopping_list/features/article/data/models/article_list_model.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
@@ -15,12 +17,17 @@ class CustomCard extends StatelessWidget {
   final Function removeCard;
   final bool movableMode;
 
-  const CustomCard({super.key, required this.card, required this.movableMode, required this.removeCard});
+  const CustomCard({
+    super.key,
+    required this.card,
+    required this.movableMode,
+    required this.removeCard,
+  });
 
   void updateCard(BuildContext context, CardModel card) async {
     final labelController = TextEditingController();
     final codeController = TextEditingController();
-    
+
     Color pickerColor = card.color.withAlpha(255);
 
     void changeColor(Color color) {
@@ -46,7 +53,9 @@ class CustomCard extends StatelessWidget {
                     TextField(
                       controller: labelController,
                       decoration: InputDecoration(
-                        hintText: context.tr('card.alert.edit.placeholder.name'),
+                        hintText: context.tr(
+                          'card.alert.edit.placeholder.name',
+                        ),
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.name,
@@ -54,7 +63,9 @@ class CustomCard extends StatelessWidget {
                     TextField(
                       controller: codeController,
                       decoration: InputDecoration(
-                        hintText: context.tr('card.alert.edit.placeholder.code'),
+                        hintText: context.tr(
+                          'card.alert.edit.placeholder.code',
+                        ),
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.streetAddress,
@@ -101,7 +112,8 @@ class CustomCard extends StatelessWidget {
 
     try {
       if (response != null && response != '') {
-        Map<String, dynamic> data = json.decode(response) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<CardBloc>().add(
             UpdateCardEvent(
@@ -141,11 +153,17 @@ class CustomCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Dismissible(
         key: GlobalKey(),
-        onDismissed:
-            (direction) {
-              context.read<CardBloc>().add(RemoveCardEvent(card: card));
-              removeCard(card);
-            },
+        onDismissed: (direction) {
+          context.read<CardBloc>().add(RemoveCardEvent(card: card));
+          removeCard(card);
+          List<ArticleListModel> articleLists =
+              context.read<ArticleBloc>().getAllArticle();
+          for (ArticleListModel list in articleLists) {
+            context.read<ArticleBloc>().add(
+              UpdateListEvent(articleList: list, label: list.label, card: ""),
+            );
+          }
+        },
         confirmDismiss: (direction) async {
           return await DeleteAlertDialog.dialog(context, 'card');
         },
@@ -157,15 +175,12 @@ class CustomCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: 5,
               children: [
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
                 Text(
                   "Supprimer",
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
               ],
             ),
@@ -181,14 +196,11 @@ class CustomCard extends StatelessWidget {
               children: [
                 Text(
                   "Supprimer",
-                  style: TextTheme.of(context).bodyLarge!.apply(
-                    color: Colors.white,
-                  ),
+                  style: TextTheme.of(
+                    context,
+                  ).bodyLarge!.apply(color: Colors.white),
                 ),
-                Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                ),
+                Icon(Icons.delete_rounded, color: Colors.white),
               ],
             ),
           ),
@@ -198,12 +210,13 @@ class CustomCard extends StatelessWidget {
             updateCard(context, card);
           },
           child: ExpansionTile(
-            leading: movableMode ? Icon(Icons.drag_handle_rounded) : Badge(
-              padding: EdgeInsets.zero,
-              label: CircleAvatar(
-                backgroundColor: card.color,
-              ),
-            ),
+            leading:
+                movableMode
+                    ? Icon(Icons.drag_handle_rounded)
+                    : Badge(
+                      padding: EdgeInsets.zero,
+                      label: CircleAvatar(backgroundColor: card.color),
+                    ),
             tilePadding: EdgeInsets.only(
               top: 10,
               bottom: 10,

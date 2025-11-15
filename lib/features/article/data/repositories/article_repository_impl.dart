@@ -145,6 +145,42 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
+  Future<Either<Failure, List<ArticleListModel>>> updateArticleList({
+    required ArticleListModel articleList,
+    required String label,
+    required String card,
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.updateArticleList(
+          articleList: articleList,
+          label: label,
+          card: card,
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ArticleListModel>>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      return Right(
+        await articleRemoteDatasource.rerange(
+          oldIndex: oldIndex,
+          newIndex: newIndex,
+        ),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<ArticleListModel>>>
   migrateArticleToMultipleList() async {
     try {

@@ -9,6 +9,7 @@ class ArticleListModel extends ArticleList {
   ArticleListModel({
     required super.id,
     required super.label,
+    required super.card,
     required super.articles,
   });
 
@@ -16,14 +17,16 @@ class ArticleListModel extends ArticleList {
     return <String, dynamic>{
       'id': id,
       'label': label,
+      'card': card,
       'articles': articles.map((a) => a.toMap()).toList(),
     };
   }
 
   factory ArticleListModel.fromMap(Map<String, dynamic> map) {
     return ArticleListModel(
-      id: (map.containsKey('id') ? map['id'] : "") as String,
+      id: map['id'] as String,
       label: map['label'] as String,
+      card: map['card'] as String,
       articles: (map['articles'] as List<dynamic>).map((a) => ArticleModel.fromMap(a)).toList(),
     );
   }

@@ -36,6 +36,18 @@ class UpdateArticleEvent extends ArticleEvent {
   });
 }
 
+class UpdateListEvent extends ArticleEvent {
+  final ArticleListModel articleList;
+  final String label;
+  final String card;
+
+  const UpdateListEvent({
+    required this.articleList,
+    required this.label,
+    required this.card,
+  });
+}
+
 class ArticleImportEvent extends ArticleEvent {
   final String json;
   final CategoryModel defaultCategory;
@@ -74,3 +86,13 @@ class ToogleArticleDoneStateEvent extends ArticleEvent {
 }
 
 class ArticleMigrateToMultipleListEvent extends ArticleEvent {}
+
+class RerangeArticleEvent extends ArticleEvent {
+  final int oldIndex;
+  final int newIndex;
+
+  const RerangeArticleEvent({
+    required this.oldIndex,
+    required this.newIndex,
+  });
+}

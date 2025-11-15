@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -20,6 +21,18 @@ class ArticleLists extends StatefulWidget {
 typedef MenuEntry = DropdownMenuEntry<String>;
 
 class _ArticleListsState extends State<ArticleLists> {
+  bool movableMode = false;
+  bool _isDragging = false;
+  List<ArticleListModel> articleLists = [];
+  final ScrollController _scrollController = ScrollController();
+  Timer? _scrollTimer;
+
+  @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void handleClick(BuildContext context, String value) async {
     HandleMenuButton.click(
@@ -38,6 +51,11 @@ class _ArticleListsState extends State<ArticleLists> {
             ),
           ),
         );
+      },
+      onMove: () {
+        setState(() {
+          movableMode = true;
+        });
       },
     );
   }
@@ -81,7 +99,7 @@ class _ArticleListsState extends State<ArticleLists> {
                     () => Navigator.pop(
                       context,
                       labelController.text != ""
-                          ? '{"id": "${uuid.v4()}","label": "${labelController.text}", "articles": []}'
+                          ? '{"id": "${uuid.v4()}","label": "${labelController.text}", "card": "", "articles": []}'
                           : "",
                     ),
                 child: Text(context.tr('article.alert.add.action.add')),
@@ -96,9 +114,7 @@ class _ArticleListsState extends State<ArticleLists> {
             json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
           context.read<ArticleBloc>().add(
-            AddListEvent(
-              articleList: ArticleListModel.fromMap(data),
-            ),
+            AddListEvent(articleList: ArticleListModel.fromMap(data)),
           );
         }
       }
@@ -118,6 +134,33 @@ class _ArticleListsState extends State<ArticleLists> {
     }
   }
 
+  void removeArticleList(ArticleListModel articleList) {
+    setState(() {
+      articleLists.remove(articleList);
+    });
+  }
+
+  void _startScroll(double offset) {
+    _scrollTimer ??= Timer.periodic(Duration(milliseconds: 50), (_) {
+      if (_scrollController.hasClients) {
+        final newOffset = _scrollController.offset + offset;
+        _scrollController.animateTo(
+          newOffset.clamp(
+            _scrollController.position.minScrollExtent,
+            _scrollController.position.maxScrollExtent,
+          ),
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  void _stopScroll() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,60 +173,142 @@ class _ArticleListsState extends State<ArticleLists> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: PopupMenuButton<String>(
-              onSelected: (value) => handleClick(context, value),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              itemBuilder: (context) {
-                final choices = [
-                  {'label': 'import', 'icon': Icons.download_rounded},
-                ];
-
-                return choices.map((choice) {
-                  return PopupMenuItem<String>(
-                    padding: EdgeInsets.only(left: 20, right: 10),
-                    value: choice['label'] as String,
-                    child: Row(
-                      children: [
-                        Icon(
-                          choice['icon'] as IconData,
-                          size: 20,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          context.tr("articles.options.${choice['label']}"),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+            child:
+                movableMode
+                    ? IconButton(
+                      onPressed: () {
+                        setState(() {
+                          movableMode = false;
+                        });
+                      },
+                      icon: Icon(Icons.check_rounded),
+                    )
+                    : PopupMenuButton<String>(
+                      onSelected: (value) => handleClick(context, value),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      itemBuilder: (context) {
+                        final choices = [
+                          {'label': 'import', 'icon': Icons.download_rounded},
+                          {'label': 'move', 'icon': Icons.shuffle_rounded},
+                        ];
+                        return choices.map((choice) {
+                          return PopupMenuItem<String>(
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            value: choice['label'] as String,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  choice['icon'] as IconData,
+                                  size: 20,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  context.tr(
+                                    "articles.options.${choice['label']}",
+                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
+                      icon: const Icon(Icons.more_vert),
                     ),
-                  );
-                }).toList();
-              },
-              icon: const Icon(Icons.more_vert),
-            ),
           ),
         ],
       ),
       body: BlocBuilder<ArticleBloc, ArticleState>(
-        buildWhen: (previous, state) {
-          return state is ArticleSuccess;
-        },
         builder: (BuildContext context, ArticleState state) {
-          final List<ArticleListModel> articleLists =
-              context.read<ArticleBloc>().getAllArticle();
+          if (state is ArticleSuccess) {
+            articleLists = state.articles;
+          }
           if (articleLists.isEmpty) {
             return Center(child: (Text(context.tr('articles.empty'))));
           }
-          return ListView.builder(
-            padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
-            itemCount: articleLists.length,
-            itemBuilder: (context, index) {
-              return ArticleListCard(articleList: articleLists[index]);
-            },
-          );
+          return movableMode
+              ? Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerMove: (event) {
+                  if (_isDragging) {
+                    final y = event.position.dy;
+                    final screenHeight = MediaQuery.of(context).size.height;
+
+                    if (y < 100) {
+                      _startScroll(-10);
+                    } else if (y > screenHeight - 100) {
+                      _startScroll(10);
+                    } else {
+                      _stopScroll();
+                    }
+                  }
+                },
+                onPointerUp: (_) {
+                  _stopScroll();
+                  _isDragging = false;
+                },
+                child: ReorderableListView.builder(
+                  scrollController: _scrollController,
+                  proxyDecorator: (
+                    Widget child,
+                    int index,
+                    Animation<double> animation,
+                  ) {
+                    _isDragging = true;
+                    return Material(
+                      elevation: 10,
+                      color: Colors.transparent,
+                      child: child,
+                    );
+                  },
+                  onReorder: (int oldIndex, int newIndex) {
+                    _isDragging = false;
+                    _stopScroll();
+                    if (newIndex > oldIndex) newIndex -= 1;
+                    context.read<ArticleBloc>().add(
+                      RerangeArticleEvent(
+                        oldIndex: oldIndex,
+                        newIndex: newIndex,
+                      ),
+                    );
+                    setState(() {
+                      final item = articleLists.removeAt(oldIndex);
+                      articleLists.insert(newIndex, item);
+                    });
+                  },
+                  padding: EdgeInsets.only(
+                    top: 5,
+                    left: 5,
+                    right: 5,
+                    bottom: 65,
+                  ),
+                  shrinkWrap: true,
+                  itemCount: articleLists.length,
+                  itemBuilder: (context, index) {
+                    return ArticleListCard(
+                      key: ValueKey(articleLists[index].id),
+                      articleList: articleLists[index],
+                      movableMode: movableMode,
+                      removeCategory: removeArticleList,
+                    );
+                  },
+                ),
+              )
+              : ListView.builder(
+                padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65),
+                itemCount: articleLists.length,
+                itemBuilder: (context, index) {
+                  return ArticleListCard(
+                    articleList: articleLists[index],
+                    movableMode: movableMode,
+                    removeCategory: removeArticleList,
+                  );
+                },
+              );
         },
       ),
       floatingActionButton: Padding(

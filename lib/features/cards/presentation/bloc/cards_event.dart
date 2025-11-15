@@ -52,3 +52,5 @@ class RerangeCardEvent extends CardEvent {
     required this.newIndex,
   });
 }
+
+class MigrateCardAddIdEvent extends CardEvent {}

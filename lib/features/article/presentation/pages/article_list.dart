@@ -2,6 +2,9 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:shopping_list/features/article/data/models/article_list_model.dart';
+import 'package:shopping_list/features/cards/data/models/card_model.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
@@ -20,10 +23,11 @@ import 'package:shopping_list/features/category/presentation/bloc/category_bloc.
 // import '../../../calculator/presentation/bloc/calculator_bloc.dart';
 import '../../../calculator/presentation/widgets/display_amount.dart';
 
+// ignore: must_be_immutable
 class ArticleList extends StatefulWidget {
-  final ArticleListModel articleList;
+  ArticleListModel articleList;
 
-  const ArticleList({super.key, required this.articleList});
+  ArticleList({super.key, required this.articleList});
 
   @override
   State<ArticleList> createState() => _ArticleListState();
@@ -32,7 +36,6 @@ class ArticleList extends StatefulWidget {
 typedef MenuEntry = DropdownMenuEntry<String>;
 
 class _ArticleListState extends State<ArticleList> {
-
   void handleDelete(BuildContext context) async {
     bool? res = await DeleteAlertDialog.dialog(
       context,
@@ -156,21 +159,158 @@ class _ArticleListState extends State<ArticleList> {
     }
   }
 
-  void handleClick(BuildContext context, String value) async {
-    HandleMenuButton.click(
-      context: context,
-      action: value,
-      data: [context.read<ArticleBloc>().getAllArticle().singleWhere((l) => l.id == widget.articleList.id)],
-      deepLinkAction: "importArticles",
-      onDelete: () {
-        handleDelete(context);
-      },
+  void handleAddCard(BuildContext context) async {
+    List<CardModel> cards = context.read<CardBloc>().getAllCard();
+    if (cards.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.tr('articles.emptyCards'),
+            style: TextTheme.of(context).labelLarge,
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+          duration: Durations.extralong4,
+        ),
+      );
+      return;
+    }
+    List<MenuEntry> cardsEntries = UnmodifiableListView<MenuEntry>(
+      cards.map<MenuEntry>(
+        (CardModel c) =>
+            MenuEntry(value: c.id, labelWidget: Text(c.label), label: c.label),
+      ),
     );
+    String cardsEntriesValue = cards.first.id;
+    String? response = await showDialog<String>(
+      context: context,
+      builder:
+          (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+            title: Text(context.tr('article.alert.addCard.title')),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final double fieldWidth = constraints.maxWidth;
+                      return DropdownMenuTheme(
+                        data: DropdownMenuThemeData(
+                          menuStyle: MenuStyle(
+                            maximumSize: WidgetStatePropertyAll<Size>(
+                              Size(fieldWidth, double.infinity),
+                            ),
+                            alignment: Alignment.bottomLeft,
+                          ),
+                        ),
+                        child: DropdownMenu<String>(
+                          width: fieldWidth,
+                          initialSelection: cardsEntriesValue,
+                          onSelected: (String? value) {
+                            cardsEntriesValue = value!;
+                          },
+                          dropdownMenuEntries: cardsEntries,
+                          selectedTrailingIcon: Icon(
+                            Icons.arrow_drop_up_rounded,
+                          ),
+                          trailingIcon: Icon(Icons.arrow_drop_down_rounded),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, ''),
+                child: Text(context.tr('article.alert.addCard.action.cancel')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, cardsEntriesValue),
+                child: Text(context.tr('article.alert.addCard.action.add')),
+              ),
+            ],
+          ),
+    );
+
+    try {
+      if (response != null && response != '') {
+        if (context.mounted) {
+          context.read<ArticleBloc>().add(
+            UpdateListEvent(
+              articleList: widget.articleList,
+              label: widget.articleList.label,
+              card: response,
+            ),
+          );
+          widget.articleList = ArticleListModel(
+            id: widget.articleList.id,
+            label: widget.articleList.label,
+            card: response,
+            articles: widget.articleList.articles,
+          );
+        }
+      }
+    } on FormatException {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr('core.error'),
+              style: TextTheme.of(context).labelLarge,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            duration: Durations.extralong4,
+          ),
+        );
+      }
+    }
+  }
+
+  void handleClick(BuildContext context, String value) async {
+    switch (value) {
+      case 'cardAdd':
+        handleAddCard(context);
+        break;
+      case 'cardRemove':
+        context.read<ArticleBloc>().add(
+          UpdateListEvent(
+            articleList: widget.articleList,
+            label: widget.articleList.label,
+            card: "",
+          ),
+        );
+        widget.articleList = ArticleListModel(
+          id: widget.articleList.id,
+          label: widget.articleList.label,
+          card: "",
+          articles: widget.articleList.articles,
+        );
+        break;
+      default:
+        HandleMenuButton.click(
+          context: context,
+          action: value,
+          data: [
+            context.read<ArticleBloc>().getAllArticle().singleWhere(
+              (l) => l.id == widget.articleList.id,
+            ),
+          ],
+          deepLinkAction: "importArticles",
+          onDelete: () {
+            handleDelete(context);
+          },
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     context.read<CategoryBloc>().add(CategoryGetAllEvent());
+    context.read<CardBloc>().add(CardGetAllEvent());
     final calculator = context.read<SettingEnableCalculator>().isEnabled();
     return Scaffold(
       appBar: AppBar(
@@ -190,8 +330,13 @@ class _ArticleListState extends State<ArticleList> {
               ),
               color: Theme.of(context).colorScheme.surfaceContainer,
               itemBuilder: (context) {
+                bool hasCard = widget.articleList.card != "";
                 final choices = [
                   {'label': 'share', 'icon': Icons.share_rounded},
+                  {
+                    'label': hasCard ? 'cardRemove' : 'cardAdd',
+                    'icon': hasCard ? Icons.remove_rounded : Icons.add_rounded,
+                  },
                   {'label': 'delete', 'icon': Icons.delete_rounded},
                 ];
                 return choices.map((choice) {

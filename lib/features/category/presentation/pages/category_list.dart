@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/utils/delete_alert_dialog.dart';
 import 'package:shopping_list/core/utils/handle_menu_button.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 import 'package:shopping_list/features/category/presentation/widgets/category_card.dart';
@@ -186,6 +187,7 @@ class _CategoryListState extends State<CategoryList> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ArticleBloc>().add(ArticleGetAllEvent());
     return Scaffold(
       appBar: AppBar(
         leading: Padding(

@@ -5,6 +5,7 @@ import 'package:shopping_list/features/cards/domain/entities/card.dart';
 
 class CardModel extends Card {
   const CardModel({
+    required super.id,
     required super.label,
     required super.code,
     required super.color,
@@ -12,6 +13,7 @@ class CardModel extends Card {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'label': label,
       'code': code,
       'color': color.toARGB32(),
@@ -20,6 +22,7 @@ class CardModel extends Card {
 
   factory CardModel.fromMap(Map<String, dynamic> map) {
     return CardModel(
+      id: (map.containsKey('id') ? map['id'] : "") as String,
       label: map['label'] as String,
       code: map['code'] as String,
       color:

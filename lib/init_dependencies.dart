@@ -15,8 +15,10 @@ import 'package:shopping_list/features/article/domain/usecases/remove_article_fr
 import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_list.dart';
+import 'package:shopping_list/features/article/domain/usecases/rerange_article.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
+import 'package:shopping_list/features/article/domain/usecases/update_article_list.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/calculator/data/datasources/calculator_remote_datasource.dart';
 import 'package:shopping_list/features/calculator/data/repositories/calculator_repository_impl.dart';
@@ -38,6 +40,7 @@ import 'package:shopping_list/features/cards/domain/repositories/card_repository
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
+import 'package:shopping_list/features/cards/domain/usecases/migrate_card_add_id.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/cards/domain/usecases/update_card.dart';
@@ -112,11 +115,13 @@ void initArticle() {
     ..registerFactory<AddArticle>(() => AddArticle(getIt()))
     ..registerFactory<AddList>(() => AddList(getIt()))
     ..registerFactory<UpdateArticle>(() => UpdateArticle(getIt()))
+    ..registerFactory<UpdateList>(() => UpdateList(getIt()))
     ..registerFactory<RemoveArticle>(() => RemoveArticle(getIt()))
     ..registerFactory<RemoveList>(() => RemoveList(getIt()))
     ..registerFactory<ToogleArticleDoneState>(() => ToogleArticleDoneState(getIt()))
     ..registerFactory<Clear>(() => Clear(getIt()))
     ..registerFactory<ArticleImport>(() => ArticleImport(getIt()))
+    ..registerFactory<RerangeArticle>(() => RerangeArticle(getIt()))
     ..registerFactory<MigrateArticleToMultipleList>(() => MigrateArticleToMultipleList(getIt()))
     // bloc
     ..registerLazySingleton<ArticleBloc>(
@@ -125,11 +130,13 @@ void initArticle() {
         addArticle: getIt(),
         addList: getIt(),
         updateArticle: getIt(),
+        updateList: getIt(),
         removeArticle: getIt(),
         removeList: getIt(),
         toogleArticleDoneState: getIt(),
         clear: getIt(),
         articleImport: getIt(),
+        rerangeArticle: getIt(),
         migrateToMultipleList: getIt(),
       ),
     );
@@ -150,6 +157,7 @@ void initCard() {
     ..registerFactory<RemoveCard>(() => RemoveCard(getIt()))
     ..registerFactory<CardImport>(() => CardImport(getIt()))
     ..registerFactory<RerangeCard>(() => RerangeCard(getIt()))
+    ..registerFactory<MigrateCardAddId>(() => MigrateCardAddId(getIt()))
     // bloc
     ..registerLazySingleton<CardBloc>(
       () => CardBloc(
@@ -159,6 +167,7 @@ void initCard() {
         removeCard: getIt(),
         cardImport: getIt(),
         rerangeCard: getIt(),
+        migrateCardAddId: getIt(),
       ),
     );
 }

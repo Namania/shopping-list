@@ -75,7 +75,8 @@
     },
     "articles": {
         "options": {
-            "import": "Importer"
+            "import": "Importer",
+            "move": "Réorganiser"
         },
         "alert": {
             "add": {
@@ -95,6 +96,16 @@
                     "yes": "Oui",
                     "no": "Non"
                 }
+            },
+            "edit": {
+                "title": "Modifier la liste",
+                "placeholder": {
+                    "name": "Entrez le nom de la liste"
+                },
+                "action": {
+                    "cancel": "Annuler",
+                    "update": "Enregistrer"
+                }
             }
         },
         "count": {
@@ -105,13 +116,16 @@
         },
         "card": "Voir la carte associée",
         "empty": "Vous n'avez pas de liste !",
+        "emptyCards": "Veuillez d'abord ajouter une carte !",
         "delete": "Supprimer",
         "add": "Ajouter une liste"
     },
     "article": {
         "options": {
             "delete": "Retirer",
-            "share": "Partager"
+            "share": "Partager",
+            "cardAdd": "Lier une carte",
+            "cardRemove": "Délier la carte"
         },
         "alert": {
             "add": {
@@ -122,6 +136,13 @@
                 "action": {
                     "cancel": "Annuler",
                     "add": "Ajouter"
+                }
+            },
+            "addCard" : {
+                "title": "Lier une carte",
+                "action": {
+                    "cancel": "Annuler",
+                    "add": "Lier"
                 }
             },
             "confirm": {

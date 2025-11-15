@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
+import 'package:uuid/uuid.dart';
 
 abstract interface class CardRemoteDatasource {
   Future<List<CardModel>> cardGetAll();
@@ -19,6 +20,7 @@ abstract interface class CardRemoteDatasource {
     required int oldIndex,
     required int newIndex,
   });
+  Future<List<CardModel>> migrateCardAddId();
 }
 
 class CardRemoteDatasourceImpl implements CardRemoteDatasource {
@@ -106,7 +108,12 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
       List<CardModel> cards = await cardGetAll();
       int index = cards.indexOf(card);
       cards.removeAt(index);
-      CardModel updatedCard = CardModel(label: label, code: code, color: color);
+      CardModel updatedCard = CardModel(
+        id: card.id,
+        label: label,
+        code: code,
+        color: color,
+      );
       cards.insert(index, updatedCard);
       await prefs.setString(
         "cards",
@@ -134,6 +141,44 @@ class CardRemoteDatasourceImpl implements CardRemoteDatasource {
       return await cardGetAll();
     } catch (e) {
       return [];
+    }
+  }
+
+  @override
+  Future<List<CardModel>> migrateCardAddId() async {
+    try {
+      Uuid uuid = Uuid();
+      bool hasKey = prefs.containsKey("cards");
+      String? response = prefs.getString("cards");
+
+      if (hasKey && response != null) {
+        List<CardModel> cards = [];
+        List<dynamic> data = jsonDecode(response);
+        cards = data.map((card) => CardModel.fromJson(card)).toList();
+
+        List<CardModel> migratedArticles = [];
+        for (CardModel card in cards) {
+          if (card.id == "") {
+            CardModel newA = CardModel(
+              id: uuid.v4(),
+              label: card.label,
+              code: card.code,
+              color: card.color,
+            );
+            migratedArticles.add(newA);
+          } else {
+            migratedArticles.add(card);
+          }
+        }
+
+        await prefs.setString(
+          "cards",
+          jsonEncode(migratedArticles.map((a) => a.toJson()).toList()),
+        );
+      }
+      return await cardGetAll();
+    } catch (e) {
+      return await cardGetAll();
     }
   }
 }

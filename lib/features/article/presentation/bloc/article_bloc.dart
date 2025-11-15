@@ -11,8 +11,10 @@ import 'package:shopping_list/features/article/domain/usecases/clear.dart';
 import 'package:shopping_list/features/article/domain/usecases/get_all.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopping_list/features/article/domain/usecases/remove_list.dart';
+import 'package:shopping_list/features/article/domain/usecases/rerange_article.dart';
 import 'package:shopping_list/features/article/domain/usecases/toogle_article_done_state.dart';
 import 'package:shopping_list/features/article/domain/usecases/update_article.dart';
+import 'package:shopping_list/features/article/domain/usecases/update_article_list.dart';
 import 'package:shopping_list/features/category/data/models/category_model.dart';
 
 part 'article_event.dart';
@@ -23,11 +25,13 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final AddArticle addArticle;
   final AddList addList;
   final UpdateArticle updateArticle;
+  final UpdateList updateList;
   final RemoveArticle removeArticle;
   final RemoveList removeList;
   final ToogleArticleDoneState toogleArticleDoneState;
   final Clear clear;
   final ArticleImport articleImport;
+  final RerangeArticle rerangeArticle;
   final MigrateArticleToMultipleList migrateToMultipleList;
 
   ArticleBloc({
@@ -35,12 +39,14 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     required this.addArticle,
     required this.addList,
     required this.updateArticle,
+    required this.updateList,
     required this.removeArticle,
     required this.removeList,
     required this.toogleArticleDoneState,
     required this.clear,
     required this.articleImport,
     required this.migrateToMultipleList,
+    required this.rerangeArticle,
   }) : super(ArticleInitial()) {
     on<ArticleEvent>((event, emit) {
       emit(ArticleLoading());
@@ -49,6 +55,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     on<AddArticleEvent>((event, emit) => _onAddArticle(event, emit));
     on<AddListEvent>((event, emit) => _onAddList(event, emit));
     on<UpdateArticleEvent>((event, emit) => _onUpdateArticle(event, emit));
+    on<UpdateListEvent>((event, emit) => _onUpdateList(event, emit));
     on<RemoveArticleEvent>((event, emit) => _onRemoveArticle(event, emit));
     on<RemoveListEvent>((event, emit) => _onRemoveList(event, emit));
     on<ClearEvent>((event, emit) => _onClear(event, emit));
@@ -59,6 +66,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     on<ArticleMigrateToMultipleListEvent>(
       (event, emit) => _onMigrateArticleToMultipleList(event, emit),
     );
+    on<RerangeArticleEvent>((event, emit) => _onRerangeArticle(event, emit));
     add(ArticleGetAllEvent());
   }
 
@@ -171,6 +179,34 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
         label: event.label,
         category: event.category,
       ),
+    );
+
+    result.fold(
+      (l) => emit(ArticleFailure(message: l.message)),
+      (r) => emit(ArticleSuccess(articles: r)),
+    );
+  }
+
+  Future<void> _onUpdateList(UpdateListEvent event, Emitter emit) async {
+    emit(ArticleLoading());
+    final result = await updateList(
+      UpdateListParams(
+        articleList: event.articleList,
+        label: event.label,
+        card: event.card,
+      ),
+    );
+
+    result.fold(
+      (l) => emit(ArticleFailure(message: l.message)),
+      (r) => emit(ArticleSuccess(articles: r)),
+    );
+  }
+
+  Future<void> _onRerangeArticle(RerangeArticleEvent event, Emitter emit) async {
+    emit(ArticleLoading());
+    final result = await rerangeArticle(
+      RerangeArticleParams(oldIndex: event.oldIndex, newIndex: event.newIndex),
     );
 
     result.fold(

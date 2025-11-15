@@ -42,6 +42,15 @@ abstract interface class ArticleRemoteDatasource {
     required String label,
     required CategoryModel category,
   });
+  Future<List<ArticleListModel>> updateArticleList({
+    required ArticleListModel articleList,
+    required String label,
+    required String card,
+  });
+  Future<List<ArticleListModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  });
   Future<List<ArticleListModel>> migrateArticleToMultipleList();
 }
 
@@ -297,6 +306,52 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
+  Future<List<ArticleListModel>> updateArticleList({
+    required ArticleListModel articleList,
+    required String label,
+    required String card,
+  }) async {
+    try {
+      List<ArticleListModel> articleLists = await getAll();
+      int index = articleLists.indexOf(articleList);
+      articleLists.removeAt(index);
+      ArticleListModel updatedArticleList = ArticleListModel(
+        id: articleList.id,
+        label: label,
+        card: card,
+        articles: articleList.articles,
+      );
+      articleLists.insert(index, updatedArticleList);
+      await prefs.setString(
+        "articles",
+        jsonEncode(articleLists.map((a) => a.toJson()).toList()),
+      );
+      return await getAll();
+    } catch (e) {
+      return await getAll();
+    }
+  }
+
+  @override
+  Future<List<ArticleListModel>> rerange({
+    required int oldIndex,
+    required int newIndex,
+  }) async {
+    try {
+      List<ArticleListModel> articlesLists = await getAll();
+      final item = articlesLists.removeAt(oldIndex);
+      articlesLists.insert(newIndex, item);
+      await prefs.setString(
+        "articles",
+        jsonEncode(articlesLists.map((c) => c.toJson()).toList()),
+      );
+      return await getAll();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
   Future<List<ArticleListModel>> migrateArticleToMultipleList() async {
     try {
       Uuid uuid = Uuid();
@@ -323,12 +378,13 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
             migratedArticles.add(article);
           }
         }
-        
+
         List<ArticleListModel> articleLists = [];
         articleLists.add(
           ArticleListModel(
             id: uuid.v4(),
             label: "Default",
+            card: "",
             articles: migratedArticles,
           ),
         );

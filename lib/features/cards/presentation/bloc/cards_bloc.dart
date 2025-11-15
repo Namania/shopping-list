@@ -4,6 +4,7 @@ import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/domain/usecases/add_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_get_all.dart';
 import 'package:shopping_list/features/cards/domain/usecases/card_import.dart';
+import 'package:shopping_list/features/cards/domain/usecases/migrate_card_add_id.dart';
 import 'package:shopping_list/features/cards/domain/usecases/remove_card.dart';
 import 'package:shopping_list/features/cards/domain/usecases/rerange.dart';
 import 'package:shopping_list/features/cards/domain/usecases/update_card.dart';
@@ -17,6 +18,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   final RemoveCard removeCard;
   final CardImport cardImport;
   final RerangeCard rerangeCard;
+  final MigrateCardAddId migrateCardAddId;
 
   CardBloc({
     required this.cardGetAll,
@@ -25,6 +27,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     required this.removeCard,
     required this.cardImport,
     required this.rerangeCard,
+    required this.migrateCardAddId,
   }) : super(CardInitial()) {
     on<CardEvent>((event, emit) {
       emit(CardLoading());
@@ -35,6 +38,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     on<RemoveCardEvent>((event, emit) => _onRemoveCard(event, emit));
     on<CardImportEvent>((event, emit) => _onCardImport(event, emit));
     on<RerangeCardEvent>((event, emit) => _onRerangeCard(event, emit));
+    on<MigrateCardAddIdEvent>((event, emit) => _onMigrateCardAddId(event, emit));
     add(CardGetAllEvent());
   }
 
@@ -100,6 +104,16 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     final result = await rerangeCard(
       RerangeCardParams(oldIndex: event.oldIndex, newIndex: event.newIndex),
     );
+
+    result.fold(
+      (l) => emit(CardFailure(message: l.message)),
+      (r) => emit(CardSuccess(cards: r)),
+    );
+  }
+
+  Future<void> _onMigrateCardAddId(MigrateCardAddIdEvent event, Emitter emit) async {
+    emit(CardLoading());
+    final result = await migrateCardAddId(NoParams());
 
     result.fold(
       (l) => emit(CardFailure(message: l.message)),

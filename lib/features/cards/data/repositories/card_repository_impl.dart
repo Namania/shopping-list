@@ -91,4 +91,15 @@ class CardRepositoryImpl implements CardRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<CardModel>>> migrateCardAddId() async {
+    try {
+      return Right(
+        await cardRemoteDatasource.migrateCardAddId(),
+      );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
 }

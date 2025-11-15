@@ -9,11 +9,13 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/utils/handle_menu_button.dart';
 import 'package:shopping_list/core/utils/handle_scaning.dart';
+import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/cards/data/models/card_model.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_state.dart';
 import 'package:shopping_list/features/cards/presentation/widgets/custom_card.dart';
+import 'package:uuid/uuid.dart';
 
 class CardList extends StatefulWidget {
   const CardList({super.key});
@@ -92,6 +94,7 @@ class _CardListState extends State<CardList> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ArticleBloc>().add(ArticleGetAllEvent());
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -249,6 +252,7 @@ class _CardListState extends State<CardList> {
           onPressed: () async {
             final labelController = TextEditingController();
             final codeController = TextEditingController();
+            Uuid uuid = Uuid();
 
             Color pickerColor = Theme.of(context).colorScheme.primary;
 
@@ -331,7 +335,7 @@ class _CardListState extends State<CardList> {
                               context,
                               labelController.text.isNotEmpty &&
                                       codeController.text.isNotEmpty
-                                  ? '{"label": "${capitalize(labelController.text)}", "code": "${codeController.text}", "color": ${pickerColor.toARGB32()}}'
+                                  ? '{"id": "${uuid.v4()}","label": "${capitalize(labelController.text)}", "code": "${codeController.text}", "color": ${pickerColor.toARGB32()}}'
                                   : "",
                             ),
                         child: Text(context.tr('card.alert.add.action.add')),

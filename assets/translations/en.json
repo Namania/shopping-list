@@ -75,7 +75,8 @@
     },
     "articles": {
         "options": {
-            "import": "Import"
+            "import": "Import",
+            "move": "Reorganize"
         },
         "alert": {
             "add": {
@@ -95,6 +96,16 @@
                     "yes": "Yes",
                     "no": "No"
                 }
+            },
+            "edit": {
+                "title": "Update list",
+                "placeholder": {
+                    "name": "Enter the name of the list"
+                },
+                "action": {
+                    "cancel": "Cancel",
+                    "update": "Update"
+                }
             }
         },
         "count": {
@@ -105,13 +116,16 @@
         },
         "card": "See linked card",
         "empty": "You have any list !",
+        "emptyCards": "Please add a card first !",
         "delete": "Delete",
         "add": "Add new list"
     },
     "article": {
         "options": {
             "delete": "Delete",
-            "export": "Export"
+            "export": "Export",
+            "cardAdd": "Link card",
+            "cardRemove": "Unlink card"
         },
         "alert": {
             "add": {
@@ -122,6 +136,13 @@
                 "action": {
                     "cancel": "Cancel",
                     "add": "Add"
+                }
+            },
+            "add_card": {
+                "title": "Link card",
+                "action": {
+                    "cancel": "Cancel",
+                    "add": "Link"
                 }
             },
             "confirm": {

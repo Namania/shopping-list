@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shopping_list/core/router/app_router.dart';
 import 'package:shopping_list/core/shared/cubit/migrate_article_to_multiple_list.dart';
+import 'package:shopping_list/core/shared/cubit/migrate_card_add_id.dart';
 import 'package:shopping_list/core/shared/cubit/setting_default_category_position.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/shared/cubit/setting_router_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shopping_list/features/article/presentation/bloc/article_bloc.dart';
 import 'package:shopping_list/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:shopping_list/features/cards/presentation/bloc/cards_bloc.dart';
+import 'package:shopping_list/features/cards/presentation/bloc/cards_event.dart';
 import 'package:shopping_list/features/category/presentation/bloc/category_bloc.dart';
 import 'package:shopping_list/init_dependencies.dart';
 
@@ -31,6 +33,7 @@ void main() async {
         BlocProvider(create: (context) => SettingDefaultCategoryPosition()),
         BlocProvider(create: (context) => SettingEnableCalculator()),
         BlocProvider(create: (context) => MigrateArticleToMultipleListCubit()),
+        BlocProvider(create: (context) => MigrateCardAddIdCubit()),
         BlocProvider(create: (context) => getIt<ArticleBloc>()),
         BlocProvider(create: (context) => getIt<CardBloc>()),
         BlocProvider(create: (context) => getIt<CategoryBloc>()),
@@ -67,6 +70,10 @@ class MainApp extends StatelessWidget {
     if (context.read<MigrateArticleToMultipleListCubit>().hasNotBeenPlay()) {
       context.read<ArticleBloc>().add(ArticleMigrateToMultipleListEvent());
       context.read<MigrateArticleToMultipleListCubit>().set(true);
+    }
+    if (context.read<MigrateCardAddIdCubit>().hasNotBeenPlay()) {
+      context.read<CardBloc>().add(MigrateCardAddIdEvent());
+      context.read<MigrateCardAddIdCubit>().set(true);
     }
 
     return BlocBuilder<ThemeCubit, ThemeMode>(
