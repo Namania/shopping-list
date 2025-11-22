@@ -166,7 +166,11 @@ class ArticleListCard extends StatelessWidget {
     }
     if (calculator) {
       rightChildren.add(
-        DisplayAmount(idList: articleList.id, articles: articleList.articles),
+        DisplayAmount(
+          idList: articleList.id,
+          articles: articleList.articles,
+          specificId: true,
+        ),
       );
     }
     return Card(
