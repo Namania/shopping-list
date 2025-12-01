@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/shared/cubit/setting_enable_calculator.dart';
 import 'package:shopping_list/core/utils/handle_menu_button.dart';
 import 'package:shopping_list/features/article/data/models/article_list_model.dart';
@@ -170,7 +171,11 @@ class _ArticleListsState extends State<ArticleLists> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: BackButton(),
+          child: BackButton(
+            onPressed: () {
+              context.go("/");
+            },
+          ),
         ),
         title: Text(context.tr('core.card.article.title')),
         actions: [
