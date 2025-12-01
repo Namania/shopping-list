@@ -42,7 +42,7 @@ class _SettingsState extends State<Settings> {
   late bool isCalculatorEnabled;
 
   // ignore: non_constant_identifier_names
-  final String VERSION = "1.3.6";
+  final String VERSION = "1.3.7";
 
   @override
   void initState() {
