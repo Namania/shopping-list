@@ -136,12 +136,14 @@ class _ArticleListState extends State<ArticleList> {
         Map<String, dynamic> data =
             json.decode(response) as Map<String, dynamic>;
         if (context.mounted) {
+          ArticleModel article = ArticleModel.fromMap(data);
           context.read<ArticleBloc>().add(
             AddArticleEvent(
               id: widget.articleList.id,
-              article: ArticleModel.fromMap(data),
+              article: article,
             ),
           );
+          widget.articleList.articles.add(article);
         }
       }
     } on FormatException {
