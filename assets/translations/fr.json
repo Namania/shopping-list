@@ -1,299 +1,163 @@
 {
-    "core": {
-        "cancel_scan": "Annuler",
-        "error": "Une erreur est survenue !",
-        "deep_link_error": "Une erreur s'est produite..\nVeuillez nous excuser pour le dérangement.",
-        "deep_link_button": "Retourner à l'accueil",
-        "welcome": "Bienvenue !",
-        "card": {
-            "article": {
-                "title": "Mes listes",
-                "description": "Voir mes listes d'articles"
-            },
-            "card": {
-                "title": "Mes cartes",
-                "description": "Voir mes cartes de fidèlité"
-            },
-            "category": {
-                "title": "Mes catégories",
-                "description": "Voir mes catégories"
-            }
-        },
-        "settings": {
-            "title": "Paramètres",
-            "item": {
-                "main": {
-                    "version": "Version de l'application",
-                    "theme": "Thème",
-                    "lang": "Langage",
-                    "backup": "Sauvegarde"
-                },
-                "route": {
-                    "article": "Aller directement aux articles au lancement de l'application ?",
-                    "category": "Aller directement aux cartes au lancement de l'application ?"
-                },
-                "article": {
-                    "category": "Afficher les articles sans catégorie au début de la liste ?"
-                },
-                "calculator": {
-                    "enable": "Activer la calculatrice ?"
-                },
-                "developer": {
-                    "author": "Auteur",
-                    "website": "Site web"
-                }
-            },
-            "snack": {
-                "theme": "Le thème a été défini en: {theme}",
-                "lang": "La langue a été défini en: {lang}",
-                "backup": {
-                    "download": {
-                        "success": "Les données ont été sauvegardées",
-                        "failure": "Les données n'ont pas été sauvegardées !"
-                    },
-                    "upload": {
-                        "success": "Les données ont été rétablies",
-                        "failure": "Les données n'ont pas été rétablies !"
-                    }
-                }
-            },
-            "separator": {
-                "main": "Gérénal",
-                "article": "Article",
-                "calculator": "Calculatrice",
-                "startup": "Lancement de l'application",
-                "developer": "Développeur"
-            },
-            "backup": {
-                "download": "Télécharger",
-                "upload": "Rétablir"
-            },
-            "shareArticleMessage": "Voici ma list !\n[Shopping List]",
-            "shareCategoryMessage": "Voici mes catégories !\n[Shopping List]",
-            "shareCardMessage": "Voici mes cartes !\n[Shopping List]"
-        }
+  "common": {
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmez",
+    "share": "Partager",
+    "import": "Importer",
+    "move": "Réorganiser",
+    "link": "Lier une carte",
+    "unlink": "Délier la carte",
+    "edit": "Modifier",
+    "undo": "Annuler",
+    "deleted": "« {} » supprimé"
+  },
+  "home": {
+    "welcome": "Bienvenue !",
+    "lists": "Voir mes listes d'articles",
+    "categories": "Voir mes catégories",
+    "cards": "Voir mes cartes de fidélité"
+  },
+  "lists": {
+    "title": "Mes listes",
+    "empty": "Vous n'avez pas de liste !",
+    "add": "Ajouter une liste",
+    "count": {
+      "zero": "Pas d'article",
+      "one": "{} article",
+      "many": "{} articles",
+      "other": "{} articles"
     },
-    "articles": {
-        "options": {
-            "import": "Importer",
-            "move": "Réorganiser"
-        },
-        "alert": {
-            "add": {
-                "title": "Ajouter une Liste",
-                "placeholder": {
-                    "label": "Entrez le nom de la liste"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "add": "Ajouter"
-                }
-            },
-            "confirm": {
-                "title": "Confirmez",
-                "description": "Voulez-vous vraiment la supprimer ?",
-                "action": {
-                    "yes": "Oui",
-                    "no": "Non"
-                }
-            },
-            "edit": {
-                "title": "Modifier la liste",
-                "placeholder": {
-                    "name": "Entrez le nom de la liste"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "update": "Enregistrer"
-                }
-            }
-        },
-        "count": {
-            "zero": "Pas d'article",
-            "one": "{} article",
-            "many": "{} articles",
-            "other": "{} articles"
-        },
-        "card": "Voir la carte associée",
-        "empty": "Vous n'avez pas de liste !",
-        "emptyCards": "Veuillez d'abord ajouter une carte !",
-        "delete": "Supprimer",
-        "add": "Ajouter une liste"
+    "form": {
+      "add_title": "Ajouter une liste",
+      "edit_title": "Modifier la liste",
+      "label_hint": "Entrez le nom de la liste"
     },
-    "article": {
-        "options": {
-            "delete": "Retirer",
-            "share": "Partager",
-            "cardAdd": "Lier une carte",
-            "cardRemove": "Délier la carte"
-        },
-        "alert": {
-            "add": {
-                "title": "Ajouter un article",
-                "placeholder": {
-                    "name": "Entrez le nom de l'article"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "add": "Ajouter"
-                }
-            },
-            "addCard" : {
-                "title": "Lier une carte",
-                "action": {
-                    "cancel": "Annuler",
-                    "add": "Lier"
-                }
-            },
-            "confirm": {
-                "title": "Confirmez",
-                "description": {
-                    "one": "Voulez-vous vraiment le supprimer ?",
-                    "all": "Voulez-vous vraiment tout supprimer ?"
-                },
-                "action": {
-                    "yes": "Oui",
-                    "selected": "Cocher uniquement",
-                    "no": "Non"
-                }
-            },
-            "edit": {
-                "title": "Modifier un article",
-                "placeholder": {
-                    "name": "Entrez le nom de l'article"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "update": "Enregistrer"
-                }
-            }
-        },
-        "empty": "Aucun article dans la liste !",
-        "delete": "Supprimer",
-        "add": "Ajouter un article"
+    "confirm_delete": "Voulez-vous vraiment la supprimer ?",
+    "no_cards": "Veuillez d'abord ajouter une carte !",
+    "exists": "La liste « {} » existe déjà !"
+  },
+  "list": {
+    "empty": "Aucun article dans la liste !",
+    "add": "Ajouter un article",
+    "form": {
+      "add_title": "Ajouter un article",
+      "edit_title": "Modifier un article",
+      "label_hint": "Entrez le nom de l'article"
     },
-    "card": {
-        "options": {
-            "import": "Importer",
-            "share": "Partager",
-            "move": "Réorganiser"
-        },
-        "alert": {
-            "add": {
-                "title": "Ajouter une carte",
-                "placeholder": {
-                    "name": "Entrez le nom de la boutique",
-                    "code": "Entrez le code de la carte"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "add": "Ajouter"
-                }
-            },
-            "confirm": {
-                "title": "Confirmez",
-                "description": "Voulez-vous vraiment la supprimer ?",
-                "action": {
-                    "yes": "Oui",
-                    "no": "Non"
-                }
-            },
-            "edit": {
-                "title": "Modifier une carte",
-                "placeholder": {
-                    "name": "Entrez le nom de la boutique",
-                    "code": "Entrez le code de la carte"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "update": "Enregistrer"
-                }
-            }
-        },
-        "empty": "Aucune carte enregistré !",
-        "add": "Ajouter une carte"
+    "confirm_delete": "Voulez-vous vraiment le supprimer ?",
+    "confirm_clear": "Voulez-vous vraiment tout supprimer ?",
+    "clear_done_only": "Cochés uniquement",
+    "link_card": {
+      "title": "Lier une carte"
     },
-    "category": {
-        "default": "Sans catégorie",
-        "options": {
-            "delete": "Supprimer",
-            "import": "Importer",
-            "move": "Réorganiser",
-            "share": "Partager"
-        },
-        "alert": {
-            "add": {
-                "title": "Ajouter une catégorie",
-                "placeholder": {
-                    "name": "Entrez le nom de la catégorie"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "add": "Ajouter"
-                }
-            },
-            "confirm": {
-                "title": "Confirmez",
-                "description": {
-                    "one": "Voulez-vous vraiment la supprimer ?",
-                    "all": "Voulez-vous vraiment tout supprimer ?"
-                },
-                "action": {
-                    "yes": "Oui",
-                    "no": "Non"
-                }
-            },
-            "edit": {
-                "title": "Modifier la catégorie",
-                "placeholder": {
-                    "name": "Entrez le nom de la catégorie"
-                },
-                "action": {
-                    "cancel": "Annuler",
-                    "update": "Enregistrer"
-                }
-            }
-        },
-        "empty": "Aucune catégorie !",
-        "delete": "Supprimer",
-        "add": "Ajouter une catégorie",
-        "error": {
-            "exist": "Une catégorie existe déjà pour ce label !"
-        }
+    "exists": "L'article « {} » est déjà dans la liste !"
+  },
+  "cards": {
+    "title": "Mes cartes",
+    "empty": "Aucune carte enregistrée !",
+    "add": "Ajouter une carte",
+    "form": {
+      "add_title": "Ajouter une carte",
+      "edit_title": "Modifier une carte",
+      "name_hint": "Entrez le nom de la boutique",
+      "code_hint": "Entrez le code de la carte"
     },
-    "calculator": {
-        "success": "{}€",
-        "failure": "--.--€",
-        "total": "Montant total",
-        "add": "Entrez le montant de l'article",
-        "addButton": "Ajouter un montant",
-        "withoutArticle": "Sans article",
-        "modalMessage": "Clickez en dehors du modal pour valider.",
-        "title": "Calculatrice",
-        "empty": "Vous n'avez aucun article d'enregistrer dans la calculatrice.",
-        "delete": {
-            "title": "Que voulez-vous supprimer ?",
-            "with": "Avec article",
-            "without": "Sans article",
-            "all": "Vider la calculatrice"
-        },
-        "alert": {
-            "confirm": {
-                "title": "Confirmez",
-                "description": {
-                    "one": "Voulez-vous vraiment le supprimer ?"
-                },
-                "action": {
-                    "yes": "Oui",
-                    "no": "Non"
-                }
-            }
-        }
+    "confirm_delete": "Voulez-vous vraiment la supprimer ?",
+    "invalid_code": "Ce code ne peut pas être affiché au format {}. Modifiez la carte pour changer le format."
+  },
+  "categories": {
+    "title": "Mes catégories",
+    "empty": "Aucune catégorie !",
+    "add": "Ajouter une catégorie",
+    "uncategorized": "Sans catégorie",
+    "form": {
+      "add_title": "Ajouter une catégorie",
+      "edit_title": "Modifier la catégorie",
+      "name_hint": "Entrez le nom de la catégorie"
     },
-    "modal": {
-        "export": "Scannez le QR code via la fonctionnalité \"Importer\" de l'application Shopping List",
-        "send_file": "Envoyer un fichier",
-        "scan": "Scanner",
-        "pick_file": "Parcourir"
+    "confirm_delete": "Voulez-vous vraiment la supprimer ?",
+    "confirm_delete_all": "Voulez-vous vraiment tout supprimer ?",
+    "exists": "Une catégorie existe déjà avec ce nom !"
+  },
+  "calculator": {
+    "title": "Calculatrice",
+    "amount": "{}€",
+    "total": "Montant total",
+    "add_hint": "Entrez le montant de l'article",
+    "add_button": "Ajouter un montant",
+    "without_article": "Sans article",
+    "tap_outside": "Touchez en dehors de la fenêtre pour valider.",
+    "empty": "Vous n'avez aucun montant enregistré dans la calculatrice.",
+    "confirm_delete": "Voulez-vous vraiment le supprimer ?",
+    "clear": {
+      "title": "Que voulez-vous supprimer ?",
+      "with_article": "Avec article",
+      "without_article": "Sans article",
+      "all": "Vider la calculatrice"
     }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "sections": {
+      "general": "Général",
+      "article": "Article",
+      "calculator": "Calculatrice",
+      "startup": "Lancement de l'application",
+      "developer": "Développeur"
+    },
+    "items": {
+      "version": "Version de l'application",
+      "theme": "Thème",
+      "language": "Langue",
+      "backup": "Sauvegarde",
+      "uncategorized_first": "Afficher les articles sans catégorie au début de la liste ?",
+      "calculator_enabled": "Activer la calculatrice ?",
+      "author": "Auteur",
+      "website": "Site web",
+      "start_route": "Écran au lancement"
+    },
+    "themes": {
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "backup": {
+      "download": "Télécharger",
+      "upload": "Rétablir",
+      "download_success": "Les données ont été sauvegardées",
+      "download_failure": "Les données n'ont pas été sauvegardées !",
+      "upload_success": "Les données ont été rétablies",
+      "upload_failure": "Les données n'ont pas été rétablies !",
+      "restore_mode": "Que faire des données déjà présentes ?",
+      "merge": "Les conserver et ajouter",
+      "replace": "Les remplacer"
+    },
+    "start": {
+      "home": "Accueil",
+      "lists": "Mes listes",
+      "cards": "Mes cartes"
+    }
+  },
+  "share": {
+    "qr_hint": "Scannez le QR code via la fonction « Importer » de l'application Shopping List",
+    "send_file": "Envoyer le fichier",
+    "scan": "Scanner",
+    "pick_file": "Parcourir",
+    "invalid": "Ce contenu n'est pas un partage valide !",
+    "message": {
+      "lists": "Voici ma liste !\n[Shopping List]",
+      "categories": "Voici mes catégories !\n[Shopping List]",
+      "cards": "Voici mes cartes !\n[Shopping List]"
+    },
+    "too_big": "Trop de données pour un QR code : envoyez le fichier à la place."
+  },
+  "deep_link": {
+    "error": "Une erreur s'est produite.\nVeuillez nous excuser pour le dérangement.",
+    "home": "Retourner à l'accueil"
+  }
 }

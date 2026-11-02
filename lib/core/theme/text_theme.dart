@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-TextTheme createTextTheme(
-    BuildContext context, String bodyFontString, String displayFontString) {
+TextTheme createTextTheme(BuildContext context, String bodyFontString, String displayFontString) {
   TextTheme baseTextTheme = Theme.of(context).textTheme.apply(fontFamily: 'Montserrat');
   TextTheme textTheme = baseTextTheme.copyWith(
     bodyLarge: baseTextTheme.bodyLarge,
