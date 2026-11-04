@@ -5,11 +5,13 @@ import 'package:shopping_list/features/categories/category_repository.dart';
 import 'package:shopping_list/features/lists/list_repository.dart';
 import 'package:shopping_list/features/settings/app_settings.dart';
 import 'package:shopping_list/features/settings/settings_repository.dart';
+import 'package:shopping_list/features/backup/data_dump.dart';
+import 'package:shopping_list/features/sharing/import_bundle.dart';
 import 'package:shopping_list/features/sharing/share_payload.dart';
 import 'package:uuid/uuid.dart';
 
 /// What a backup file carries besides the collections.
-typedef BackupSettings = ({AppSettings? settings, String? lang});
+typedef BackupSettings = ({AppSettings? settings});
 
 /// Writes shared payloads and backup files into the database, each in a
 /// single transaction: a malformed item leaves nothing behind.
@@ -39,44 +41,54 @@ class DataImporter {
     changes.notify();
   }
 
-  /// Restores a backup file and returns the settings it holds. The file
-  /// format is the one of versions <= 1.3.x, whose settings were stored under
-  /// `cubits`; newer files use `settings`.
-  ///
-  /// With [replace], every existing list, article, price, card and category
-  /// is removed first, so the database ends up as the file describes it.
-  Future<BackupSettings> importBackup(Map<String, dynamic> data, {bool replace = false}) async {
-    List<Map<String, dynamic>> items(String key) =>
-        ((data[key] as List<dynamic>?) ?? const []).cast<Map<String, dynamic>>();
+  /// Adds what [bundle] holds to the current data.
+  Future<void> add(ImportBundle bundle) async {
+    await db.transaction((txn) => _addIn(txn, bundle));
+    changes.notify();
+  }
 
-    final settingsMap = data['settings'] as Map<String, dynamic>?;
-    final legacyMap = data['cubits'] as Map<String, dynamic>?;
-    final settings =
-        settingsMap != null
-            ? AppSettings.fromMap(settingsMap)
-            : legacyMap != null
-            ? AppSettings.fromLegacyMap(legacyMap)
-            : null;
-
+  /// Replaces the current data with the backup in [bundle] and returns its
+  /// settings, already saved. A backup of this version is restored exactly,
+  /// amounts included; an older one is rebuilt from its lists and cards.
+  Future<AppSettings?> replaceWith(ImportBundle bundle) async {
     await db.transaction((txn) async {
-      if (replace) {
-        for (final table in ['prices', 'articles', 'lists', 'cards', 'categories']) {
-          await txn.delete(table);
-        }
+      if (bundle.dump case final dump?) {
+        await dump.restoreIn(txn);
+        return;
       }
-      // Categories and cards first, so articles and lists can be linked to them.
-      for (final map in items('categories')) {
-        await _categories.importOneIn(txn, map);
+      for (final table in DataDump.tables.reversed) {
+        await txn.delete(table);
       }
-      for (final map in items('cards')) {
-        await _cards.importOneIn(txn, map);
-      }
-      for (final map in items('articles')) {
-        await _lists.importOneIn(txn, map);
-      }
-      if (settings != null) await SettingsRepository.saveIn(txn, settings);
+      await _addIn(txn, bundle);
+      if (bundle.settings != null) await SettingsRepository.saveIn(txn, bundle.settings!);
     });
     changes.notify();
-    return (settings: settings, lang: (settingsMap ?? legacyMap)?['lang'] as String?);
+    return bundle.settings;
+  }
+
+  // Categories and cards first, so articles and lists can be linked to them.
+  Future<void> _addIn(Transaction txn, ImportBundle bundle) async {
+    for (final map in bundle.categories) {
+      await _categories.importOneIn(txn, map);
+    }
+    for (final map in bundle.cards) {
+      await _cards.importOneIn(txn, map);
+    }
+    for (final map in bundle.lists) {
+      await _lists.importOneIn(txn, map);
+    }
+  }
+
+  /// Restores a backup file (any version) and returns the settings it holds,
+  /// saved. With [replace], the current data is removed first.
+  Future<BackupSettings> importBackup(Map<String, dynamic> data, {bool replace = false}) async {
+    final bundle = ImportBundle.fromJson(data);
+    if (replace) return (settings: await replaceWith(bundle));
+    await db.transaction((txn) async {
+      await _addIn(txn, bundle);
+      if (bundle.settings != null) await SettingsRepository.saveIn(txn, bundle.settings!);
+    });
+    changes.notify();
+    return (settings: bundle.settings);
   }
 }

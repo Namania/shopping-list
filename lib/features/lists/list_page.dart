@@ -1,178 +1,379 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopping_list/core/ui/app_snackbar.dart';
-import 'package:shopping_list/core/ui/collection_page.dart';
 import 'package:shopping_list/core/ui/confirm_dialog.dart';
-import 'package:shopping_list/core/ui/movable_list.dart';
+import 'package:shopping_list/core/ui/empty_state.dart';
 import 'package:shopping_list/core/ui/options_menu.dart';
+import 'package:shopping_list/core/ui/page_header.dart';
 import 'package:shopping_list/features/cards/cards_cubit.dart';
 import 'package:shopping_list/features/categories/categories_cubit.dart';
 import 'package:shopping_list/features/categories/category.dart';
 import 'package:shopping_list/features/categories/uncategorized.dart';
 import 'package:shopping_list/features/lists/article.dart';
-import 'package:shopping_list/features/lists/article_form_dialog.dart';
 import 'package:shopping_list/features/lists/article_tile.dart';
 import 'package:shopping_list/features/lists/link_card_dialog.dart';
+import 'package:shopping_list/features/lists/list_actions.dart';
 import 'package:shopping_list/features/lists/lists_cubit.dart';
+import 'package:shopping_list/features/lists/quick_add_bar.dart';
 import 'package:shopping_list/features/lists/shopping_list.dart';
 import 'package:shopping_list/features/prices/amount_button.dart';
 import 'package:shopping_list/features/settings/settings_cubit.dart';
 import 'package:shopping_list/features/sharing/share_payload.dart';
 import 'package:shopping_list/features/sharing/share_sheet.dart';
 
-enum _ListAction { share, linkCard, unlinkCard, delete }
+enum _ListAction { rename, duplicate, restart, share, linkCard, unlinkCard, clear, delete }
 
-/// The articles of one list, grouped by category.
-class ListPage extends StatelessWidget {
+/// One list: its progress, the articles still to buy grouped by category,
+/// the ones already in the cart folded at the bottom, and a field to add
+/// articles without leaving the page.
+class ListPage extends StatefulWidget {
   final String listId;
 
   const ListPage({super.key, required this.listId});
 
-  Future<void> _addArticle(BuildContext context, ShoppingList list) async {
-    final input = await showArticleFormDialog(context);
-    if (input == null || !context.mounted) return;
-    final added = await context.read<ListsCubit>().addArticle(
-      listId: list.id,
-      label: input.label,
-      category: input.category,
-    );
-    if (!added && context.mounted) showAppSnackBar(context, context.tr('list.exists', args: [input.label]));
-  }
+  @override
+  State<ListPage> createState() => _ListPageState();
+}
 
-  Future<void> _linkCard(BuildContext context, ShoppingList list) async {
+class _ListPageState extends State<ListPage> {
+  bool _showDone = false;
+
+  Future<void> _linkCard(ShoppingList list) async {
     final cards = context.read<CardsCubit>().state;
     if (cards.isEmpty) {
-      showAppSnackBar(context, context.tr('lists.no_cards'));
+      showAppSnackBar(context, context.l10n.listsNoCards);
       return;
     }
     final card = await showLinkCardDialog(context, cards: cards);
-    if (card == null || !context.mounted) return;
+    if (card == null || !mounted) return;
     await context.read<ListsCubit>().update(list.copyWith(cardId: card.id));
   }
 
-  Future<void> _clear(BuildContext context, ShoppingList list) async {
+  Future<void> _clear(ShoppingList list) async {
     final onlyDone = await showChoiceDialog<bool?>(
       context,
-      message: context.tr('list.confirm_clear'),
+      message: context.l10n.listConfirmClear,
+      icon: Icons.delete_sweep_outlined,
       choices: [
-        Choice(context.tr('common.no'), null, primary: false),
-        Choice(context.tr('list.clear_done_only'), true),
-        Choice(context.tr('common.yes'), false),
+        Choice(context.l10n.listClearDoneOnly, true),
+        Choice(context.l10n.listClearAll, false, destructive: true),
+        Choice(context.l10n.commonCancel, null, primary: false),
       ],
     );
-    if (onlyDone == null || !context.mounted) return;
+    if (onlyDone == null || !mounted) return;
     await context.read<ListsCubit>().clear(list.id, onlyDone: onlyDone);
   }
 
-  void _onAction(BuildContext context, ShoppingList list, _ListAction action) {
+  void _onAction(ShoppingList list, _ListAction action) {
     switch (action) {
+      case _ListAction.rename:
+        renameList(context, list);
+      case _ListAction.duplicate:
+        duplicateList(context, list);
+      case _ListAction.restart:
+        restartList(context, list);
       case _ListAction.share:
         showShareSheet(
           context,
           SharePayload(ShareKind.lists, [list.toMap(uncategorized: uncategorized(context))]),
+          what: list.label,
+          text: listAsText(list),
         );
       case _ListAction.linkCard:
-        _linkCard(context, list);
+        _linkCard(list);
       case _ListAction.unlinkCard:
         context.read<ListsCubit>().update(list.copyWith(clearCard: true));
+      case _ListAction.clear:
+        _clear(list);
       case _ListAction.delete:
-        _clear(context, list);
+        deleteList(context, list);
     }
   }
 
-  /// Articles in category order, each category preceded by a header.
-  List<Widget> _grouped(BuildContext context, List<Article> articles) {
+  /// The articles still to buy, by category in the user's category order.
+  List<(Category, List<Article>)> _groups(List<Article> todo) {
     final categories = [...context.watch<CategoriesCubit>().state];
     final none = uncategorized(context);
     final first = context.watch<SettingsCubit>().state.uncategorizedFirst;
     categories.insert(first ? 0 : categories.length, none);
-
     return [
       for (final category in categories)
-        ...switch (articles.where((a) => (a.category ?? none) == category).toList()) {
-          [] => const <Widget>[],
-          final group => [
-            _CategoryHeader(category),
-            for (final article in group) ArticleTile(key: ValueKey(article.id), article: article),
-          ],
-        },
+        if (todo.where((a) => (a.category ?? none) == category).toList() case final group
+            when group.isNotEmpty)
+          (category, group),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final list = context.watch<ListsCubit>().byId(listId);
+    final list = context.watch<ListsCubit>().byId(widget.listId);
     if (list == null) {
       // Deleted while open.
-      WidgetsBinding.instance.addPostFrameCallback((_) => context.mounted ? context.go('/lists') : null);
+      WidgetsBinding.instance.addPostFrameCallback((_) => mounted ? context.go('/lists') : null);
       return const Scaffold();
     }
+    final colors = Theme.of(context).colorScheme;
     final calculator = context.watch<SettingsCubit>().state.calculatorEnabled;
-    final cardAction =
-        list.cardId == null
-            ? MenuOption(_ListAction.linkCard, icon: Icons.add_rounded, label: context.tr('common.link'))
-            : MenuOption(
-              _ListAction.unlinkCard,
-              icon: Icons.remove_rounded,
-              label: context.tr('common.unlink'),
-            );
-    final children = _grouped(context, list.articles);
+    final card = context.watch<CardsCubit>().byId(list.cardId);
+    final todo = list.articles.where((a) => !a.done).toList();
+    final done = list.articles.where((a) => a.done).toList();
+    final total = list.articles.length;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const Padding(padding: EdgeInsets.only(left: 10), child: BackButton()),
-        title: Text(list.label),
-        actions: [
-          if (calculator) AmountButton(listId: list.id),
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: OptionsMenu<_ListAction>(
-              options: [
-                MenuOption(_ListAction.share, icon: Icons.share_rounded, label: context.tr('common.share')),
-                cardAction,
-                MenuOption(
-                  _ListAction.delete,
-                  icon: Icons.delete_rounded,
-                  label: context.tr('common.delete'),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PageHeader(
+              title: list.label,
+              showBack: true,
+              actions: [
+                if (card != null)
+                  IconButton(
+                    tooltip: card.label,
+                    onPressed: () => context.push('/cards/${card.id}'),
+                    icon: Icon(Icons.credit_card_rounded, color: card.color),
+                  ),
+                OptionsMenu<_ListAction>(
+                  options: [
+                    MenuOption(_ListAction.rename, icon: Icons.edit_outlined, label: context.l10n.listRename),
+                    MenuOption(
+                      _ListAction.duplicate,
+                      icon: Icons.content_copy_rounded,
+                      label: context.l10n.listDuplicate,
+                    ),
+                    if (done.isNotEmpty)
+                      MenuOption(
+                        _ListAction.restart,
+                        icon: Icons.replay_rounded,
+                        label: context.l10n.listsRestart,
+                      ),
+                    MenuOption(
+                      _ListAction.share,
+                      icon: Icons.ios_share_rounded,
+                      label: context.l10n.commonShare,
+                    ),
+                    list.cardId == null
+                        ? MenuOption(
+                            _ListAction.linkCard,
+                            icon: Icons.add_card_rounded,
+                            label: context.l10n.commonLink,
+                          )
+                        : MenuOption(
+                            _ListAction.unlinkCard,
+                            icon: Icons.credit_card_off_rounded,
+                            label: context.l10n.commonUnlink,
+                          ),
+                    if (total > 0)
+                      MenuOption(
+                        _ListAction.clear,
+                        icon: Icons.delete_sweep_outlined,
+                        label: context.l10n.listClear,
+                      ),
+                    MenuOption(
+                      _ListAction.delete,
+                      icon: Icons.delete_outline_rounded,
+                      label: context.l10n.listDeleteList,
+                    ),
+                  ],
+                  onSelected: (action) => _onAction(list, action),
                 ),
               ],
-              onSelected: (action) => _onAction(context, list, action),
             ),
-          ),
-        ],
+            if (total > 0)
+              _Progress(
+                done: done.length,
+                total: total,
+                amount: calculator ? AmountButton(listId: list.id) : null,
+              ),
+            Expanded(
+              child: total == 0
+                  ? ListView(
+                      children: [
+                        EmptyState(icon: Icons.add_shopping_cart_rounded, text: context.l10n.listEmpty),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                      children: [
+                        for (final (category, articles) in _groups(todo)) ...[
+                          _GroupHeader(category: category, count: articles.length),
+                          _Group(
+                            children: [
+                              for (final a in articles) ArticleTile(key: ValueKey(a.id), article: a),
+                            ],
+                          ),
+                        ],
+                        if (todo.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Column(
+                              spacing: 8,
+                              children: [
+                                Icon(Icons.celebration_rounded, size: 36, color: colors.tertiary),
+                                Text(
+                                  context.l10n.listAllDone,
+                                  style: TextTheme.of(context).titleMedium!.copyWith(color: colors.tertiary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (done.isNotEmpty) ...[
+                          _DoneHeader(
+                            count: done.length,
+                            open: _showDone,
+                            onTap: () => setState(() => _showDone = !_showDone),
+                          ),
+                          if (_showDone)
+                            _Group(
+                              children: [for (final a in done) ArticleTile(key: ValueKey(a.id), article: a)],
+                            ),
+                        ],
+                      ],
+                    ),
+            ),
+            QuickAddBar(list: list),
+          ],
+        ),
       ),
-      body:
-          children.isEmpty
-              ? Center(child: Text(context.tr('list.empty')))
-              : ListView(padding: MovableList.padding, children: children),
-      floatingActionButton: AddButton(
-        label: context.tr('list.add'),
-        onPressed: () => _addArticle(context, list),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
 
-class _CategoryHeader extends StatelessWidget {
-  final Category category;
+/// "5 / 14 in the cart", a progress bar and, with the calculator, the total.
+class _Progress extends StatelessWidget {
+  final int done;
+  final int total;
+  final Widget? amount;
 
-  const _CategoryHeader(this.category);
+  const _Progress({required this.done, required this.total, this.amount});
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 50),
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+      child: Column(
+        spacing: 8,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.listsProgress(done, total),
+                  style: TextTheme.of(context).bodyMedium!.copyWith(
+                    color: colors.outline,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+              ?amount,
+            ],
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(end: done / total),
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) => LinearProgressIndicator(value: value, minHeight: 8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The name of a category above its articles, with its colour.
+class _GroupHeader extends StatelessWidget {
+  final Category category;
+  final int count;
+
+  const _GroupHeader({required this.category, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+      child: Row(
+        spacing: 10,
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(color: category.color, borderRadius: BorderRadius.circular(4)),
+          ),
+          Expanded(
+            child: Text(
+              category.label,
+              style: TextTheme.of(context).titleSmall!.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          Text('$count', style: TextTheme.of(context).bodyMedium!.copyWith(color: colors.outline)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Rows of one category in a single rounded card, separated by hairlines.
+class _Group extends StatelessWidget {
+  final List<Widget> children;
+
+  const _Group({required this.children});
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
     child: Column(
-      spacing: 10,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: Text(category.label, style: TextTheme.of(context).titleLarge),
-        ),
-        const Divider(indent: 10, endIndent: 10),
+        for (var i = 0; i < children.length; i++) ...[if (i > 0) const Divider(indent: 56), children[i]],
       ],
     ),
   );
+}
+
+/// "In the cart (5)", tap to unfold the checked articles.
+class _DoneHeader extends StatelessWidget {
+  final int count;
+  final bool open;
+  final VoidCallback onTap;
+
+  const _DoneHeader({required this.count, required this.open, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Row(
+            spacing: 10,
+            children: [
+              Icon(Icons.shopping_basket_rounded, size: 18, color: colors.tertiary),
+              Expanded(
+                child: Text(
+                  context.l10n.listInCart(count),
+                  style: TextTheme.of(context).titleSmall!.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              AnimatedRotation(
+                turns: open ? 0.5 : 0,
+                duration: const Duration(milliseconds: 180),
+                child: Icon(Icons.expand_more_rounded, color: colors.outline),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

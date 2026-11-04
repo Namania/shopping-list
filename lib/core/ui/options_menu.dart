@@ -23,21 +23,20 @@ class OptionsMenu<T> extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: theme.colorScheme.surfaceContainer,
       icon: const Icon(Icons.more_vert),
-      itemBuilder:
-          (context) => [
-            for (final option in options)
-              PopupMenuItem<T>(
-                value: option.value,
-                padding: const EdgeInsets.only(left: 20, right: 10),
-                child: Row(
-                  spacing: 10,
-                  children: [
-                    Icon(option.icon, size: 20, color: theme.iconTheme.color),
-                    Text(option.label, style: theme.textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-          ],
+      itemBuilder: (context) => [
+        for (final option in options)
+          PopupMenuItem<T>(
+            value: option.value,
+            padding: const EdgeInsets.only(left: 20, right: 10),
+            child: Row(
+              spacing: 10,
+              children: [
+                Icon(option.icon, size: 20, color: theme.iconTheme.color),
+                Text(option.label, style: theme.textTheme.bodyMedium),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

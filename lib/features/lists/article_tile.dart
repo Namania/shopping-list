@@ -1,7 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shopping_list/core/ui/color_dot.dart';
 import 'package:shopping_list/core/ui/confirm_dialog.dart';
 import 'package:shopping_list/core/ui/edit_button.dart';
 import 'package:shopping_list/core/ui/swipe_to_delete.dart';
@@ -13,14 +13,17 @@ import 'package:shopping_list/features/prices/price_input_sheet.dart';
 import 'package:shopping_list/features/prices/prices_cubit.dart';
 import 'package:shopping_list/features/settings/settings_cubit.dart';
 
-/// An article: check it off, pencil or long-press to edit, swipe to delete.
-/// With the calculator on, checking an article asks for its price.
+/// One article row inside its category group: a large checkbox, the label,
+/// an edit pencil. Tap anywhere on the row to check it; long-press or the
+/// pencil to edit; swipe to delete. With the calculator on, checking an
+/// article asks for its price.
 class ArticleTile extends StatelessWidget {
   final Article article;
 
   const ArticleTile({super.key, required this.article});
 
   Future<void> _toggle(BuildContext context) async {
+    HapticFeedback.selectionClick();
     final lists = context.read<ListsCubit>();
     final prices = context.read<PricesCubit>();
     final calculator = context.read<SettingsCubit>().state.calculatorEnabled;
@@ -30,8 +33,7 @@ class ArticleTile extends StatelessWidget {
     if (article.done) {
       await prices.removeForArticle(article.id);
     } else {
-      final cents = await showPriceInputSheet(context);
-      if (cents != null) {
+      if (await showPriceSheet(context, title: article.label) case SetPrice(:final cents)) {
         await prices.setForArticle(listId: article.listId, articleId: article.id, cents: cents);
       }
     }
@@ -54,7 +56,7 @@ class ArticleTile extends StatelessWidget {
     if (deleted == null || !context.mounted) return;
     showUndoSnackBar(
       context,
-      message: context.tr('common.deleted', args: [article.label]),
+      message: context.l10n.commonDeleted(article.label),
       onUndo: () => cubit.restoreArticle(deleted),
     );
   }
@@ -64,30 +66,36 @@ class ArticleTile extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return SwipeToDelete(
       id: article.id,
-      confirm: () => confirmDelete(context, message: context.tr('list.confirm_delete')),
+      card: false,
+      confirm: () => confirmDelete(context, message: context.l10n.listConfirmDelete),
       onDeleted: () => _delete(context),
-      child: GestureDetector(
+      child: InkWell(
+        onTap: () => _toggle(context),
         onLongPress: () => _edit(context),
-        child: CheckboxListTile(
-          activeColor: colors.tertiary,
-          controlAffinity: ListTileControlAffinity.leading,
-          secondary: Row(
-            mainAxisSize: MainAxisSize.min,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Row(
             children: [
-              ColorDot(article.done ? colors.outline : (article.category?.color ?? colors.primary)),
+              Transform.scale(
+                scale: 1.15,
+                child: Checkbox(value: article.done, onChanged: (_) => _toggle(context)),
+              ),
+              Expanded(
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 160),
+                  style: TextTheme.of(context).bodyLarge!.copyWith(
+                    fontSize: 17,
+                    color: article.done ? colors.outline : colors.onSurface,
+                    decoration: article.done ? TextDecoration.lineThrough : TextDecoration.none,
+                    decorationColor: colors.outline,
+                  ),
+                  child: Text(article.label),
+                ),
+              ),
               EditButton(onPressed: () => _edit(context)),
+              const SizedBox(width: 4),
             ],
           ),
-          title: Text(
-            article.label,
-            style: TextTheme.of(context).bodyLarge!.apply(
-              color: article.done ? colors.outline : colors.primary,
-              decoration: article.done ? TextDecoration.lineThrough : TextDecoration.none,
-              decorationColor: colors.outline,
-            ),
-          ),
-          value: article.done,
-          onChanged: (_) => _toggle(context),
         ),
       ),
     );

@@ -21,6 +21,9 @@ class LegacyData {
   final Map<String, dynamic>? categoryPosition;
   final Map<String, dynamic>? calculator;
 
+  /// The language picked in the app (easy_localization), e.g. "fr".
+  final String? language;
+
   const LegacyData({
     this.lists,
     this.cards,
@@ -31,6 +34,7 @@ class LegacyData {
     this.startRoute,
     this.categoryPosition,
     this.calculator,
+    this.language,
   });
 }
 
@@ -193,5 +197,6 @@ class LegacyMigration {
     'route': data.startRoute?['setting_router'],
     'category': data.categoryPosition?['setting_default_category_position'],
     'calculator': data.calculator?['setting_enable_calculator'] ?? 1,
+    'lang': data.language,
   });
 }

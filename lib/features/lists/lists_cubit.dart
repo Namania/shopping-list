@@ -38,6 +38,19 @@ class ListsCubit extends RepositoryCubit<List<ShoppingList>> {
 
   Future<void> reorder(int oldIndex, int newIndex) => mutate(() => _repository.reorder(oldIndex, newIndex));
 
+  /// Puts the lists in the order of [ids].
+  Future<void> setOrder(List<String> ids) => mutate(() => _repository.setOrder(ids));
+
+  /// Copies a list, articles unchecked; returns the copy's id.
+  Future<String?> duplicate(String sourceId, String label) async {
+    String? id;
+    await mutate(() async => id = await _repository.duplicate(sourceId, label));
+    return id;
+  }
+
+  /// Unchecks every article of a list.
+  Future<void> restart(String listId) => mutate(() => _repository.restart(listId));
+
   // ---- articles ----
 
   /// Returns `false` when the list already has an article with this label.

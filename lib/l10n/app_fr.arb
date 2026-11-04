@@ -1,0 +1,374 @@
+{
+  "@@locale": "fr",
+  "calculatorAddButton": "Ajouter un montant",
+  "calculatorAddHint": "Entrez le montant de l'article",
+  "calculatorAmount": "{amount} €",
+  "@calculatorAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatorClearAll": "Tout effacer",
+  "calculatorClearTitle": "Quels montants effacer ?",
+  "calculatorClearWithArticle": "Ceux des articles",
+  "calculatorClearWithoutArticle": "Ceux ajoutés à la main",
+  "calculatorConfirmDelete": "Voulez-vous vraiment le supprimer ?",
+  "calculatorEmpty": "Aucun montant pour l'instant.\nCoche un article pour noter son prix, ou ajoute un montant.",
+  "calculatorTitle": "Calculatrice",
+  "calculatorTotal": "Total",
+  "calculatorWithoutArticle": "Montant libre",
+  "cardsAdd": "Ajouter une carte",
+  "cardsConfirmDelete": "Voulez-vous vraiment la supprimer ?",
+  "cardsEmpty": "Aucune carte de fidélité.\nAjoute-la une fois, montre-la en caisse.",
+  "cardsFormAddTitle": "Ajouter une carte",
+  "cardsFormCodeHint": "Numéro de la carte",
+  "cardsFormEditTitle": "Modifier une carte",
+  "cardsFormNameHint": "Nom du magasin",
+  "cardsInvalidCode": "Ce code ne peut pas être affiché au format {format}. Modifiez la carte pour changer le format.",
+  "@cardsInvalidCode": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "cardsTitle": "Mes cartes",
+  "categoriesAdd": "Ajouter une catégorie",
+  "categoriesConfirmDelete": "Voulez-vous vraiment la supprimer ?",
+  "categoriesConfirmDeleteAll": "Voulez-vous vraiment tout supprimer ?",
+  "categoriesEmpty": "Aucune catégorie.\nRange tes articles par rayon.",
+  "categoriesExists": "Une catégorie existe déjà avec ce nom !",
+  "categoriesFormAddTitle": "Ajouter une catégorie",
+  "categoriesFormEditTitle": "Modifier la catégorie",
+  "categoriesFormNameHint": "Nom de la catégorie",
+  "categoriesTitle": "Mes catégories",
+  "categoriesUncategorized": "Sans catégorie",
+  "commonAdd": "Ajouter",
+  "commonCancel": "Annuler",
+  "commonConfirm": "Confirmez",
+  "commonDelete": "Supprimer",
+  "commonDeleted": "« {name} » supprimé",
+  "@commonDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commonDone": "Terminé",
+  "commonEdit": "Modifier",
+  "commonImport": "Importer",
+  "commonLink": "Lier une carte",
+  "commonMove": "Réorganiser",
+  "commonNo": "Non",
+  "commonSave": "Enregistrer",
+  "commonShare": "Partager",
+  "commonUndo": "Annuler",
+  "commonUnlink": "Délier la carte",
+  "commonYes": "Oui",
+  "deepLinkError": "Une erreur s'est produite.\nVeuillez nous excuser pour le dérangement.",
+  "deepLinkHome": "Retourner à l'accueil",
+  "listAllDone": "Tout est dans le panier !",
+  "listClear": "Vider la liste",
+  "listClearDoneOnly": "Cochés uniquement",
+  "listConfirmClear": "Voulez-vous vraiment tout supprimer ?",
+  "listConfirmDelete": "Voulez-vous vraiment le supprimer ?",
+  "listEmpty": "Liste vide.\nAjoute ton premier article en bas.",
+  "listExists": "L'article « {name} » est déjà dans la liste !",
+  "@listExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "listFormAddTitle": "Ajouter un article",
+  "listFormEditTitle": "Modifier un article",
+  "listFormLabelHint": "Entrez le nom de l'article",
+  "listInCart": "Dans le panier ({count})",
+  "@listInCart": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listLinkCardTitle": "Lier une carte",
+  "listMoreOptions": "Choisir une catégorie",
+  "listQuickAdd": "Ajouter un article…",
+  "listsAdd": "Nouvelle liste",
+  "listsComplete": "Tout est dans le panier",
+  "listsConfirmDelete": "Voulez-vous vraiment la supprimer ?",
+  "listsCount": "{count, plural, =0{Pas d'article} =1{{count} article} other{{count} articles}}",
+  "@listsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listsEmpty": "Aucune liste pour l'instant.\nCommence par une de ces idées, ou crée la tienne.",
+  "listsExists": "La liste « {name} » existe déjà !",
+  "@listsExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "listsFormAddTitle": "Ajouter une liste",
+  "listsFormEditTitle": "Modifier la liste",
+  "listsFormLabelHint": "Entrez le nom de la liste",
+  "listsLeft": "{count, plural, =0{Tout est dans le panier} =1{{count} article à acheter} other{{count} articles à acheter}}",
+  "@listsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listsNoCards": "Veuillez d'abord ajouter une carte !",
+  "listsProgress": "{done} / {total} dans le panier",
+  "@listsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "listsTitle": "Mes listes",
+  "navCards": "Cartes",
+  "navLists": "Listes",
+  "navSettings": "Réglages",
+  "settingsAmbiancesForest": "Forêt",
+  "settingsAmbiancesFresh": "Fraîche",
+  "settingsAmbiancesLavender": "Lavande",
+  "settingsAmbiancesOcean": "Océan",
+  "settingsAmbiancesRose": "Rose",
+  "settingsAmbiancesWarm": "Chaleureuse",
+  "settingsCalculatorOffConfirm": "{count, plural, =1{Désactiver la calculatrice efface le montant enregistré. Continuer ?} other{Désactiver la calculatrice efface les {count} montants enregistrés. Continuer ?}}",
+  "@settingsCalculatorOffConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCategoriesCount": "{count, plural, =0{Aucune catégorie} =1{{count} catégorie} other{{count} catégories}}",
+  "@settingsCategoriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsItemsAmbiance": "Ambiance",
+  "settingsItemsAuthor": "Développé par",
+  "settingsItemsBackup": "Sauvegarde",
+  "settingsItemsBackupHint": "Un fichier complet, à envoyer ou garder",
+  "settingsItemsCalculatorEnabled": "Calculatrice",
+  "settingsItemsCalculatorHint": "Demande le prix quand tu coches un article",
+  "settingsItemsLanguage": "Langue",
+  "settingsItemsStartRoute": "Écran au lancement",
+  "settingsItemsTheme": "Thème",
+  "settingsItemsUncategorizedFirst": "Sans catégorie en premier",
+  "settingsItemsUncategorizedFirstHint": "Les articles sans catégorie en haut de la liste",
+  "settingsItemsVersion": "Version",
+  "settingsSectionsAbout": "À propos",
+  "settingsSectionsAppearance": "Apparence",
+  "settingsSectionsData": "Données",
+  "settingsSectionsLists": "Listes",
+  "settingsStartCards": "Cartes",
+  "settingsStartLists": "Listes",
+  "settingsThemesDark": "Sombre",
+  "settingsThemesLight": "Clair",
+  "settingsThemesSystem": "Système",
+  "settingsTitle": "Paramètres",
+  "shareInvalid": "Ce contenu n'est pas un partage valide !",
+  "shareMessageCards": "Voici mes cartes !\n[Shopping List]",
+  "shareMessageCategories": "Voici mes catégories !\n[Shopping List]",
+  "shareMessageLists": "Voici ma liste !\n[Shopping List]",
+  "shareQrHint": "À scanner avec l'app, en face à face",
+  "shareTooBig": "Trop de données pour un QR code",
+  "colorTitle": "Couleur",
+  "colorCustom": "Autre couleur",
+  "categoriesArticleCount": "{count, plural, =0{Aucun article} =1{1 article} other{{count} articles}}",
+  "categoriesConfirmDeleteUsed": "{count, plural, =1{1 article utilise cette catégorie et passera « Sans catégorie ». Supprimer ?} other{{count} articles utilisent cette catégorie et passeront « Sans catégorie ». Supprimer ?}}",
+  "@categoriesArticleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@categoriesConfirmDeleteUsed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoriesDelete": "Supprimer la catégorie",
+  "categoriesReorderHint": "Reste appuyé pour déplacer",
+  "categoriesOrderHint": "L'ordre de tes catégories est l'ordre des rayons dans tes listes. Reste appuyé sur une catégorie puis fais-la glisser pour suivre ton magasin.",
+  "listClearAll": "Tout supprimer",
+  "settingsCalculatorTurnOff": "Désactiver et effacer",
+  "cardsScan": "Scanner la carte",
+  "cardsFormat": "Format du code-barres",
+  "cardsDelete": "Supprimer la carte",
+  "cardsBrightnessHint": "Luminosité au maximum pour la caisse",
+  "cardsLinkedLists": "Utilisée pour",
+  "cardsUsedFor": "Pour : {lists}",
+  "cardsCount": "{count, plural, =1{1 carte} other{{count} cartes}}",
+  "@cardsUsedFor": {
+    "placeholders": {
+      "lists": {
+        "type": "String"
+      }
+    }
+  },
+  "@cardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listsSuggestions": "Courses de la semaine|Apéro|Pharmacie|Barbecue|Bricolage|Pique-nique",
+  "listsIdeas": "Idées",
+  "listsDuplicateFrom": "Partir d'une liste existante",
+  "listsCopyOf": "{name} (copie)",
+  "@listsCopyOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "listsRestarted": "« {name} » est prête pour une nouvelle fois",
+  "@listsRestarted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "listsRestart": "Recommencer",
+  "listsFinished": "Terminées",
+  "listRename": "Renommer",
+  "listDuplicate": "Dupliquer",
+  "listDeleteList": "Supprimer la liste",
+  "commonValidate": "Valider",
+  "calculatorDelete": "Supprimer le montant",
+  "calculatorAllLists": "Toutes les listes",
+  "calculatorNoList": "Hors liste",
+  "calculatorCount": "{count, plural, =0{Aucun montant} =1{1 montant} other{{count} montants}}",
+  "@calculatorCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareTitle": "Partager",
+  "shareText": "En texte",
+  "shareTextHint": "Un message lisible partout, même sans l'app",
+  "shareQr": "QR code",
+  "shareFile": "Fichier",
+  "shareFileHint": "À ouvrir avec l'app sur un autre téléphone",
+  "shareQrScanHint": "Sur l'autre téléphone : Importer, puis Scanner un QR code.",
+  "shareOtherWays": "Autres façons de partager",
+  "shareWhatLists": "{count, plural, =1{1 liste} other{{count} listes}}",
+  "@shareWhatLists": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareWhatCards": "{count, plural, =1{1 carte} other{{count} cartes}}",
+  "@shareWhatCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareWhatCategories": "{count, plural, =1{1 catégorie} other{{count} catégories}}",
+  "@shareWhatCategories": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importTitle": "Importer",
+  "importSubtitle": "Un QR code, un fichier ou un lien reçu",
+  "importScan": "Scanner un QR code",
+  "importScanHint": "Montré par l'app sur un autre téléphone",
+  "importFile": "Ouvrir un fichier",
+  "importFileHint": "Une sauvegarde ou un fichier partagé",
+  "importPaste": "Coller un lien",
+  "importPasteHint": "Un lien Shopping List copié",
+  "importEmpty": "Il n'y a rien à importer.",
+  "importDone": "Importé",
+  "importRestored": "Sauvegarde restaurée",
+  "importReceived": "Données reçues",
+  "importBackup": "Sauvegarde",
+  "importBackupOf": "Sauvegarde du {date} à {time}",
+  "@importBackupOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "importAll": "Tout",
+  "importNone": "Aucun",
+  "importAdd": "{count, plural, =0{Rien de coché} =1{Ajouter 1 élément} other{Ajouter {count} éléments}}",
+  "@importAdd": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importReplace": "Tout remplacer par cette sauvegarde",
+  "importReplaceConfirm": "Tes données actuelles seront remplacées. Une copie est gardée dans les points de restauration.",
+  "importCategories": "Catégories",
+  "backupTitle": "Sauvegarde",
+  "backupSubtitle": "Toutes tes données dans un seul fichier, montants compris",
+  "backupSend": "Envoyer une sauvegarde",
+  "backupSendHint": "Vers Drive, un mail, une conversation…",
+  "backupSave": "Enregistrer sur le téléphone",
+  "backupSaveHint": "Dans le dossier de ton choix",
+  "backupRestore": "Restaurer une sauvegarde",
+  "backupRestoreHint": "Tu verras son contenu avant de choisir",
+  "backupSaved": "Sauvegarde enregistrée",
+  "restorePointsTitle": "Points de restauration",
+  "restorePointsSubtitle": "Des copies gardées sur le téléphone. Touche-en une pour revenir à ce moment-là.",
+  "restorePointsEmpty": "Aucune copie pour l'instant : la première sera faite demain.",
+  "restorePointDaily": "Copie du jour",
+  "restorePointBeforeImport": "Avant un import",
+  "restorePointBeforeRestore": "Avant une restauration",
+  "restorePointConfirm": "Revenir aux données du {when} ? Les données actuelles sont gardées en copie.",
+  "@restorePointConfirm": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "restorePointRestore": "Revenir à cette copie",
+  "restorePointDone": "Données restaurées",
+  "settingsItemsRestorePointsHint": "Une copie automatique chaque jour",
+  "importReplaceConfirmButton": "Remplacer mes données"
+}

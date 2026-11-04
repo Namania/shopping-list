@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -80,7 +80,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
             child: SafeArea(
               child: FilledButton.tonal(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text(context.tr('common.cancel')),
+                child: Text(context.l10n.commonCancel),
               ),
             ),
           ),

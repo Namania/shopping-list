@@ -54,7 +54,7 @@ void main() {
     expect(imported.cardId, 'c1');
     expect(imported.articles.single.category?.label, 'Fruits');
     expect(restored.settings?.themeMode, ThemeMode.dark);
-    expect(restored.lang, 'fr');
+    expect(restored.settings?.languageCode, 'fr');
     expect((await SettingsRepository(db).load()).themeMode, ThemeMode.dark);
     await Future<void>.delayed(Duration.zero);
     expect(notifications, 1);
@@ -67,9 +67,14 @@ void main() {
     });
     expect(
       restored.settings,
-      const AppSettings(themeMode: ThemeMode.dark, startRoute: StartRoute.lists, calculatorEnabled: true),
+      const AppSettings(
+        themeMode: ThemeMode.dark,
+        startRoute: StartRoute.lists,
+        calculatorEnabled: true,
+        languageCode: 'en',
+      ),
     );
-    expect(restored.lang, 'en');
+    expect(restored.settings?.languageCode, 'en');
   });
 
   test('a malformed backup leaves nothing behind', () async {

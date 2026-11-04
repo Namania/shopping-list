@@ -60,6 +60,7 @@ void main() {
       startRoute: {'setting_router': 1},
       categoryPosition: {'setting_default_category_position': 1},
       calculator: {'setting_enable_calculator': 0},
+      language: 'en_US',
     );
 
     expect(await LegacyMigration.isDone(db), isFalse);
@@ -93,6 +94,7 @@ void main() {
         startRoute: StartRoute.lists,
         uncategorizedFirst: false,
         calculatorEnabled: true,
+        languageCode: 'en',
       ),
     );
   });

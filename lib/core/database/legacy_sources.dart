@@ -6,7 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shopping_list/core/database/legacy_migration.dart';
 
-const _legacyPrefKeys = ['articles', 'cards', 'categories', 'calculator', 'calculator_without_article'];
+const _legacyPrefKeys = [
+  'articles',
+  'cards',
+  'categories',
+  'calculator',
+  'calculator_without_article',
+  'locale',
+];
 
 /// Runs [LegacyMigration] on the first launch after the update to SQLite,
 /// reading the stores of versions <= 1.3.x.
@@ -36,6 +43,7 @@ Future<void> migrateLegacyData(Database db) async {
     startRoute: setting('SettingRouterCubit'),
     categoryPosition: setting('SettingDefaultCategoryPosition'),
     calculator: setting('SettingEnableCalculator'),
+    language: prefs.getString('locale'),
   );
 
   try {

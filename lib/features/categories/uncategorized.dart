@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_list/features/categories/category.dart';
 
@@ -7,6 +7,6 @@ import 'package:shopping_list/features/categories/category.dart';
 /// write for those articles.
 Category uncategorized(BuildContext context) => Category(
   id: '',
-  label: context.tr('categories.uncategorized'),
+  label: context.l10n.categoriesUncategorized,
   color: Theme.of(context).colorScheme.primary,
 );

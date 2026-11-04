@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- The app works offline: no code of its own uses the network. ML Kit
+         (the barcode scanner, whose model ships in the app) brings these
+         two to send usage statistics to Google; they are removed so nothing
+         leaves the phone. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
+</manifest>

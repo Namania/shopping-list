@@ -11,6 +11,9 @@ class MovableList<T> extends StatefulWidget {
   final Widget Function(BuildContext context, T item) itemBuilder;
   final void Function(int oldIndex, int newIndex) onReorder;
 
+  /// Scrolls with the items, above them, and never moves.
+  final Widget? header;
+
   const MovableList({
     super.key,
     required this.items,
@@ -18,9 +21,11 @@ class MovableList<T> extends StatefulWidget {
     required this.keyOf,
     required this.itemBuilder,
     required this.onReorder,
+    this.header,
   });
 
-  static const padding = EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 65);
+  /// Leaves room under the last item for the add button.
+  static const padding = EdgeInsets.fromLTRB(16, 4, 16, 112);
 
   @override
   State<MovableList<T>> createState() => _MovableListState<T>();
@@ -83,10 +88,13 @@ class _MovableListState<T> extends State<MovableList<T>> {
   @override
   Widget build(BuildContext context) {
     if (!widget.movable) {
+      final header = widget.header;
+      final offset = header == null ? 0 : 1;
       return ListView.builder(
         padding: MovableList.padding,
-        itemCount: _items.length,
-        itemBuilder: (context, index) => widget.itemBuilder(context, _items[index]),
+        itemCount: _items.length + offset,
+        itemBuilder: (context, index) =>
+            index < offset ? header! : widget.itemBuilder(context, _items[index - offset]),
       );
     }
     return Listener(
@@ -99,6 +107,7 @@ class _MovableListState<T> extends State<MovableList<T>> {
       child: ReorderableListView.builder(
         scrollController: _scrollController,
         padding: MovableList.padding,
+        header: widget.header,
         proxyDecorator: (child, index, animation) {
           _dragging = true;
           return Material(elevation: 10, color: Colors.transparent, child: child);
@@ -110,11 +119,10 @@ class _MovableListState<T> extends State<MovableList<T>> {
           widget.onReorder(oldIndex, newIndex);
         },
         itemCount: _items.length,
-        itemBuilder:
-            (context, index) => KeyedSubtree(
-              key: ValueKey(widget.keyOf(_items[index])),
-              child: widget.itemBuilder(context, _items[index]),
-            ),
+        itemBuilder: (context, index) => KeyedSubtree(
+          key: ValueKey(widget.keyOf(_items[index])),
+          child: widget.itemBuilder(context, _items[index]),
+        ),
       ),
     );
   }

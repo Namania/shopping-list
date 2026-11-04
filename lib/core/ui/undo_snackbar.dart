@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Tells the user something was deleted and lets them take it back.
@@ -14,7 +14,7 @@ void showUndoSnackBar(
       content: Text(message, style: TextTheme.of(context).labelLarge),
       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       duration: const Duration(seconds: 5),
-      action: SnackBarAction(label: context.tr('common.undo'), onPressed: onUndo),
+      action: SnackBarAction(label: context.l10n.commonUndo, onPressed: onUndo),
     ),
   );
 }

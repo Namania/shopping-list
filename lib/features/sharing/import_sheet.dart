@@ -1,82 +1,130 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shopping_list/core/scanner/barcode_scanner_page.dart';
 import 'package:shopping_list/core/ui/app_bottom_sheet.dart';
 import 'package:shopping_list/core/ui/app_snackbar.dart';
+import 'package:shopping_list/core/ui/undo_snackbar.dart';
 import 'package:shopping_list/core/utils/json_file.dart';
+import 'package:shopping_list/features/backup/restore_points.dart';
+import 'package:shopping_list/features/settings/settings_cubit.dart';
 import 'package:shopping_list/features/sharing/data_importer.dart';
-import 'package:shopping_list/features/sharing/share_payload.dart';
+import 'package:shopping_list/features/sharing/import_bundle.dart';
+import 'package:shopping_list/features/sharing/import_preview_sheet.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 
-/// Lets the user import a collection of [kind] by scanning a QR code or by
-/// picking a JSON file.
-Future<void> showImportSheet(BuildContext context, {required ShareKind kind}) {
-  return showAppBottomSheet<void>(
+/// The one way in for anything shared or backed up: a QR code, a file or a
+/// copied link. What it holds is always previewed before it is added.
+Future<void> showImportSheet(BuildContext context) {
+  final l10n = context.l10n;
+  return showOptionSheet<void>(
     context,
-    children: [
-      Row(
-        spacing: 10,
-        children: [
-          SheetActionTile(
-            icon: Icons.qr_code_scanner_rounded,
-            label: context.tr('share.scan'),
-            onTap: () => _import(context, kind, _fromQrCode(context, kind)),
-          ),
-          SheetActionTile(
-            icon: Icons.insert_drive_file_rounded,
-            label: context.tr('share.pick_file'),
-            onTap: () => _import(context, kind, _fromFile()),
-          ),
-        ],
+    title: l10n.importTitle,
+    subtitle: l10n.importSubtitle,
+    options: [
+      SheetOption(
+        icon: Icons.qr_code_scanner_rounded,
+        title: l10n.importScan,
+        subtitle: l10n.importScanHint,
+        onTap: () => _from(context, _scan),
+      ),
+      SheetOption(
+        icon: Icons.file_open_outlined,
+        title: l10n.importFile,
+        subtitle: l10n.importFileHint,
+        onTap: () => _from(context, _pickFile),
+      ),
+      SheetOption(
+        icon: Icons.content_paste_rounded,
+        title: l10n.importPaste,
+        subtitle: l10n.importPasteHint,
+        onTap: () => _from(context, _paste),
       ),
     ],
   );
 }
 
-/// Items read from a source: `cancelled` when the user backed out, `items`
-/// `null` when the source was not a valid share.
-typedef _Source = ({bool cancelled, List<Map<String, dynamic>>? items});
-
-const _Source _cancelled = (cancelled: true, items: null);
-const _Source _invalid = (cancelled: false, items: null);
-
-Future<void> _import(BuildContext context, ShareKind kind, Future<_Source> source) async {
-  final (:cancelled, :items) = await source;
-  if (cancelled || !context.mounted) return;
-  if (items == null) {
-    showAppSnackBar(context, context.tr('share.invalid'));
-    return;
-  }
+/// Reads a source and closes the sheet; [read] returns `null` when the user
+/// backed out and throws a [FormatException] when the source is not valid.
+Future<void> _from(BuildContext context, Future<ImportBundle?> Function(BuildContext) read) async {
+  final ImportBundle? bundle;
   try {
-    await context.read<DataImporter>().importShared(kind, items);
-  } on TypeError {
-    if (context.mounted) showAppSnackBar(context, context.tr('share.invalid'));
-    return;
-  } on DatabaseException {
-    if (context.mounted) showAppSnackBar(context, context.tr('share.invalid'));
-    return;
-  }
-  if (context.mounted) Navigator.pop(context);
-}
-
-Future<_Source> _fromQrCode(BuildContext context, ShareKind kind) async {
-  final scanned = await scanCode(context, qr: true);
-  if (scanned == null) return _cancelled;
-  final uri = Uri.tryParse(scanned.value);
-  if (uri == null || !SharePayload.isDeepLink(uri)) return _invalid;
-  final payload = SharePayload.decode(uri.queryParameters['data']);
-  return payload?.kind == kind ? (cancelled: false, items: payload!.items) : _invalid;
-}
-
-Future<_Source> _fromFile() async {
-  try {
-    final decoded = await pickJsonFile();
-    if (decoded == null) return _cancelled;
-    return (cancelled: false, items: (decoded as List<dynamic>).cast<Map<String, dynamic>>());
+    bundle = await read(context);
   } on FormatException {
-    return _invalid;
+    if (context.mounted) showAppSnackBar(context, context.l10n.shareInvalid);
+    return;
+  }
+  if (bundle == null || !context.mounted) return;
+  Navigator.pop(context);
+  await importBundle(context, bundle);
+}
+
+Future<ImportBundle?> _scan(BuildContext context) async {
+  final scanned = await scanCode(context, qr: true);
+  if (scanned == null) return null;
+  return ImportBundle.fromLink(scanned.value) ?? (throw const FormatException('Not a share link'));
+}
+
+Future<ImportBundle?> _pickFile(BuildContext context) async {
+  final decoded = await pickJsonFile();
+  return decoded == null ? null : ImportBundle.fromJson(decoded);
+}
+
+Future<ImportBundle?> _paste(BuildContext context) async {
+  final text = (await Clipboard.getData(Clipboard.kTextPlain))?.text ?? '';
+  return readImport(text) ?? (throw const FormatException('Nothing to import'));
+}
+
+/// Reads a share link or the content of a file, `null` when it is neither.
+ImportBundle? readImport(String text) {
+  final link = ImportBundle.fromLink(text);
+  if (link != null) return link;
+  try {
+    return ImportBundle.fromJson(jsonDecode(text));
+  } on FormatException {
+    return null;
+  }
+}
+
+/// Previews [bundle], then adds or restores it. A restore point is taken
+/// first, so the import can be undone from the message that follows.
+Future<void> importBundle(BuildContext context, ImportBundle bundle) async {
+  final l10n = context.l10n;
+  if (bundle.isEmpty) {
+    showAppSnackBar(context, l10n.importEmpty);
+    return;
+  }
+  final choice = await showImportPreview(context, bundle);
+  if (choice == null || !context.mounted) return;
+
+  final importer = context.read<DataImporter>();
+  final points = context.read<RestorePoints>();
+  final settings = context.read<SettingsCubit>();
+  final previousSettings = settings.state;
+  try {
+    final point = await points.take(RestorePointReason.beforeImport);
+    switch (choice) {
+      case AddSelected(:final selection):
+        await importer.add(selection);
+      case ReplaceAll():
+        final restored = await importer.replaceWith(bundle);
+        if (restored != null) await settings.replace(restored);
+    }
+    if (!context.mounted) return;
+    showUndoSnackBar(
+      context,
+      message: choice is ReplaceAll ? l10n.importRestored : l10n.importDone,
+      onUndo: () async {
+        if (point != null) await points.restore(point, saveCurrent: false);
+        await settings.replace(previousSettings);
+      },
+    );
   } on TypeError {
-    return _invalid;
+    if (context.mounted) showAppSnackBar(context, l10n.shareInvalid);
+  } on DatabaseException {
+    if (context.mounted) showAppSnackBar(context, l10n.shareInvalid);
   }
 }

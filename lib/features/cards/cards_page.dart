@@ -1,21 +1,22 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/ui/collection_page.dart';
-import 'package:shopping_list/features/cards/card_form_dialog.dart';
+import 'package:shopping_list/features/cards/card_sheet.dart';
 import 'package:shopping_list/features/cards/card_tile.dart';
 import 'package:shopping_list/features/cards/cards_cubit.dart';
 import 'package:shopping_list/features/cards/loyalty_card.dart';
 import 'package:shopping_list/features/sharing/import_sheet.dart';
 import 'package:shopping_list/features/sharing/share_payload.dart';
 import 'package:shopping_list/features/sharing/share_sheet.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 
 class CardsPage extends StatelessWidget {
   const CardsPage({super.key});
 
   Future<void> _add(BuildContext context) async {
-    final input = await showCardFormDialog(context);
-    if (input == null || !context.mounted) return;
+    final result = await showCardSheet(context);
+    if (result is! SaveCard || !context.mounted) return;
+    final input = result.input;
     await context.read<CardsCubit>().add(
       label: input.label,
       code: input.code,
@@ -28,9 +29,13 @@ class CardsPage extends StatelessWidget {
     final cubit = context.read<CardsCubit>();
     switch (action) {
       case CollectionAction.share:
-        showShareSheet(context, SharePayload(ShareKind.cards, cubit.state.map((c) => c.toMap()).toList()));
+        showShareSheet(
+          context,
+          SharePayload(ShareKind.cards, cubit.state.map((c) => c.toMap()).toList()),
+          what: context.l10n.shareWhatCards(cubit.state.length),
+        );
       case CollectionAction.import:
-        showImportSheet(context, kind: ShareKind.cards);
+        showImportSheet(context);
       case CollectionAction.move:
       case CollectionAction.delete:
         break;
@@ -41,15 +46,18 @@ class CardsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cards = context.watch<CardsCubit>().state;
     return CollectionPage<LoyaltyCard>(
-      title: context.tr('cards.title'),
+      title: context.l10n.cardsTitle,
+      subtitle: cards.isEmpty ? null : context.l10n.cardsCount(cards.length),
       items: cards,
-      emptyText: context.tr('cards.empty'),
-      addLabel: context.tr('cards.add'),
+      emptyIcon: Icons.credit_card_rounded,
+      emptyText: context.l10n.cardsEmpty,
+      addLabel: context.l10n.cardsAdd,
       onAdd: () => _add(context),
-      actions: const [CollectionAction.share, CollectionAction.import, CollectionAction.move],
+      actions: const [CollectionAction.share, CollectionAction.import],
+      reorderOnLongPress: true,
       onAction: (action) => _onAction(context, action),
       keyOf: (card) => card.id,
-      itemBuilder: (context, card, movable) => CardTile(card: card, movable: movable),
+      itemBuilder: (context, card, movable) => CardTile(card: card),
       onReorder: context.read<CardsCubit>().reorder,
     );
   }

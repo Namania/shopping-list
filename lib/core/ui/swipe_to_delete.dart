@@ -1,13 +1,15 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 /// A card that can be swiped away in either direction. The swipe is only
-/// completed when [confirm] returns `true`.
+/// completed when [confirm] returns `true`. With [card] off, the row is
+/// drawn bare, for rows grouped inside a card of their own.
 class SwipeToDelete extends StatelessWidget {
   final String id;
   final Future<bool> Function() confirm;
   final VoidCallback onDeleted;
   final Widget child;
+  final bool card;
 
   const SwipeToDelete({
     super.key,
@@ -15,20 +17,21 @@ class SwipeToDelete extends StatelessWidget {
     required this.confirm,
     required this.onDeleted,
     required this.child,
+    this.card = true,
   });
 
   @override
-  Widget build(BuildContext context) => Card(
-    clipBehavior: Clip.antiAlias,
-    child: Dismissible(
+  Widget build(BuildContext context) {
+    final dismissible = Dismissible(
       key: ValueKey('swipe-$id'),
       confirmDismiss: (_) => confirm(),
       onDismissed: (_) => onDeleted(),
       background: const _DeleteBackground(alignment: MainAxisAlignment.start),
       secondaryBackground: const _DeleteBackground(alignment: MainAxisAlignment.end),
       child: child,
-    ),
-  );
+    );
+    return card ? Card(child: dismissible) : dismissible;
+  }
 }
 
 class _DeleteBackground extends StatelessWidget {
@@ -39,13 +42,13 @@ class _DeleteBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = Text(
-      context.tr('common.delete'),
-      style: TextTheme.of(context).bodyLarge!.apply(color: Colors.white),
+      context.l10n.commonDelete,
+      style: TextTheme.of(context).bodyLarge!.apply(color: Theme.of(context).colorScheme.onError),
     );
-    const icon = Icon(Icons.delete_rounded, color: Colors.white);
+    final icon = Icon(Icons.delete_outline_rounded, color: Theme.of(context).colorScheme.onError);
     return Container(
-      color: const Color(0xff93000a),
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      color: Theme.of(context).colorScheme.error,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: alignment,
         spacing: 5,

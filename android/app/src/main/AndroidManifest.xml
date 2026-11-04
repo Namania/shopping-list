@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- No automatic backup to Google Drive: lists and loyalty cards stay on
+         the phone. From Android 12 this still lets a new phone copy them
+         straight from the old one (device-to-device transfer). -->
     <application
+        android:allowBackup="false"
         android:label="Shopping List"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -26,6 +29,19 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="shopping-list" android:host="launch"/>
+            </intent-filter>
+            <!-- Backups and shared files, opened from a file manager, a mail or a chat. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:mimeType="application/json"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/json"/>
             </intent-filter>
         </activity>
         <meta-data

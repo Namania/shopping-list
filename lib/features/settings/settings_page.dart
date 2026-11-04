@@ -1,11 +1,15 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shopping_list/core/ui/form_dialog.dart';
+import 'package:shopping_list/core/ui/confirm_dialog.dart';
+import 'package:shopping_list/core/ui/page_header.dart';
+import 'package:shopping_list/features/categories/categories_cubit.dart';
 import 'package:shopping_list/features/prices/prices_cubit.dart';
 import 'package:shopping_list/features/settings/app_settings.dart';
-import 'package:shopping_list/features/settings/backup.dart';
+import 'package:shopping_list/features/backup/backup_sheet.dart';
+import 'package:shopping_list/features/sharing/import_sheet.dart';
 import 'package:shopping_list/features/settings/settings_cubit.dart';
 import 'package:shopping_list/features/settings/settings_widgets.dart';
 
@@ -19,128 +23,165 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final _packageInfo = PackageInfo.fromPlatform();
 
-  static String _languageName(Locale locale) => switch (locale.languageCode) {
-    'fr' => 'Français',
-    'en' => 'English',
-    final code => code,
-  };
+  /// Turning the calculator off erases every amount: ask first when there
+  /// are some.
+  Future<void> _setCalculator(bool enabled) async {
+    final cubit = context.read<SettingsCubit>();
+    final prices = context.read<PricesCubit>();
+    if (!enabled && prices.state.isNotEmpty) {
+      final confirmed = await confirmDelete(
+        context,
+        message: context.l10n.settingsCalculatorOffConfirm(prices.state.length),
+        confirmLabel: context.l10n.settingsCalculatorTurnOff,
+      );
+      if (!confirmed) return;
+      await prices.clear();
+    }
+    await cubit.setCalculatorEnabled(enabled);
+  }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.watch<SettingsCubit>();
     final settings = cubit.state;
+    final categoryCount = context.watch<CategoriesCubit>().state.length;
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(), title: Text(context.tr('settings.title'))),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          spacing: 2,
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 32),
           children: [
-            SettingsSection(
-              title: context.tr('settings.sections.general'),
+            PageHeader(title: l10n.settingsTitle),
+
+            SettingsGroup(
+              title: l10n.settingsSectionsAppearance,
               children: [
-                SettingsTile(
-                  icon: Icons.system_update_rounded,
-                  title: context.tr('settings.items.version'),
-                  trailing: FutureBuilder(
-                    future: _packageInfo,
-                    builder: (context, snapshot) => Text(snapshot.data?.version ?? ''),
-                  ),
-                ),
-                SettingsTile(
+                SettingsChoiceRow<ThemeMode>(
                   icon: Icons.contrast_rounded,
-                  title: context.tr('settings.items.theme'),
-                  trailing: SizedBox(
-                    width: 150,
-                    child: AppDropdown<ThemeMode>(
-                      items: ThemeMode.values,
-                      initial: settings.themeMode,
-                      labelOf: (mode) => context.tr('settings.themes.${mode.name}'),
-                      onSelected: cubit.setThemeMode,
-                    ),
-                  ),
+                  title: l10n.settingsItemsTheme,
+                  value: settings.themeMode,
+                  onChanged: cubit.setThemeMode,
+                  options: [
+                    (ThemeMode.system, l10n.settingsThemesSystem, Icons.brightness_auto_rounded),
+                    (ThemeMode.light, l10n.settingsThemesLight, Icons.light_mode_rounded),
+                    (ThemeMode.dark, l10n.settingsThemesDark, Icons.dark_mode_rounded),
+                  ],
                 ),
-                SettingsTile(
-                  icon: Icons.language,
-                  title: context.tr('settings.items.language'),
-                  trailing: SizedBox(
-                    width: 150,
-                    child: AppDropdown<Locale>(
-                      items: context.supportedLocales,
-                      initial: context.locale,
-                      labelOf: _languageName,
-                      onSelected: context.setLocale,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SettingsRow(icon: Icons.palette_outlined, title: l10n.settingsItemsAmbiance),
+                    AmbiancePicker(
+                      value: settings.ambiance,
+                      labelOf: (ambiance) => ambiance.label(l10n),
+                      onChanged: cubit.setAmbiance,
                     ),
-                  ),
+                  ],
                 ),
-                SettingsTile(
-                  icon: Icons.cloud_rounded,
-                  title: context.tr('settings.items.backup'),
-                  trailing: const Icon(Icons.arrow_right_rounded),
-                  onTap: () => showBackupSheet(context),
+                SettingsChoiceRow<String?>(
+                  icon: Icons.translate_rounded,
+                  title: l10n.settingsItemsLanguage,
+                  value: settings.languageCode,
+                  onChanged: cubit.setLanguage,
+                  // Language names are written in their own language.
+                  options: [
+                    (null, l10n.settingsThemesSystem, null),
+                    ('fr', 'Français', null),
+                    ('en', 'English', null),
+                  ],
                 ),
               ],
             ),
-            SettingsSection(
-              title: context.tr('settings.sections.article'),
+
+            SettingsGroup(
+              title: l10n.settingsSectionsLists,
               children: [
-                SettingsSwitch(
-                  icon: Icons.swap_vert_rounded,
-                  title: context.tr('settings.items.uncategorized_first'),
+                SettingsRow.nav(
+                  icon: Icons.category_outlined,
+                  title: context.l10n.categoriesTitle,
+                  subtitle: context.l10n.settingsCategoriesCount(categoryCount),
+                  onTap: () => context.push('/categories'),
+                ),
+                SettingsSwitchRow(
+                  icon: Icons.vertical_align_top_rounded,
+                  title: l10n.settingsItemsUncategorizedFirst,
+                  subtitle: l10n.settingsItemsUncategorizedFirstHint,
                   value: settings.uncategorizedFirst,
                   onChanged: cubit.setUncategorizedFirst,
                 ),
-              ],
-            ),
-            SettingsSection(
-              title: context.tr('settings.sections.calculator'),
-              children: [
-                SettingsSwitch(
-                  icon: Icons.calculate_rounded,
-                  title: context.tr('settings.items.calculator_enabled'),
+                SettingsSwitchRow(
+                  icon: Icons.calculate_outlined,
+                  title: l10n.settingsItemsCalculatorEnabled,
+                  subtitle: l10n.settingsItemsCalculatorHint,
                   value: settings.calculatorEnabled,
-                  onChanged: (enabled) {
-                    cubit.setCalculatorEnabled(enabled);
-                    if (!enabled) context.read<PricesCubit>().clear();
-                  },
+                  onChanged: _setCalculator,
+                ),
+                SettingsChoiceRow<StartRoute>(
+                  icon: Icons.rocket_launch_outlined,
+                  title: l10n.settingsItemsStartRoute,
+                  // "home" is the lists tab since the home page is gone.
+                  value: settings.startRoute == StartRoute.cards ? StartRoute.cards : StartRoute.lists,
+                  onChanged: cubit.setStartRoute,
+                  options: [
+                    (StartRoute.lists, l10n.settingsStartLists, Icons.checklist_rounded),
+                    (StartRoute.cards, l10n.settingsStartCards, Icons.credit_card_rounded),
+                  ],
                 ),
               ],
             ),
-            SettingsSection(
-              title: context.tr('settings.sections.startup'),
+
+            SettingsGroup(
+              title: l10n.settingsSectionsData,
               children: [
-                SettingsTile(
-                  icon: Icons.signpost_rounded,
-                  title: context.tr('settings.items.start_route'),
-                  trailing: SizedBox(
-                    width: 150,
-                    child: AppDropdown<StartRoute>(
-                      items: StartRoute.values,
-                      initial: settings.startRoute,
-                      labelOf: (route) => context.tr('settings.start.${route.name}'),
-                      onSelected: cubit.setStartRoute,
+                SettingsRow.nav(
+                  icon: Icons.save_outlined,
+                  title: l10n.settingsItemsBackup,
+                  subtitle: l10n.settingsItemsBackupHint,
+                  onTap: () => showBackupSheet(context),
+                ),
+                SettingsRow.nav(
+                  icon: Icons.history_rounded,
+                  title: l10n.restorePointsTitle,
+                  subtitle: l10n.settingsItemsRestorePointsHint,
+                  onTap: () => showRestorePointsSheet(context),
+                ),
+                SettingsRow.nav(
+                  icon: Icons.move_to_inbox_outlined,
+                  title: l10n.importTitle,
+                  subtitle: l10n.importSubtitle,
+                  onTap: () => showImportSheet(context),
+                ),
+              ],
+            ),
+
+            SettingsGroup(
+              title: l10n.settingsSectionsAbout,
+              children: [
+                SettingsRow(
+                  icon: Icons.info_outline_rounded,
+                  title: l10n.settingsItemsVersion,
+                  trailing: FutureBuilder(
+                    future: _packageInfo,
+                    builder: (context, snapshot) => Text(
+                      snapshot.data?.version ?? '',
+                      style: TextTheme.of(
+                        context,
+                      ).bodyMedium!.copyWith(color: Theme.of(context).colorScheme.outline),
                     ),
                   ),
                 ),
-              ],
-            ),
-            SettingsSection(
-              title: context.tr('settings.sections.developer'),
-              children: [
-                SettingsTile(
-                  icon: Icons.person_rounded,
-                  title: context.tr('settings.items.author'),
-                  trailing: const Text('Namania'),
-                ),
-                SettingsTile.link(
-                  icon: Icons.language,
-                  title: context.tr('settings.items.website'),
+                SettingsRow.link(
+                  icon: Icons.person_outline_rounded,
+                  title: l10n.settingsItemsAuthor,
+                  subtitle: 'Namania · namania.fr',
                   url: 'https://namania.fr',
                 ),
-                const BuyMeACoffeeTile(),
               ],
             ),
+
+            const BuyMeACoffeeButton(),
           ],
         ),
       ),

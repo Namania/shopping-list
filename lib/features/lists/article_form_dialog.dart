@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_list/core/ui/form_dialog.dart';
@@ -19,10 +19,10 @@ Future<ArticleInput?> showArticleFormDialog(BuildContext context, {ArticleInput?
 
   return showFormDialog<ArticleInput>(
     context,
-    title: context.tr(initial == null ? 'list.form.add_title' : 'list.form.edit_title'),
-    submitLabel: context.tr(initial == null ? 'common.add' : 'common.save'),
+    title: initial == null ? context.l10n.listFormAddTitle : context.l10n.listFormEditTitle,
+    submitLabel: initial == null ? context.l10n.commonAdd : context.l10n.commonSave,
     fields: [
-      AppTextField(controller: labelController, hint: context.tr('list.form.label_hint')),
+      AppTextField(controller: labelController, hint: context.l10n.listFormLabelHint),
       AppDropdown<Category>(
         items: categories,
         initial: category,

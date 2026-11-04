@@ -1,6 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:shopping_list/core/ui/color_swatch_picker.dart';
 
 /// A dialog with form [fields] and cancel / submit buttons.
 ///
@@ -15,27 +15,26 @@ Future<T?> showFormDialog<T>(
 }) {
   return showDialog<T>(
     context: context,
-    builder:
-        (context) => AlertDialog(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: Text(title),
-          content: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Column(mainAxisSize: MainAxisSize.min, spacing: 10, children: fields),
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text(context.tr('common.cancel'))),
-            TextButton(
-              onPressed: () {
-                final result = submit();
-                if (result != null) Navigator.pop(context, result);
-              },
-              child: Text(submitLabel),
-            ),
-          ],
+    builder: (context) => AlertDialog(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      title: Text(title),
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(mainAxisSize: MainAxisSize.min, spacing: 10, children: fields),
         ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.commonCancel)),
+        TextButton(
+          onPressed: () {
+            final result = submit();
+            if (result != null) Navigator.pop(context, result);
+          },
+          child: Text(submitLabel),
+        ),
+      ],
+    ),
   );
 }
 
@@ -92,26 +91,30 @@ class AppDropdown<T> extends StatelessWidget {
   );
 }
 
-/// The HSL colour picker used for categories and cards.
-class ColorPickerField extends StatelessWidget {
+/// The colour field of the category and card forms: ready-made swatches
+/// plus a fine-grained picker for any other colour.
+class ColorPickerField extends StatefulWidget {
   final Color initial;
   final ValueChanged<Color> onChanged;
 
   const ColorPickerField({super.key, required this.initial, required this.onChanged});
 
   @override
+  State<ColorPickerField> createState() => _ColorPickerFieldState();
+}
+
+class _ColorPickerFieldState extends State<ColorPickerField> {
+  late Color _color = widget.initial;
+
+  @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 10),
-    child: ColorPicker(
-      pickerColor: initial,
-      onColorChanged: onChanged,
-      hexInputBar: false,
-      displayThumbColor: false,
-      labelTypes: const [],
-      enableAlpha: false,
-      pickerAreaBorderRadius: const BorderRadius.all(Radius.circular(5)),
-      pickerAreaHeightPercent: .5,
-      paletteType: PaletteType.hsl,
+    padding: const EdgeInsets.only(top: 4),
+    child: ColorSwatchPicker(
+      value: _color,
+      onChanged: (color) {
+        setState(() => _color = color);
+        widget.onChanged(color);
+      },
     ),
   );
 }

@@ -108,6 +108,42 @@ class ListRepository {
 
   Future<void> reorder(int oldIndex, int newIndex) => db.reorder(table, oldIndex, newIndex);
 
+  /// Puts the lists in the order of [ids]; lists not named keep their place
+  /// after them.
+  Future<void> setOrder(List<String> ids) => db.transaction((txn) async {
+    final rows = await txn.query(table, columns: ['id'], orderBy: 'position');
+    final rest = rows.map((r) => r['id'] as String).where((id) => !ids.contains(id));
+    final batch = txn.batch();
+    var position = 0;
+    for (final id in [...ids, ...rest]) {
+      batch.update(table, {'position': position++}, where: 'id = ?', whereArgs: [id]);
+    }
+    await batch.commit(noResult: true);
+  });
+
+  /// Copies a list and its articles, all unchecked, under [label], at the
+  /// end. Returns the new list's id, `null` when [sourceId] is unknown.
+  Future<String?> duplicate(String sourceId, String label) => db.transaction((txn) async {
+    final rows = await txn.query(table, where: 'id = ?', whereArgs: [sourceId]);
+    if (rows.isEmpty) return null;
+    final id = _uuid.v4();
+    await _insertList(txn, ShoppingList(id: id, label: label, cardId: rows.first['card_id'] as String?));
+    for (final article in await _articlesIn(txn, listId: sourceId)) {
+      await _insertArticle(
+        txn,
+        Article(id: _uuid.v4(), listId: id, label: article.label, category: article.category),
+      );
+    }
+    return id;
+  });
+
+  /// Unchecks every article of a list so it can be shopped again, and drops
+  /// the prices entered for them.
+  Future<void> restart(String listId) => db.transaction((txn) async {
+    await txn.update(articles, {'done': 0}, where: 'list_id = ?', whereArgs: [listId]);
+    await txn.delete('prices', where: 'list_id = ? AND article_id IS NOT NULL', whereArgs: [listId]);
+  });
+
   // ---- articles ----
 
   /// Inserts an article; returns `false` when the list already has one with
@@ -258,13 +294,12 @@ class ListRepository {
     listId: row['list_id'] as String,
     label: row['label'] as String,
     done: row['done'] == 1,
-    category:
-        row['category_id'] == null
-            ? null
-            : Category(
-              id: row['category_id'] as String,
-              label: row['category_label'] as String,
-              color: Color(row['category_color'] as int),
-            ),
+    category: row['category_id'] == null
+        ? null
+        : Category(
+            id: row['category_id'] as String,
+            label: row['category_label'] as String,
+            color: Color(row['category_color'] as int),
+          ),
   );
 }

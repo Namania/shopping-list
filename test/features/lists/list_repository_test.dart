@@ -143,4 +143,48 @@ void main() {
     expect(imported.articles.single.id, isNot(milkId));
     expect((await repo.all()).first.articles.single.label, 'Milk');
   });
+
+  test('restart unchecks every article and drops their prices', () async {
+    await repo.add('Groceries');
+    final list = (await repo.all()).single;
+    await repo.addArticle(listId: list.id, label: 'Milk');
+    await repo.addArticle(listId: list.id, label: 'Eggs');
+    final [milk, eggs] = (await repo.all()).single.articles;
+    await repo.toggleDone(milk.id);
+    await repo.toggleDone(eggs.id);
+    final prices = PriceRepository(db);
+    await prices.setForArticle(listId: list.id, articleId: milk.id, cents: 150);
+    await prices.addManual(listId: list.id, cents: 200);
+
+    await repo.restart(list.id);
+
+    expect((await repo.all()).single.articles.every((a) => !a.done), isTrue);
+    expect((await prices.all()).map((p) => p.cents), [200], reason: 'hand-entered amounts stay');
+  });
+
+  test('duplicate copies the articles unchecked, with their category and card', () async {
+    final fruits = await CategoryRepository(db).add(label: 'Fruits', color: const Color(0xFF4CAF50));
+    await repo.add('Weekly');
+    final source = (await repo.all()).single;
+    await repo.addArticle(listId: source.id, label: 'Apples', category: fruits);
+    await repo.toggleDone((await repo.all()).single.articles.single.id);
+
+    final id = await repo.duplicate(source.id, 'Weekly (copy)');
+
+    final copy = (await repo.all()).firstWhere((l) => l.id == id);
+    expect(copy.label, 'Weekly (copy)');
+    expect(copy.articles.single.label, 'Apples');
+    expect(copy.articles.single.done, isFalse);
+    expect(copy.articles.single.category, fruits);
+    expect((await repo.all()).first.articles.single.done, isTrue, reason: 'source untouched');
+  });
+
+  test('setOrder puts the named lists first, the others after in their order', () async {
+    for (final label in ['A', 'B', 'C', 'D']) {
+      await repo.add(label);
+    }
+    final ids = {for (final l in await repo.all()) l.label: l.id};
+    await repo.setOrder([ids['C']!, ids['A']!]);
+    expect((await repo.all()).map((l) => l.label), ['C', 'A', 'B', 'D']);
+  });
 }
