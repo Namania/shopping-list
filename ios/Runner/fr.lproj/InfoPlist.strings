@@ -1,0 +1,2 @@
+/* Affiché quand l'app demande la caméra la première fois. */
+"NSCameraUsageDescription" = "L'appareil photo sert à scanner le code-barres de vos cartes de fidélité et les QR codes des listes partagées. Les images sont analysées sur votre appareil, jamais enregistrées ni envoyées.";

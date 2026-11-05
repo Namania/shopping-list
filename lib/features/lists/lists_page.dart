@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/core/ui/collection_page.dart';
 import 'package:shopping_list/core/ui/empty_state.dart';
 import 'package:shopping_list/core/ui/movable_list.dart';
@@ -99,7 +100,7 @@ class _ListsPageState extends State<ListsPage> {
     );
 
     return Scaffold(
-      body: SafeArea(
+      body: PageBody(
         bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

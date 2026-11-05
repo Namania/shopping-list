@@ -2,7 +2,7 @@
 
 *[English version below](#shopping-list--privacy-policy)*
 
-**Dernière mise à jour : 4 novembre 2026**
+**Dernière mise à jour : 5 novembre 2026**
 
 Cette politique décrit comment l'application **Shopping List** (identifiant
 `fr.namania.shopping_list`), éditée par Namania, traite vos informations.
@@ -86,13 +86,16 @@ L'application n'intègre aucun service de publicité, d'analyse ou de suivi.
 
 - La lecture des codes-barres utilise Google ML Kit sur Android, dont le
   modèle est inclus dans l'application et fonctionne hors ligne. L'application
-  n'ayant pas accès à Internet, ML Kit ne peut rien transmettre à Google.
-- Les liens de la page Réglages (site de l'éditeur, « Buy me a coffee »)
-  s'ouvrent dans votre navigateur, seulement si vous les touchez ; ces sites
-  ont leur propre politique de confidentialité.
-- Le téléchargement depuis Google Play, et les rapports de plantage que vous
-  avez éventuellement acceptés dans les réglages de votre téléphone, sont
-  régis par la [politique de confidentialité de Google](https://policies.google.com/privacy).
+  n'ayant pas accès à Internet, ML Kit ne peut rien transmettre à Google. Sur
+  iPhone et iPad, elle utilise Apple Vision, intégré au système.
+- Les liens de la page Réglages (site de l'éditeur et, sur Android, « Buy me
+  a coffee ») s'ouvrent dans votre navigateur, seulement si vous les touchez ;
+  ces sites ont leur propre politique de confidentialité.
+- Le téléchargement depuis Google Play ou l'App Store, et les rapports de
+  plantage que vous avez éventuellement acceptés dans les réglages de votre
+  appareil, sont régis par la
+  [politique de confidentialité de Google](https://policies.google.com/privacy)
+  ou par celle d'[Apple](https://www.apple.com/fr/legal/privacy/).
 
 ## Partage des données
 
@@ -115,7 +118,7 @@ moins de 13 ans.
 
 Cette politique peut être mise à jour ; la date en haut de page indique la
 dernière version. Toute modification importante sera signalée dans la fiche
-Google Play de l'application.
+de l'application (Google Play, App Store).
 
 ## Contact
 
@@ -125,7 +128,7 @@ Pour toute question sur cette politique : **namania1717@gmail.com**
 
 # Shopping List — Privacy Policy
 
-**Last updated: November 4, 2026**
+**Last updated: November 5, 2026**
 
 This policy describes how the **Shopping List** app (package
 `fr.namania.shopping_list`), published by Namania, handles your information.
@@ -203,13 +206,15 @@ The app includes no advertising, analytics or tracking service.
 
 - Barcode reading uses Google ML Kit on Android, whose model ships inside the
   app and works offline. As the app has no Internet access, ML Kit cannot
-  send anything to Google.
-- The links on the Settings page (the publisher's website, "Buy me a coffee")
-  open in your browser, only if you tap them; those sites have their own
-  privacy policies.
-- Downloading from Google Play, and any crash reports you may have allowed in
-  your phone's settings, are governed by
-  [Google's privacy policy](https://policies.google.com/privacy).
+  send anything to Google. On iPhone and iPad, it uses Apple Vision, built
+  into the system.
+- The links on the Settings page (the publisher's website and, on Android,
+  "Buy me a coffee") open in your browser, only if you tap them; those sites
+  have their own privacy policies.
+- Downloading from Google Play or the App Store, and any crash reports you
+  may have allowed in your device's settings, are governed by
+  [Google's privacy policy](https://policies.google.com/privacy) or
+  [Apple's](https://www.apple.com/legal/privacy/).
 
 ## Data sharing
 
@@ -228,7 +233,8 @@ The app collects no data, including from children under 13.
 ## Changes
 
 This policy may be updated; the date at the top shows the latest version.
-Any significant change will be noted in the app's Google Play listing.
+Any significant change will be noted in the app's store listing (Google Play,
+App Store).
 
 ## Contact
 

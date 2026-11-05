@@ -1,4 +1,6 @@
+import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/l10n/l10n.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final l10n = context.l10n;
 
     return Scaffold(
-      body: SafeArea(
+      body: PageBody(
         bottom: false,
         child: ListView(
           padding: const EdgeInsets.only(bottom: 32),
@@ -181,7 +183,9 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
 
-            const BuyMeACoffeeButton(),
+            // The App Store does not allow tipping the developer through an
+            // outside link (guideline 3.1.1): the button is Android only.
+            if (defaultTargetPlatform != TargetPlatform.iOS) const BuyMeACoffeeButton(),
           ],
         ),
       ),

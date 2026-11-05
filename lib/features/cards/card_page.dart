@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/features/cards/barcode_view.dart';
 import 'package:shopping_list/features/cards/card_actions.dart';
 import 'package:shopping_list/features/cards/card_face.dart';
@@ -57,7 +58,7 @@ class _CardPageState extends State<CardPage> {
       value: ink == Colors.white ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: card.color,
-        body: SafeArea(
+        body: PageBody(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
             children: [

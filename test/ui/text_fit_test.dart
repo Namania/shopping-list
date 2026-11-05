@@ -31,8 +31,9 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../helpers/test_database.dart';
 
-/// Phone widths in logical pixels: small, the dev phone, a large one.
-const widths = [320.0, 360.0, 412.0];
+/// Widths in logical pixels: a small phone, the dev phone, a large one, a
+/// tablet.
+const widths = [320.0, 360.0, 412.0, 820.0];
 
 /// System font sizes: default, large, largest accessibility size.
 const textScales = [1.0, 1.3, 2.0];

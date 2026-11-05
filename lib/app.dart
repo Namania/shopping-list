@@ -55,10 +55,17 @@ class _AppState extends State<App> {
     });
   }
 
-  /// A file opened with the app: preview it over the page on screen.
+  /// A file opened with the app: preview it over the page on screen. The
+  /// file that launches the app can arrive before the first page is up: it
+  /// then waits for the next frames.
   void _onFile(String content) {
     final context = rootNavigatorKey.currentContext;
-    if (context == null) return;
+    if (context == null) {
+      WidgetsBinding.instance
+        ..addPostFrameCallback((_) => _onFile(content))
+        ..scheduleFrame();
+      return;
+    }
     final bundle = readImport(content);
     if (bundle == null) {
       showAppSnackBar(context, context.l10n.shareInvalid);

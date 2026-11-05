@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/core/ui/collection_page.dart';
 import 'package:shopping_list/core/ui/confirm_dialog.dart';
 import 'package:shopping_list/core/ui/empty_state.dart';
@@ -73,7 +74,7 @@ class CalculatorPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      body: SafeArea(
+      body: PageBody(
         bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

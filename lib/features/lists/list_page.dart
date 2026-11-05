@@ -1,3 +1,4 @@
+import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -122,7 +123,7 @@ class _ListPageState extends State<ListPage> {
     final total = list.articles.length;
 
     return Scaffold(
-      body: SafeArea(
+      body: PageBody(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

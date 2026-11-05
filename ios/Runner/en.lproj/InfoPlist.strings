@@ -1,0 +1,2 @@
+/* Shown when the app first asks for the camera. */
+"NSCameraUsageDescription" = "The camera scans your loyalty cards' barcodes and the QR codes of shared lists. Images are analysed on your device and never saved or sent.";
