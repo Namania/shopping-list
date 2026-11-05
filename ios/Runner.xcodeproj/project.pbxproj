@@ -405,6 +405,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				DEVELOPMENT_TEAM = 766N3ZK2N3;
 				PRODUCT_BUNDLE_IDENTIFIER = fr.namania.shoppingList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -584,6 +585,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				DEVELOPMENT_TEAM = 766N3ZK2N3;
 				PRODUCT_BUNDLE_IDENTIFIER = fr.namania.shoppingList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -606,6 +608,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				DEVELOPMENT_TEAM = 766N3ZK2N3;
 				PRODUCT_BUNDLE_IDENTIFIER = fr.namania.shoppingList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
