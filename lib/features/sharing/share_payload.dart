@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/utils/compressed_json.dart';
 
 /// What a share payload contains. The wire names are those of the first
@@ -83,13 +84,13 @@ abstract final class CompactShare {
       ShareKind.cards => [
         kind.name,
         [
-          for (final c in items) [c['label'], c['code'], _rgb(c['color'] as int), c['format'] ?? 'code128'],
+          for (final c in items) [c['label'], c['code'], _rgb(c['color'] as int?), c['format'] ?? 'code128'],
         ],
       ],
       ShareKind.categories => [
         kind.name,
         [
-          for (final c in items) [c['label'], _rgb(c['color'] as int)],
+          for (final c in items) [c['label'], _rgb(c['color'] as int?)],
         ],
       ],
     });
@@ -100,7 +101,7 @@ abstract final class CompactShare {
     final categories = <String, int>{};
     final table = <List<Object?>>[];
     int indexOf(Map<String, dynamic> category) => categories.putIfAbsent(jsonEncode(category), () {
-      table.add([category['label'], _rgb(category['color'] as int)]);
+      table.add([category['label'], _rgb(category['color'] as int?)]);
       return table.length - 1;
     });
 
@@ -168,8 +169,9 @@ abstract final class CompactShare {
     ];
   }
 
-  /// Opaque colours lose their alpha byte: fewer digits.
-  static int _rgb(int argb) => argb >>> 24 == 0xFF ? argb & 0xFFFFFF : argb;
+  /// Colours are made visible first (see [opaqueColor]), then lose their
+  /// alpha byte: fewer digits.
+  static int _rgb(int? argb) => opaqueColor(argb).toARGB32() & 0xFFFFFF;
 
   static int _argb(int value) => value <= 0xFFFFFF ? value | 0xFF000000 : value;
 }

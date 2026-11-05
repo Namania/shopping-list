@@ -1,3 +1,4 @@
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/ui/page_body.dart';
 import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -135,7 +136,7 @@ class _ListPageState extends State<ListPage> {
                   IconButton(
                     tooltip: card.label,
                     onPressed: () => context.push('/cards/${card.id}'),
-                    icon: Icon(Icons.credit_card_rounded, color: card.color),
+                    icon: Icon(Icons.credit_card_rounded, color: visibleColor(context, card.color)),
                   ),
                 OptionsMenu<_ListAction>(
                   options: [
@@ -306,7 +307,11 @@ class _GroupHeader extends StatelessWidget {
           Container(
             width: 12,
             height: 12,
-            decoration: BoxDecoration(color: category.color, borderRadius: BorderRadius.circular(4)),
+            decoration: BoxDecoration(
+              color: category.color,
+              borderRadius: BorderRadius.circular(4),
+              border: edgeFor(context, category.color),
+            ),
           ),
           Expanded(
             child: Text(

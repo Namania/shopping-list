@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/ui/progress_ring.dart';
 import 'package:shopping_list/features/cards/cards_cubit.dart';
 import 'package:shopping_list/features/lists/list_actions.dart';
@@ -101,7 +102,11 @@ class _CardTag extends StatelessWidget {
       Container(
         width: 10,
         height: 10,
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(3),
+          border: edgeFor(context, color),
+        ),
       ),
       Flexible(
         child: Text(label, style: TextTheme.of(context).bodySmall!.copyWith(fontWeight: FontWeight.w600)),

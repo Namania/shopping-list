@@ -1,3 +1,4 @@
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -55,9 +56,13 @@ class CardChip extends StatelessWidget {
     final onCard = ThemeData.estimateBrightnessForColor(card.color) == Brightness.dark
         ? Colors.white
         : Colors.black87;
+    final edge = edgeFor(context, card.color);
     return Material(
       color: card.color,
-      borderRadius: BorderRadius.circular(14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: edge?.top ?? BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push('/cards/${card.id}'),

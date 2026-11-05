@@ -95,7 +95,8 @@ void main() {
         ]).toDeepLink(),
       ),
     )!;
-    expect(categories.items.single, {'label': 'Fruits', 'color': 0x8043A047});
+    // Translucent colours arrive opaque, so they never blend into the page.
+    expect(categories.items.single, {'label': 'Fruits', 'color': 0xFF43A047});
   });
 
   test('links of older versions are still read', () {
@@ -109,6 +110,18 @@ void main() {
       })))}',
     );
     expect(SharePayload.fromUri(legacy)!.items.single['label'], 'Fruits');
+  });
+
+  test('a card without colour arrives in the fallback colour, not black', () {
+    final cards = SharePayload.fromUri(
+      Uri.parse(
+        const SharePayload(ShareKind.cards, [
+          {'label': 'Old', 'code': '1', 'color': 0},
+          {'label': 'Older', 'code': '2'},
+        ]).toDeepLink(),
+      ),
+    )!;
+    expect([for (final c in cards.items) c['color']], [0xFF545A92, 0xFF545A92]);
   });
 
   test('a damaged link is refused', () {

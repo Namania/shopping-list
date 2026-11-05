@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/features/cards/card_format.dart';
 
 class LoyaltyCard extends Equatable {
@@ -39,7 +40,7 @@ class LoyaltyCard extends Equatable {
     id: (map['id'] as String?) ?? fallbackId,
     label: map['label'] as String,
     code: map['code'].toString(),
-    color: Color((map['color'] as int?) ?? Colors.transparent.toARGB32()),
+    color: opaqueColor(map['color'] as int?),
     format: CardFormat.fromName(map['format'] as String?),
   );
 

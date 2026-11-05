@@ -54,8 +54,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cardsConfirmDelete => 'Voulez-vous vraiment la supprimer ?';
 
   @override
-  String get cardsEmpty =>
-      'Aucune carte de fidélité.\nAjoute-la une fois, montre-la en caisse.';
+  String get cardsEmpty => 'Aucune carte de fidélité.\nAjoute-la une fois, montre-la en caisse.';
 
   @override
   String get cardsFormAddTitle => 'Ajouter une carte';
@@ -84,12 +83,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get categoriesConfirmDelete => 'Voulez-vous vraiment la supprimer ?';
 
   @override
-  String get categoriesConfirmDeleteAll =>
-      'Voulez-vous vraiment tout supprimer ?';
+  String get categoriesConfirmDeleteAll => 'Voulez-vous vraiment tout supprimer ?';
 
   @override
-  String get categoriesEmpty =>
-      'Aucune catégorie.\nRange tes articles par rayon.';
+  String get categoriesEmpty => 'Aucune catégorie.\nRange tes articles par rayon.';
 
   @override
   String get categoriesExists => 'Une catégorie existe déjà avec ce nom !';
@@ -160,8 +157,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonYes => 'Oui';
 
   @override
-  String get deepLinkError =>
-      'Une erreur s\'est produite.\nVeuillez nous excuser pour le dérangement.';
+  String get deepLinkError => 'Une erreur s\'est produite.\nVeuillez nous excuser pour le dérangement.';
 
   @override
   String get deepLinkHome => 'Retourner à l\'accueil';
@@ -234,8 +230,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get listsEmpty =>
-      'Aucune liste pour l\'instant.\nCommence par une de ces idées, ou crée la tienne.';
+  String get listsEmpty => 'Aucune liste pour l\'instant.\nCommence par une de ces idées, ou crée la tienne.';
 
   @override
   String listsExists(String name) {
@@ -306,10 +301,8 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          'Désactiver la calculatrice efface les $count montants enregistrés. Continuer ?',
-      one:
-          'Désactiver la calculatrice efface le montant enregistré. Continuer ?',
+      other: 'Désactiver la calculatrice efface les $count montants enregistrés. Continuer ?',
+      one: 'Désactiver la calculatrice efface le montant enregistré. Continuer ?',
     );
     return '$_temp0';
   }
@@ -336,15 +329,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsItemsBackup => 'Sauvegarde';
 
   @override
-  String get settingsItemsBackupHint =>
-      'Un fichier complet, à envoyer ou garder';
+  String get settingsItemsBackupHint => 'Un fichier complet, à envoyer ou garder';
 
   @override
   String get settingsItemsCalculatorEnabled => 'Calculatrice';
 
   @override
-  String get settingsItemsCalculatorHint =>
-      'Demande le prix quand tu coches un article';
+  String get settingsItemsCalculatorHint => 'Demande le prix quand tu coches un article';
 
   @override
   String get settingsItemsLanguage => 'Langue';
@@ -359,8 +350,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsItemsUncategorizedFirst => 'Sans catégorie en premier';
 
   @override
-  String get settingsItemsUncategorizedFirstHint =>
-      'Les articles sans catégorie en haut de la liste';
+  String get settingsItemsUncategorizedFirstHint => 'Les articles sans catégorie en haut de la liste';
 
   @override
   String get settingsItemsVersion => 'Version';
@@ -402,8 +392,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareMessageCards => 'Voici mes cartes !\n[Shopping List]';
 
   @override
-  String get shareMessageCategories =>
-      'Voici mes catégories !\n[Shopping List]';
+  String get shareMessageCategories => 'Voici mes catégories !\n[Shopping List]';
 
   @override
   String get shareMessageLists => 'Voici ma liste !\n[Shopping List]';
@@ -437,10 +426,8 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          '$count articles utilisent cette catégorie et passeront « Sans catégorie ». Supprimer ?',
-      one:
-          '1 article utilise cette catégorie et passera « Sans catégorie ». Supprimer ?',
+      other: '$count articles utilisent cette catégorie et passeront « Sans catégorie ». Supprimer ?',
+      one: '1 article utilise cette catégorie et passera « Sans catégorie ». Supprimer ?',
     );
     return '$_temp0';
   }
@@ -483,18 +470,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String cardsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cartes',
-      one: '1 carte',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count cartes', one: '1 carte');
     return '$_temp0';
   }
 
   @override
-  String get listsSuggestions =>
-      'Courses de la semaine|Apéro|Pharmacie|Barbecue|Bricolage|Pique-nique';
+  String get listsSuggestions => 'Courses de la semaine|Apéro|Pharmacie|Barbecue|Bricolage|Pique-nique';
 
   @override
   String get listsIdeas => 'Idées';
@@ -570,31 +551,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareFileHint => 'À ouvrir avec l\'app sur un autre téléphone';
 
   @override
-  String get shareQrScanHint =>
-      'Sur l\'autre téléphone : Importer, puis Scanner un QR code.';
+  String get shareQrScanHint => 'Sur l\'autre téléphone : Importer, puis Scanner un QR code.';
 
   @override
   String get shareOtherWays => 'Autres façons de partager';
 
   @override
   String shareWhatLists(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count listes',
-      one: '1 liste',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count listes', one: '1 liste');
     return '$_temp0';
   }
 
   @override
   String shareWhatCards(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cartes',
-      one: '1 carte',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count cartes', one: '1 carte');
     return '$_temp0';
   }
 
@@ -685,8 +655,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get backupTitle => 'Sauvegarde';
 
   @override
-  String get backupSubtitle =>
-      'Toutes tes données dans un seul fichier, montants compris';
+  String get backupSubtitle => 'Toutes tes données dans un seul fichier, montants compris';
 
   @override
   String get backupSend => 'Envoyer une sauvegarde';
@@ -717,8 +686,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Des copies gardées sur le téléphone. Touche-en une pour revenir à ce moment-là.';
 
   @override
-  String get restorePointsEmpty =>
-      'Aucune copie pour l\'instant : la première sera faite demain.';
+  String get restorePointsEmpty => 'Aucune copie pour l\'instant : la première sera faite demain.';
 
   @override
   String get restorePointDaily => 'Copie du jour';
@@ -741,8 +709,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restorePointDone => 'Données restaurées';
 
   @override
-  String get settingsItemsRestorePointsHint =>
-      'Une copie automatique chaque jour';
+  String get settingsItemsRestorePointsHint => 'Une copie automatique chaque jour';
 
   @override
   String get importReplaceConfirmButton => 'Remplacer mes données';

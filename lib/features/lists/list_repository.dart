@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/database/app_database.dart';
 import 'package:shopping_list/features/categories/category.dart';
 import 'package:shopping_list/features/categories/category_repository.dart';
@@ -299,7 +299,7 @@ class ListRepository {
         : Category(
             id: row['category_id'] as String,
             label: row['category_label'] as String,
-            color: Color(row['category_color'] as int),
+            color: opaqueColor(row['category_color'] as int?),
           ),
   );
 }

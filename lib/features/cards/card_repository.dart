@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/database/app_database.dart';
 import 'package:shopping_list/features/cards/card_format.dart';
 import 'package:shopping_list/features/cards/loyalty_card.dart';
@@ -103,7 +104,7 @@ class CardRepository {
     id: row['id'] as String,
     label: row['label'] as String,
     code: row['code'] as String,
-    color: Color(row['color'] as int),
+    color: opaqueColor(row['color'] as int?),
     format: CardFormat.fromName(row['format'] as String?),
   );
 }

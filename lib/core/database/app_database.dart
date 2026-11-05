@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 
 /// Opens the app database and owns its schema.
 ///
 /// Every repository works on the [Database] returned by [open]. Tests open an
 /// in-memory database through `sqflite_common_ffi` with the same schema.
 class AppDatabase {
-  static const latestVersion = 2;
+  static const latestVersion = 3;
 
   static Future<Database> open({
     DatabaseFactory? factory,
@@ -81,6 +82,17 @@ class AppDatabase {
     if (oldVersion < 2 && newVersion >= 2) {
       // v2: cards remember the format of their barcode.
       await db.execute("ALTER TABLE cards ADD COLUMN format TEXT NOT NULL DEFAULT 'code128'");
+    }
+    if (oldVersion < 3 && newVersion >= 3) {
+      // v3: no invisible colours. Cards of older versions could have none
+      // (stored transparent): they get the logo's violet; translucent
+      // colours become opaque.
+      for (final table in ['cards', 'categories']) {
+        await db.execute(
+          'UPDATE $table SET color = CASE WHEN (color >> 24) & 255 = 0 THEN ? ELSE color | ? END',
+          [fallbackItemColor.toARGB32(), 0xFF000000],
+        );
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/database/app_database.dart';
 import 'package:shopping_list/features/categories/category.dart';
 import 'package:uuid/uuid.dart';
@@ -85,7 +86,7 @@ class CategoryRepository {
 
   /// Adds one category of a share / backup payload (`{label, color}`).
   Future<Category> importOneIn(DatabaseExecutor txn, Map<String, dynamic> map) =>
-      addIn(txn, label: map['label'] as String, color: Color(map['color'] as int));
+      addIn(txn, label: map['label'] as String, color: opaqueColor(map['color'] as int?));
 
   Future<Category> addIn(DatabaseExecutor txn, {required String label, required Color color}) async {
     final existing = await txn.query(
@@ -104,6 +105,9 @@ class CategoryRepository {
     return category;
   }
 
-  static Category _fromRow(Map<String, Object?> row) =>
-      Category(id: row['id'] as String, label: row['label'] as String, color: Color(row['color'] as int));
+  static Category _fromRow(Map<String, Object?> row) => Category(
+    id: row['id'] as String,
+    label: row['label'] as String,
+    color: opaqueColor(row['color'] as int?),
+  );
 }

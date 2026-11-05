@@ -35,8 +35,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calculatorConfirmDelete => 'Do you really want to delete it?';
 
   @override
-  String get calculatorEmpty =>
-      'No amount yet.\nCheck an article to note its price, or add an amount.';
+  String get calculatorEmpty => 'No amount yet.\nCheck an article to note its price, or add an amount.';
 
   @override
   String get calculatorTitle => 'Calculator';
@@ -54,8 +53,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cardsConfirmDelete => 'Do you really want to delete it?';
 
   @override
-  String get cardsEmpty =>
-      'No loyalty card.\nAdd it once, show it at the checkout.';
+  String get cardsEmpty => 'No loyalty card.\nAdd it once, show it at the checkout.';
 
   @override
   String get cardsFormAddTitle => 'Add a card';
@@ -84,8 +82,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoriesConfirmDelete => 'Do you really want to delete it?';
 
   @override
-  String get categoriesConfirmDeleteAll =>
-      'Do you really want to delete everything?';
+  String get categoriesConfirmDeleteAll => 'Do you really want to delete everything?';
 
   @override
   String get categoriesEmpty => 'No category.\nSort your items by aisle.';
@@ -159,8 +156,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonYes => 'Yes';
 
   @override
-  String get deepLinkError =>
-      'An error has occurred.\nWe apologize for the inconvenience.';
+  String get deepLinkError => 'An error has occurred.\nWe apologize for the inconvenience.';
 
   @override
   String get deepLinkHome => 'Return to home';
@@ -233,8 +229,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get listsEmpty =>
-      'No list yet.\nStart with one of these ideas, or create your own.';
+  String get listsEmpty => 'No list yet.\nStart with one of these ideas, or create your own.';
 
   @override
   String listsExists(String name) {
@@ -305,8 +300,7 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          'Turning the calculator off erases the $count saved amounts. Continue?',
+      other: 'Turning the calculator off erases the $count saved amounts. Continue?',
       one: 'Turning the calculator off erases the saved amount. Continue?',
     );
     return '$_temp0';
@@ -340,8 +334,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsItemsCalculatorEnabled => 'Calculator';
 
   @override
-  String get settingsItemsCalculatorHint =>
-      'Asks for the price when you check an item';
+  String get settingsItemsCalculatorHint => 'Asks for the price when you check an item';
 
   @override
   String get settingsItemsLanguage => 'Language';
@@ -356,8 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsItemsUncategorizedFirst => 'Uncategorized first';
 
   @override
-  String get settingsItemsUncategorizedFirstHint =>
-      'Items without a category at the top of the list';
+  String get settingsItemsUncategorizedFirstHint => 'Items without a category at the top of the list';
 
   @override
   String get settingsItemsVersion => 'Version';
@@ -399,8 +391,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareMessageCards => 'Here are my cards!\n[Shopping List]';
 
   @override
-  String get shareMessageCategories =>
-      'Here are my categories!\n[Shopping List]';
+  String get shareMessageCategories => 'Here are my categories!\n[Shopping List]';
 
   @override
   String get shareMessageLists => 'Here is my list!\n[Shopping List]';
@@ -434,8 +425,7 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          '$count items use this category and will become uncategorized. Delete?',
+      other: '$count items use this category and will become uncategorized. Delete?',
       one: '1 item uses this category and will become uncategorized. Delete?',
     );
     return '$_temp0';
@@ -479,18 +469,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String cardsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cards',
-      one: '1 card',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count cards', one: '1 card');
     return '$_temp0';
   }
 
   @override
-  String get listsSuggestions =>
-      'Weekly groceries|Drinks party|Pharmacy|Barbecue|DIY|Picnic';
+  String get listsSuggestions => 'Weekly groceries|Drinks party|Pharmacy|Barbecue|DIY|Picnic';
 
   @override
   String get listsIdeas => 'Ideas';
@@ -566,31 +550,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareFileHint => 'To open with the app on another phone';
 
   @override
-  String get shareQrScanHint =>
-      'On the other phone: Import, then Scan a QR code.';
+  String get shareQrScanHint => 'On the other phone: Import, then Scan a QR code.';
 
   @override
   String get shareOtherWays => 'Other ways to share';
 
   @override
   String shareWhatLists(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count lists',
-      one: '1 list',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count lists', one: '1 list');
     return '$_temp0';
   }
 
   @override
   String shareWhatCards(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cards',
-      one: '1 card',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count cards', one: '1 card');
     return '$_temp0';
   }
 
@@ -708,12 +681,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restorePointsTitle => 'Restore points';
 
   @override
-  String get restorePointsSubtitle =>
-      'Copies kept on the phone. Tap one to go back to that moment.';
+  String get restorePointsSubtitle => 'Copies kept on the phone. Tap one to go back to that moment.';
 
   @override
-  String get restorePointsEmpty =>
-      'No copy yet: the first one will be made tomorrow.';
+  String get restorePointsEmpty => 'No copy yet: the first one will be made tomorrow.';
 
   @override
   String get restorePointDaily => 'Daily copy';

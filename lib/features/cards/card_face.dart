@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/features/cards/card_format.dart';
 
 /// A loyalty card drawn as a card: its colour, the store name, the number and
@@ -37,6 +38,7 @@ class CardFace extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
+        border: edgeFor(context, color),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

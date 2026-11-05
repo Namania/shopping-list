@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 import 'package:shopping_list/core/ui/confirm_dialog.dart';
 import 'package:shopping_list/features/sharing/import_bundle.dart';
 import 'package:shopping_list/l10n/l10n.dart';
@@ -171,7 +172,10 @@ class _ImportPreviewState extends State<_ImportPreview> {
                         i,
                         card['label'] as String,
                         null,
-                        Icon(Icons.credit_card_rounded, color: Color(card['color'] as int)),
+                        Icon(
+                          Icons.credit_card_rounded,
+                          color: visibleColor(context, opaqueColor(card['color'] as int?)),
+                        ),
                       ),
                   ],
                   if (bundle.categories.isNotEmpty) ...[
@@ -182,7 +186,11 @@ class _ImportPreviewState extends State<_ImportPreview> {
                         i,
                         category['label'] as String,
                         null,
-                        Icon(Icons.circle, size: 18, color: Color(category['color'] as int)),
+                        Icon(
+                          Icons.circle,
+                          size: 18,
+                          color: visibleColor(context, opaqueColor(category['color'] as int?)),
+                        ),
                       ),
                   ],
                 ],

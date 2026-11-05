@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_list/core/utils/colors.dart';
 
 class Category extends Equatable {
   final String id;
@@ -19,7 +20,7 @@ class Category extends Equatable {
   Map<String, dynamic> toMap() => {'label': label, 'color': color.toARGB32()};
 
   factory Category.fromMap(Map<String, dynamic> map, {required String id}) =>
-      Category(id: id, label: map['label'] as String, color: Color(map['color'] as int));
+      Category(id: id, label: map['label'] as String, color: opaqueColor(map['color'] as int?));
 
   @override
   List<Object?> get props => [id, label, color];
